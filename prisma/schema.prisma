@@ -1,0 +1,266 @@
+// Du lịch Việt Nam — Supabase (PostgreSQL) + Prisma
+// Chạy: npx prisma migrate dev | npx prisma generate
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ——— Enums ———
+enum Role {
+  USER
+  ADMIN
+}
+
+enum BookingType {
+  HOTEL
+  TOUR
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum ReviewableType {
+  HOTEL
+  TOUR
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+// ——— Profiles (mở rộng Supabase auth.users) ———
+model Profile {
+  id          String   @id
+  role        Role     @default(USER)
+  displayName String?  @map("display_name")
+  avatarUrl   String?  @map("avatar_url")
+  phone       String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  bookings Booking[]
+  reviews  Review[]
+
+  @@map("profiles")
+}
+
+// ——— Vùng miền ———
+model Region {
+  id          String   @id @default(uuid())
+  slug        String   @unique
+  nameVi      String   @map("name_vi")
+  nameEn      String?  @map("name_en")
+  description String?
+  imageUrl    String?  @map("image_url")
+  sortOrder   Int      @default(0) @map("sort_order")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  destinations Destination[]
+}
+
+// ——— Điểm đến ———
+model Destination {
+  id          String   @id @default(uuid())
+  regionId    String   @map("region_id")
+  slug        String   @unique
+  nameVi      String   @map("name_vi")
+  nameEn      String?  @map("name_en")
+  description String?
+  imageUrl    String?  @map("image_url")
+  latitude    Float?
+  longitude   Float?
+  sortOrder   Int      @default(0) @map("sort_order")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  region Region   @relation(fields: [regionId], references: [id], onDelete: Cascade)
+  hotels Hotel[]
+  tours  Tour[]
+}
+
+// ——— Khách sạn ———
+model Hotel {
+  id             String   @id @default(uuid())
+  destinationId  String   @map("destination_id")
+  slug           String   @unique
+  nameVi         String   @map("name_vi")
+  nameEn         String?  @map("name_en")
+  description    String?
+  address        String?
+  starRating     Int?     @map("star_rating")
+  latitude       Float?
+  longitude      Float?
+  amenities      String[] @default([])
+  imageUrls      String[] @default([]) @map("image_urls")
+  priceFrom      Decimal? @map("price_from") @db.Decimal(14, 0)
+  isActive       Boolean  @default(true) @map("is_active")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  destination   Destination   @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+  rooms         Room[]
+  reviews       Review[]
+}
+
+// ——— Phòng ———
+model Room {
+  id            String   @id @default(uuid())
+  hotelId       String   @map("hotel_id")
+  nameVi        String   @map("name_vi")
+  nameEn        String?  @map("name_en")
+  description   String?
+  maxGuests     Int      @map("max_guests")
+  pricePerNight Decimal  @map("price_per_night") @db.Decimal(14, 0)
+  imageUrls     String[] @default([]) @map("image_urls")
+  isActive      Boolean  @default(true) @map("is_active")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  hotel          Hotel           @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  hotelBookings  HotelBooking[]
+}
+
+// ——— Tour ———
+model Tour {
+  id            String   @id @default(uuid())
+  destinationId String?  @map("destination_id")
+  slug          String   @unique
+  nameVi        String   @map("name_vi")
+  nameEn        String?  @map("name_en")
+  description   String?
+  durationDays  Int      @map("duration_days")
+  priceFrom     Decimal? @map("price_from") @db.Decimal(14, 0)
+  imageUrls     String[] @default([]) @map("image_urls")
+  isActive      Boolean  @default(true) @map("is_active")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  destination   Destination?  @relation(fields: [destinationId], references: [id], onDelete: SetNull)
+  itineraries   TourItinerary[]
+  reviews       Review[]
+  tourBookings  TourBooking[]
+}
+
+// ——— Lịch trình tour ———
+model TourItinerary {
+  id          String  @id @default(uuid())
+  tourId      String  @map("tour_id")
+  dayNumber   Int     @map("day_number")
+  title       String
+  description String?
+  sortOrder   Int     @default(0) @map("sort_order")
+
+  tour Tour @relation(fields: [tourId], references: [id], onDelete: Cascade)
+
+  @@map("tour_itineraries")
+}
+
+// ——— Đặt chỗ (tổng) ———
+model Booking {
+  id               String        @id @default(uuid())
+  userId           String        @map("user_id")
+  bookingType      BookingType   @map("booking_type")
+  status           BookingStatus @default(PENDING)
+  totalAmount      Decimal       @map("total_amount") @db.Decimal(14, 0)
+  guestName        String        @map("guest_name")
+  guestEmail       String        @map("guest_email")
+  guestPhone       String        @map("guest_phone")
+  notes            String?
+  checkIn          DateTime?     @map("check_in") @db.Date
+  checkOut         DateTime?     @map("check_out") @db.Date
+  tourStartDate    DateTime?     @map("tour_start_date") @db.Date
+  createdAt        DateTime      @default(now()) @map("created_at")
+  updatedAt        DateTime      @updatedAt @map("updated_at")
+
+  profile       Profile        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  hotelBooking  HotelBooking?
+  tourBooking   TourBooking?
+  payments      Payment[]
+}
+
+// ——— Chi tiết đặt khách sạn ———
+model HotelBooking {
+  id            String   @id @default(uuid())
+  bookingId     String   @unique @map("booking_id")
+  roomId        String   @map("room_id")
+  nights        Int
+  guests        Int
+  pricePerNight Decimal @map("price_per_night") @db.Decimal(14, 0)
+
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  room    Room    @relation(fields: [roomId], references: [id], onDelete: Restrict)
+}
+
+// ——— Chi tiết đặt tour ———
+model TourBooking {
+  id           String   @id @default(uuid())
+  bookingId    String   @unique @map("booking_id")
+  tourId       String   @map("tour_id")
+  participants Int
+  unitPrice    Decimal  @map("unit_price") @db.Decimal(14, 0)
+
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  tour    Tour    @relation(fields: [tourId], references: [id], onDelete: Restrict)
+}
+
+// ——— Đánh giá ———
+model Review {
+  id             String         @id @default(uuid())
+  userId         String         @map("user_id")
+  reviewableType ReviewableType @map("reviewable_type")
+  hotelId        String?        @map("hotel_id")
+  tourId         String?        @map("tour_id")
+  rating         Int
+  title          String?
+  content        String?
+  isVerified     Boolean        @default(false) @map("is_verified")
+  createdAt      DateTime       @default(now()) @map("created_at")
+  updatedAt      DateTime       @updatedAt @map("updated_at")
+
+  profile Profile @relation(fields: [userId], references: [id], onDelete: Cascade)
+  hotel   Hotel?  @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  tour    Tour?   @relation(fields: [tourId], references: [id], onDelete: Cascade)
+}
+
+// ——— SEO (trang) ———
+model SeoPage {
+  id              String   @id @default(uuid())
+  slug            String   @unique
+  metaTitle       String   @map("meta_title")
+  metaDescription String?  @map("meta_description")
+  ogImage         String?  @map("og_image")
+  canonicalUrl    String?  @map("canonical_url")
+  noIndex         Boolean  @default(false) @map("no_index")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("seo_pages")
+}
+
+// ——— Thanh toán ———
+model Payment {
+  id         String        @id @default(uuid())
+  bookingId  String        @map("booking_id")
+  amount     Decimal       @db.Decimal(14, 0)
+  method     String
+  status     PaymentStatus @default(PENDING)
+  externalId String?       @map("external_id")
+  createdAt  DateTime      @default(now()) @map("created_at")
+
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}

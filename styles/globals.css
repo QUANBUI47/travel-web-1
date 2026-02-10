@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+@plugin '../hero.ts';
+
+@source '../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
+
+@custom-variant dark (&:is(.dark *));
+
+/* Design system — Du lịch Việt Nam (doc/DESIGN_SYSTEM.md) */
+@theme {
+  --font-sans: "font", sans-serif;
+  --font-mono: "monospace", monospace;
+
+  /* Màu hiện đại — slate + cyan (doc/design-tokens.json) */
+  --travel-primary: #0891b2;
+  --travel-primary-hover: #0e7490;
+  --travel-primary-foreground: #ffffff;
+  --travel-secondary: #64748b;
+  --travel-background: #fafafa;
+  --travel-surface: #ffffff;
+  --travel-foreground: #0f172a;
+  --travel-muted: #64748b;
+  --travel-muted-foreground: #94a3b8;
+  --travel-border: #e2e8f0;
+
+  /* Dark mode — override trong .dark */
+  --travel-radius-md: 10px;
+  --travel-radius-lg: 14px;
+  --travel-section: 80px;
+  --travel-section-sm: 64px;
+}
+
+/* Áp nền và biến theo theme (light/dark) */
+:root {
+  --travel-bg: var(--travel-background);
+  --travel-surface: #ffffff;
+  --travel-fg: var(--travel-foreground);
+  --travel-muted-fg: var(--travel-muted-foreground);
+  --travel-border: #e2e8f0;
+}
+
+.dark {
+  --travel-bg: #0f172a;
+  --travel-surface: #1e293b;
+  --travel-fg: #f8fafc;
+  --travel-muted-fg: #64748b;
+  --travel-border: #334155;
+  --travel-primary: #22d3ee;
+  --travel-primary-hover: #67e8f9;
+  --travel-primary-foreground: #0f172a;
+}
+
+/* Nền trang — neutral light / slate dark */
+body {
+  background-color: var(--travel-bg);
+}
