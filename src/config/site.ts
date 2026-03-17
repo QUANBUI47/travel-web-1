@@ -1,15 +1,15 @@
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-  name: "ViVu",
+  name: "Vivu",
   description:
-    "ViVu — Đặt khách sạn, tour du lịch và trải nghiệm điểm đến Việt Nam. Giá tốt, đặt chỗ dễ dàng.",
+    "Vivu — Đặt khách sạn, tour du lịch và trải nghiệm điểm đến Việt Nam. Giá tốt, đặt chỗ dễ dàng.",
   navItems: [
     { label: "Trang chủ", href: "/" },
-    { label: "Điểm đến", href: "/diem-den" },
-    { label: "Khách sạn", href: "/khach-san" },
-    { label: "Tour", href: "/tour" },
-    { label: "Liên hệ", href: "/lien-he" },
+    { label: "Điểm đến", href: "/#destinations" },
+    { label: "Ưu đãi", href: "/#promo" },
+    { label: "Tại sao chọn Vivu", href: "/#why-vivu" },
+    { label: "Liên hệ", href: "/#footer" },
   ],
   navMenuItems: [
     { label: "Tài khoản", href: "/tai-khoan" },
