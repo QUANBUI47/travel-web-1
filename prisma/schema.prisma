@@ -264,3 +264,34 @@ model Payment {
 
   @@map("payments")
 }
+// ——— Cài đặt trang chủ ———
+model HomeSetting {
+  id        String   @id @default("default")
+  content   Json     // Lưu cấu hình Hero, Banner, Stats theo dạng { hero: {...}, stats: [...] }
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("home_settings")
+}
+
+// ——— Cài đặt hệ thống (SEO, Theme, Info) ———
+model SystemSetting {
+  id        String   @id @default(uuid())
+  group     String   // 'SEO', 'THEME', 'GENERAL'
+  key       String   @unique
+  value     Json
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("system_settings")
+}
+
+// ——— Nội dung Pháp lý ———
+model LegalContent {
+  id          String   @id @default(uuid())
+  slug        String   @unique // 'dieu-khoan-dich-vu', 'chinh-sach-bao-mat'
+  title       String
+  content     Json     // Lưu mảng các section [{title, icon, content}]
+  version     String   @default("1.0")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("legal_contents")
+}

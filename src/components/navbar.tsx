@@ -18,6 +18,7 @@ import { ROUTES } from "@/config/routes";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { UserMenu } from "@/components/user-menu";
 import { createClient } from "@/lib/supabase/server";
+import { DesktopNavLinks, MobileNavLinks } from "@/components/nav-links";
 
 export async function Navbar() {
   // Server-side: lấy session và profile
@@ -74,24 +75,7 @@ export async function Navbar() {
           </NextLink>
         </NavbarBrand>
 
-        <ul className='hidden lg:flex gap-10 justify-start ml-16'>
-          {siteConfig.navItems.map((item) => (
-            <NavbarItem key={item.href}>
-              <NextLink
-                className={clsx(
-                  "text-[15px] font-bold tracking-tight transition-all duration-200",
-                  // Placeholder logic for active state - can be improved with usePathname
-                  item.href === "/"
-                    ? "text-primary"
-                    : "text-foreground/70 hover:text-primary hover:opacity-100",
-                )}
-                href={item.href}
-              >
-                {item.label}
-              </NextLink>
-            </NavbarItem>
-          ))}
-        </ul>
+        <DesktopNavLinks items={siteConfig.navItems} />
       </NavbarContent>
 
       {/* Right side */}
@@ -172,25 +156,7 @@ export async function Navbar() {
 
       {/* Mobile Menu */}
       <NavbarMenu>
-        <div className='mx-4 mt-2 flex flex-col gap-2'>
-          {siteConfig.navItems.map((item, index) => (
-            <NavbarMenuItem key={`${item.href}-${index}`}>
-              <Link color='foreground' href={item.href} size='lg'>
-                {item.label}
-              </Link>
-            </NavbarMenuItem>
-          ))}
-          <NavbarMenuItem>
-            <Link
-              color='primary'
-              href={ROUTES.LOGIN}
-              size='lg'
-              className='font-bold'
-            >
-              Đăng nhập / Đăng ký
-            </Link>
-          </NavbarMenuItem>
-        </div>
+        <MobileNavLinks items={siteConfig.navItems} />
       </NavbarMenu>
     </HeroUINavbar>
   );

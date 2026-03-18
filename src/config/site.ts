@@ -17,11 +17,12 @@ export const siteConfig = {
     { label: "Đăng xuất", href: "/dang-xuat" },
   ],
   adminNavItems: [
-    { label: "Tổng quan", href: "/admin" },
-    { label: "Điểm đến", href: "/admin/destinations" },
-    { label: "Khách sạn & Tour", href: "/admin/products" },
-    { label: "Đơn đặt", href: "/admin/bookings" },
-    { label: "SEO", href: "/admin/seo" },
+    { label: "Bảng điều khiển", href: "/admin", icon: "LayoutDashboard" },
+    { label: "Quản lý Tour", href: "/admin/tours", icon: "Palmtree" },
+    { label: "Đơn đặt chỗ", href: "/admin/bookings", icon: "BookCheck" },
+    { label: "Khách hàng", href: "/admin/customers", icon: "Users" },
+    { label: "Pháp lý & Bảo mật", href: "/admin/legal", icon: "ShieldCheck" },
+    { label: "Cài đặt hệ thống", href: "/admin/settings", icon: "Settings" },
   ],
   links: {
     facebook: "#",
