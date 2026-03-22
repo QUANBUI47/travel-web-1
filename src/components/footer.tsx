@@ -8,7 +8,11 @@ import { Input } from "@heroui/input";
 import { Divider } from "@heroui/divider";
 import { ROUTES } from "@/config/routes";
 
+import { useTranslations } from "next-intl";
+
 export const Footer = () => {
+  const t = useTranslations("Footer");
+
   return (
     <footer
       id='footer'
@@ -32,8 +36,7 @@ export const Footer = () => {
               </span>
             </Link>
             <p className='text-gray-500 dark:text-gray-400 text-sm leading-relaxed font-bold'>
-              Nền tảng du lịch kết nối bạn với những vẻ đẹp di sản và trải
-              nghiệm đậm chất Việt Nam.
+              {t("about")}
             </p>
             <div className='flex gap-4'>
               <Link
@@ -60,22 +63,22 @@ export const Footer = () => {
           {/* Column 2: Explore */}
           <div className='flex flex-col gap-6'>
             <h4 className='text-sm font-black uppercase tracking-[0.2em] text-foreground'>
-              Khám phá
+              {t("explore")}
             </h4>
             <ul className='flex flex-col gap-3'>
               {[
-                "Vịnh Hạ Long",
-                "Phố cổ Hội An",
-                "Đảo ngọc Phú Quốc",
-                "Ruộng bậc thang Sapa",
-                "Cố đô Huế",
+                { key: "halong", label: "destinations.halong" },
+                { key: "hoian", label: "destinations.hoian" },
+                { key: "phuquoc", label: "destinations.phuquoc" },
+                { key: "sapa", label: "destinations.sapa" },
+                { key: "hue", label: "destinations.hue" },
               ].map((item) => (
-                <li key={item}>
+                <li key={item.key}>
                   <Link
                     href='#'
                     className='text-default-500 hover:text-primary text-sm font-medium transition-colors'
                   >
-                    {item}
+                    {t(item.label as any)}
                   </Link>
                 </li>
               ))}
@@ -85,22 +88,22 @@ export const Footer = () => {
           {/* Column 3: Support */}
           <div className='flex flex-col gap-6'>
             <h4 className='text-sm font-black uppercase tracking-[0.2em] text-foreground'>
-              Hỗ trợ
+              {t("support")}
             </h4>
             <ul className='flex flex-col gap-3'>
               {[
-                { title: "Trung tâm trợ giúp", href: "#" },
-                { title: "Chính sách hoàn tiền", href: "#" },
-                { title: "Điều khoản dịch vụ", href: "/dieu-khoan-dich-vu" },
-                { title: "Chính sách bảo mật", href: "/chinh-sach-bao-mat" },
-                { title: "Liên hệ hợp tác", href: "#" }
+                { key: "help_center", label: "links.help_center", href: "#" },
+                { key: "refund_policy", label: "links.refund_policy", href: "#" },
+                { key: "terms_of_service", label: "links.terms_of_service", href: "/dieu-khoan-dich-vu" },
+                { key: "privacy_policy", label: "links.privacy_policy", href: "/chinh-sach-bao-mat" },
+                { key: "collaboration", label: "links.collaboration", href: "#" }
               ].map((item) => (
-                <li key={item.title}>
+                <li key={item.key}>
                   <Link
                     href={item.href}
                     className='text-default-500 hover:text-primary text-sm font-medium transition-colors'
                   >
-                    {item.title}
+                    {t(item.label as any)}
                   </Link>
                 </li>
               ))}
@@ -110,14 +113,14 @@ export const Footer = () => {
           {/* Column 4: Newsletter */}
           <div className='flex flex-col gap-6'>
             <h4 className='text-sm font-black uppercase tracking-[0.2em] text-foreground'>
-              Đăng ký nhận tin
+              {t("newsletter_title")}
             </h4>
             <p className='text-default-500 text-sm font-medium'>
-              Nhận thông báo về các tour khuyến mãi sớm nhất.
+              {t("newsletter_description")}
             </p>
             <div className='relative group'>
               <Input
-                placeholder='Email của bạn'
+                placeholder={t("email_placeholder")}
                 variant='flat'
                 radius='lg'
                 classNames={{
@@ -157,7 +160,7 @@ export const Footer = () => {
 
         <div className='flex flex-col md:flex-row justify-between items-center gap-8 mt-12'>
           <p className='text-gray-400 text-[10px] font-black uppercase tracking-widest order-2 md:order-1 text-center md:text-left'>
-            © {new Date().getFullYear()} Vivu Travel . Khám phá vẻ đẹp Việt Nam
+            © {new Date().getFullYear()} Vivu Travel . {t("copyright_suffix")}
           </p>
           <div className='flex items-center gap-8 grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-500 order-1 md:order-2'>
             <div className='font-extrabold text-slate-400 text-base italic'>

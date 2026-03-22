@@ -16,28 +16,23 @@ import Image from "next/image";
 import { siteConfig } from "@/config/site";
 import { ROUTES } from "@/config/routes";
 import { ThemeSwitch } from "@/components/theme-switch";
+import { LocaleSwitcher } from "@/components/locale-switcher";
 import { UserMenu } from "@/components/user-menu";
 import { createClient } from "@/lib/supabase/server";
 import { DesktopNavLinks, MobileNavLinks } from "@/components/nav-links";
 
+import { AuthService } from "@/services/auth.service";
+
+import { getTranslations } from "next-intl/server";
+
 export async function Navbar() {
-  // Server-side: lấy session và profile
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  let profile = null;
-
-  if (user) {
-    const { data } = await supabase
-      .from("profiles")
-      .select("display_name, avatar_url")
-      .eq("id", user.id)
-      .single();
-
-    profile = data;
-  }
+  const t = await getTranslations("Navbar");
+  // Lấy dữ liệu phiên thông qua Service Layer duy nhất
+  const { user: sessionUser, profile } = await AuthService.getCurrentSession();
+  
+  // TÁCH BIỆT: Admin sẽ KHÔNG ĐƯỢC tính là đã đăng nhập ở khu vực Client Navbar
+  const isClientUser = sessionUser && profile?.role !== "ADMIN";
+  const user = isClientUser ? sessionUser : null;
 
   return (
     <HeroUINavbar
@@ -83,7 +78,8 @@ export async function Navbar() {
         className='hidden sm:flex basis-1/5 sm:basis-full'
         justify='end'
       >
-        <NavbarItem className='flex items-center gap-4'>
+        <NavbarItem className='flex items-center gap-2'>
+          <LocaleSwitcher />
           <ThemeSwitch />
         </NavbarItem>
 
@@ -98,7 +94,7 @@ export async function Navbar() {
                 className='font-bold h-10 px-6 rounded-full'
                 size='sm'
               >
-                Admin Panel
+                {t("admin_panel")}
               </Button>
             </NavbarItem>
             <NavbarItem>
@@ -119,7 +115,7 @@ export async function Navbar() {
                 className='font-bold text-[15px] px-6 text-foreground/80 hover:text-primary'
                 radius='full'
               >
-                Đăng nhập
+                {t("login")}
               </Button>
             </NavbarItem>
             <NavbarItem>
@@ -130,7 +126,7 @@ export async function Navbar() {
                 radius='full'
                 className='font-bold text-[15px] px-8 h-11 shadow-xl shadow-primary/20 hover:scale-105 transition-all'
               >
-                Đăng ký
+                {t("signup")}
               </Button>
             </NavbarItem>
           </div>
@@ -148,7 +144,7 @@ export async function Navbar() {
           />
         ) : (
           <Button as={NextLink} href='/dang-nhap' size='sm' variant='flat'>
-            Đăng nhập
+            {t("login")}
           </Button>
         )}
         <NavbarMenuToggle />

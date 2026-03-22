@@ -33,8 +33,10 @@ import {
   NavbarItem 
 } from "@heroui/navbar";
 import { ThemeSwitch } from "@/components/theme-switch";
+import { useTranslations } from "next-intl";
 
 export default function TermsOfServicePage() {
+  const t = useTranslations("Legal.terms");
   const [mounted, setMounted] = useState(false);
   const { theme, systemTheme } = useTheme();
   const [activeSection, setActiveSection] = useState('intro');
@@ -48,13 +50,13 @@ export default function TermsOfServicePage() {
   const isDarkMode = currentTheme === "dark";
 
   const sections = [
-    { id: 'intro', title: '1. Giới thiệu', icon: <FileText size={18} /> },
-    { id: 'definitions', title: '2. Định nghĩa', icon: <Search size={18} /> },
-    { id: 'accounts', title: '3. Tài khoản người dùng', icon: <Lock size={18} /> },
-    { id: 'bookings', title: '4. Đặt chỗ & Thanh toán', icon: <Scale size={18} /> },
-    { id: 'cancellation', title: '5. Hủy bỏ & Hoàn tiền', icon: <ArrowLeft size={18} /> },
-    { id: 'privacy', title: '6. Bảo mật thông tin', icon: <Shield size={18} /> },
-    { id: 'ip', title: '7. Sở hữu trí tuệ', icon: <FileText size={18} /> },
+    { id: 'intro', title: t("sections.intro"), icon: <FileText size={18} /> },
+    { id: 'definitions', title: t("sections.definitions"), icon: <Search size={18} /> },
+    { id: 'accounts', title: t("sections.accounts"), icon: <Lock size={18} /> },
+    { id: 'bookings', title: t("sections.bookings"), icon: <Scale size={18} /> },
+    { id: 'cancellation', title: t("sections.cancellation"), icon: <ArrowLeft size={18} /> },
+    { id: 'privacy', title: t("sections.privacy"), icon: <Shield size={18} /> },
+    { id: 'ip', title: t("sections.ip"), icon: <FileText size={18} /> },
   ];
 
   const themeColors = isDarkMode ? {
@@ -132,7 +134,7 @@ export default function TermsOfServicePage() {
               radius='full'
               className='font-bold text-[13px] px-6 h-10 shadow-lg shadow-primary/20 hover:scale-105 transition-all'
             >
-              Quay lại Trang chủ
+              {useTranslations("Common")("back_to_home")}
             </Button>
           </NavbarItem>
         </NavbarContent>
@@ -142,14 +144,17 @@ export default function TermsOfServicePage() {
       <section className={`${isDarkMode ? 'bg-[#0a0d11]' : 'bg-blue-50'} py-16 md:py-24 px-6 border-b ${themeColors.border}`}>
         <div className="max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#fcc219]/10 border border-[#fcc219]/20 text-[#fcc219] text-[10px] font-black uppercase tracking-[0.3em] mb-6">
-            <Clock size={12} /> Cập nhật lần cuối: 15 Tháng 03, 2024
+            <FileText size={12} /> {t("title")}
           </div>
           <h1 className="text-4xl md:text-6xl font-black font-serif tracking-tighter mb-6 leading-tight">
-            Điều khoản <br /> <span className={themeColors.accent}>Dịch vụ</span>
+            {t("hero_title")}
           </h1>
           <p className={`${themeColors.subtext} text-lg max-w-2xl mx-auto font-medium`}>
-            Vui lòng đọc kỹ các điều khoản này trước khi sử dụng dịch vụ của Vivu để hiểu rõ quyền lợi và trách nhiệm của bạn.
+            {t("hero_desc")}
           </p>
+          <div className={`mt-8 flex justify-center items-center gap-2 text-xs font-bold ${themeColors.subtext}`}>
+            <Clock size={14} /> {t("updated_at")}
+          </div>
         </div>
       </section>
 
@@ -159,7 +164,7 @@ export default function TermsOfServicePage() {
         {/* Sidebar điều hướng (Sticky) */}
         <aside className="lg:w-1/4">
           <div className="sticky top-28 space-y-1">
-            <p className={`text-[10px] font-black uppercase tracking-[0.2em] ${themeColors.subtext} mb-4 px-4`}>Mục lục nội dung</p>
+            <p className={`text-[10px] font-black uppercase tracking-[0.3em] ${themeColors.subtext} mb-6 px-4`}>{t("nav_title")}</p>
             {sections.map((section) => (
               <button
                 key={section.id}
@@ -182,14 +187,11 @@ export default function TermsOfServicePage() {
               </button>
             ))}
 
-            <div className={`mt-10 p-6 rounded-2xl border ${themeColors.border} ${isDarkMode ? 'bg-white/5' : 'bg-blue-50/50'}`}>
-              <p className="text-xs font-bold mb-3">Bạn cần hỗ trợ?</p>
-              <div className="flex items-center gap-3 text-xs mb-3">
-                <Mail size={14} className={themeColors.accent} />
-                <span className="opacity-80">legal@vivu.com.vn</span>
-              </div>
-              <button className="w-full py-2 bg-transparent border border-current rounded-lg text-[10px] font-black uppercase tracking-widest opacity-60 hover:opacity-100 transition-all">
-                Liên hệ pháp lý
+            <div className={`mt-12 p-8 rounded-[2rem] border ${themeColors.border} ${isDarkMode ? 'bg-white/5 shadow-2xl shadow-black/20' : 'bg-[#fcc219]/5'}`}>
+              <Mail className="text-[#fcc219] mb-4" size={32} />
+              <p className="text-xs font-black uppercase tracking-widest mb-2">{t("legal_help")}</p>
+              <button className={`text-[11px] font-bold text-left hover:text-[#fcc219] transition-colors leading-relaxed ${themeColors.subtext}`}>
+                {t("legal_contact")}
               </button>
             </div>
           </div>
@@ -201,7 +203,7 @@ export default function TermsOfServicePage() {
           <section id="intro" className="scroll-mt-32">
             <h2 className="text-2xl font-black mb-6 flex items-center gap-3">
               <span className={`w-8 h-8 rounded-lg ${themeColors.accentBg} text-white flex items-center justify-center text-sm`}>1</span>
-              Giới thiệu
+              {t("sections.intro")}
             </h2>
             <div className={`space-y-4 ${themeColors.subtext} font-medium`}>
               <p>
@@ -216,7 +218,7 @@ export default function TermsOfServicePage() {
           <section id="definitions" className="scroll-mt-32">
             <h2 className="text-2xl font-black mb-6 flex items-center gap-3">
               <span className={`w-8 h-8 rounded-lg ${themeColors.accentBg} text-white flex items-center justify-center text-sm`}>2</span>
-              Định nghĩa
+              {t("sections.definitions")}
             </h2>
             <div className={`grid grid-cols-1 md:grid-cols-2 gap-6`}>
               <div className={`p-6 rounded-2xl border ${themeColors.border} ${themeColors.card}`}>
@@ -233,7 +235,7 @@ export default function TermsOfServicePage() {
           <section id="accounts" className="scroll-mt-32">
             <h2 className="text-2xl font-black mb-6 flex items-center gap-3">
               <span className={`w-8 h-8 rounded-lg ${themeColors.accentBg} text-white flex items-center justify-center text-sm`}>3</span>
-              Tài khoản người dùng
+              {t("sections.accounts")}
             </h2>
             <div className={`space-y-4 ${themeColors.subtext} font-medium`}>
               <p>
@@ -250,7 +252,7 @@ export default function TermsOfServicePage() {
           <section id="bookings" className="scroll-mt-32">
             <h2 className="text-2xl font-black mb-6 flex items-center gap-3">
               <span className={`w-8 h-8 rounded-lg ${themeColors.accentBg} text-white flex items-center justify-center text-sm`}>4</span>
-              Đặt chỗ & Thanh toán
+              {t("sections.bookings")}
             </h2>
             <p className={`${themeColors.subtext} font-medium mb-6`}>
               Giá cả được niêm yết công khai và đã bao gồm các loại thuế phí cơ bản trừ khi có ghi chú khác.
@@ -268,7 +270,7 @@ export default function TermsOfServicePage() {
           <section id="cancellation" className="scroll-mt-32">
             <h2 className="text-2xl font-black mb-6 flex items-center gap-3">
               <span className={`w-8 h-8 rounded-lg ${themeColors.accentBg} text-white flex items-center justify-center text-sm`}>5</span>
-              Hủy bỏ & Hoàn tiền
+              {t("sections.cancellation")}
             </h2>
             <div className={`space-y-4 ${themeColors.subtext} font-medium`}>
               <p>
@@ -304,7 +306,7 @@ export default function TermsOfServicePage() {
           <section id="privacy" className="scroll-mt-32">
             <h2 className="text-2xl font-black mb-6 flex items-center gap-3">
               <span className={`w-8 h-8 rounded-lg ${themeColors.accentBg} text-white flex items-center justify-center text-sm`}>6</span>
-              Bảo mật thông tin
+              {t("sections.privacy")}
             </h2>
             <div className={`space-y-6 ${themeColors.subtext} font-medium`}>
               <p>
@@ -341,7 +343,7 @@ export default function TermsOfServicePage() {
           <section id="ip" className="scroll-mt-32">
             <h2 className="text-2xl font-black mb-6 flex items-center gap-3">
               <span className={`w-8 h-8 rounded-lg ${themeColors.accentBg} text-white flex items-center justify-center text-sm`}>7</span>
-              Sở hữu trí tuệ
+              {t("sections.ip")}
             </h2>
             <div className={`space-y-6 ${themeColors.subtext} font-medium`}>
               <p>

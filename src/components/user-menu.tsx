@@ -19,7 +19,10 @@ interface UserMenuProps {
   avatarUrl: string | null;
 }
 
+import { useTranslations } from "next-intl";
+
 export function UserMenu({ displayName, email, avatarUrl }: UserMenuProps) {
+  const t = useTranslations("UserMenu");
   const [isPending, startTransition] = useTransition();
 
   const initials = displayName
@@ -51,25 +54,25 @@ export function UserMenu({ displayName, email, avatarUrl }: UserMenuProps) {
         />
       </DropdownTrigger>
       <DropdownMenu
-        aria-label="Menu tài khoản"
+        aria-label={t("account")}
         className="min-w-[200px]"
         variant="flat"
       >
-        <DropdownSection showDivider title={displayName ?? email ?? "Tài khoản"}>
+        <DropdownSection showDivider title={displayName ?? email ?? t("account")}>
           <DropdownItem
             key="profile"
             description={email ?? ""}
             startContent={<User2 size={16} />}
             href="/tai-khoan"
           >
-            Tài khoản của tôi
+            {t("profile")}
           </DropdownItem>
           <DropdownItem
             key="bookings"
             startContent={<CalendarCheck size={16} />}
             href="/don-dat"
           >
-            Đơn đặt chỗ
+            {t("bookings")}
           </DropdownItem>
         </DropdownSection>
         <DropdownSection>
@@ -81,7 +84,7 @@ export function UserMenu({ displayName, email, avatarUrl }: UserMenuProps) {
             startContent={<LogOut size={16} />}
             onPress={handleLogout}
           >
-            {isPending ? "Đang đăng xuất..." : "Đăng xuất"}
+            {isPending ? t("logout") + "..." : t("logout")}
           </DropdownItem>
         </DropdownSection>
       </DropdownMenu>

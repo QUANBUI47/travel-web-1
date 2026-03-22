@@ -1,9 +1,11 @@
 import { title } from "@/components/primitives";
+import { useTranslations } from "next-intl";
 
 export default function BlogPage() {
+  const t = useTranslations("Blog");
   return (
     <div>
-      <h1 className={title()}>Blog</h1>
+      <h1 className={title()}>{t("title")}</h1>
     </div>
   );
 }

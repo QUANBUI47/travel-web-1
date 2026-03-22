@@ -38,8 +38,10 @@ import {
   NavbarItem 
 } from "@heroui/navbar";
 import { ThemeSwitch } from "@/components/theme-switch";
+import { useTranslations } from "next-intl";
 
 export default function PrivacyPolicyPage() {
+  const t = useTranslations("Legal.privacy");
   const [mounted, setMounted] = useState(false);
   const { theme, systemTheme } = useTheme();
   const [activeSection, setActiveSection] = useState('collection');
@@ -53,13 +55,13 @@ export default function PrivacyPolicyPage() {
   const isDarkMode = currentTheme === "dark";
 
   const sections = [
-    { id: 'collection', title: '1. Thu thập thông tin', icon: <Database size={18} /> },
-    { id: 'usage', title: '2. Sử dụng thông tin', icon: <Eye size={18} /> },
-    { id: 'security', title: '3. Bảo mật dữ liệu', icon: <Lock size={18} /> },
-    { id: 'cookies', title: '4. Cookies & Theo dõi', icon: <Bell size={18} /> },
-    { id: 'sharing', title: '5. Chia sẻ bên thứ ba', icon: <Share2 size={18} /> },
-    { id: 'rights', title: '6. Quyền của bạn', icon: <UserCheck size={18} /> },
-    { id: 'contact', title: '7. Liên hệ chúng tôi', icon: <Mail size={18} /> },
+    { id: 'collection', title: t("sections.collection"), icon: <Database size={18} /> },
+    { id: 'usage', title: t("sections.usage"), icon: <Eye size={18} /> },
+    { id: 'security', title: t("sections.security"), icon: <Lock size={18} /> },
+    { id: 'cookies', title: t("sections.cookies"), icon: <Bell size={18} /> },
+    { id: 'sharing', title: t("sections.sharing"), icon: <Share2 size={18} /> },
+    { id: 'rights', title: t("sections.rights"), icon: <UserCheck size={18} /> },
+    { id: 'contact', title: t("sections.contact"), icon: <Mail size={18} /> },
   ];
 
   const themeColors = isDarkMode ? {
@@ -137,7 +139,7 @@ export default function PrivacyPolicyPage() {
               radius='full'
               className='font-bold text-[13px] px-6 h-10 shadow-lg shadow-primary/20 hover:scale-105 transition-all'
             >
-              Quay lại Trang chủ
+              {useTranslations("Common")("back_to_home")}
             </Button>
           </NavbarItem>
         </NavbarContent>
@@ -148,7 +150,7 @@ export default function PrivacyPolicyPage() {
         <div className="absolute top-0 right-0 w-96 h-96 bg-[#fcc219]/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2"></div>
         <div className="max-w-4xl mx-auto text-center relative z-10">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#3385da]/10 border border-[#3385da]/20 text-[#3385da] text-[10px] font-black uppercase tracking-[0.3em] mb-6">
-            <Shield size={12} /> Cam kết bảo mật quyền riêng tư
+            <Shield size={12} /> {t("breadcrumb")}
           </div>
           <h1 className="text-4xl md:text-6xl font-black font-serif tracking-tighter mb-6 leading-tight">
             Chính sách <br /> <span className="text-[#fcc219]">Bảo mật</span>
@@ -157,7 +159,7 @@ export default function PrivacyPolicyPage() {
             Tại Vivu, sự an toàn của dữ liệu cá nhân là ưu tiên hàng đầu. Chúng tôi bảo vệ thông tin của bạn như bảo vệ những di sản quý giá nhất.
           </p>
           <div className={`mt-8 flex justify-center items-center gap-2 text-xs font-bold ${themeColors.subtext}`}>
-            <Clock size={14} /> Cập nhật: 20 Tháng 03, 2024
+            <Clock size={14} /> {t("updated_at")}
           </div>
         </div>
       </section>
@@ -168,7 +170,7 @@ export default function PrivacyPolicyPage() {
         {/* Sticky Sidebar Navigation */}
         <aside className="lg:w-1/4">
           <div className="sticky top-28 space-y-1.5">
-            <p className={`text-[10px] font-black uppercase tracking-[0.3em] ${themeColors.subtext} mb-6 px-4`}>Điều hướng chính sách</p>
+            <p className={`text-[10px] font-black uppercase tracking-[0.3em] ${themeColors.subtext} mb-6 px-4`}>{t("nav_title")}</p>
             {sections.map((section) => (
               <button
                 key={section.id}
@@ -197,7 +199,7 @@ export default function PrivacyPolicyPage() {
             <div className={`mt-12 p-8 rounded-[2rem] border ${themeColors.border} ${isDarkMode ? 'bg-white/5 shadow-2xl shadow-black/20' : 'bg-[#fcc219]/5'}`}>
               <ShieldCheck className="text-[#fcc219] mb-4" size={32} />
               <p className="text-xs font-black uppercase tracking-widest mb-2">Vivu SafeCare</p>
-              <p className={`text-[11px] leading-relaxed ${themeColors.subtext}`}>Dữ liệu của bạn được mã hóa theo tiêu chuẩn quân đội AES-256.</p>
+              <p className={`text-[11px] leading-relaxed ${themeColors.subtext}`}>{t("safecare")}</p>
             </div>
           </div>
         </aside>
@@ -210,16 +212,16 @@ export default function PrivacyPolicyPage() {
               <div className={`w-10 h-10 rounded-xl ${themeColors.accentBg} text-white flex items-center justify-center`}>
                 <Database size={20} />
               </div>
-              Thông tin chúng tôi thu thập
+              {t("sections.collection")}
             </h2>
             <div className={`space-y-6 ${themeColors.subtext} font-medium text-[15px]`}>
-              <p>Chúng tôi thu thập các thông tin sau để đảm bảo hành trình của bạn diễn ra suôn sẻ:</p>
+              <p>{t("sections.collection_desc")}</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {[
-                  { label: 'Thông tin định danh', value: 'Họ tên, ngày sinh, số CMND/Hộ chiếu khi đặt tour.' },
-                  { label: 'Thông tin liên lạc', value: 'Địa chỉ email, số điện thoại, địa chỉ nhận hóa đơn.' },
-                  { label: 'Thông tin thanh toán', value: 'Chi tiết giao dịch (chúng tôi không lưu trữ số thẻ tín dụng).' },
-                  { label: 'Dữ liệu thiết bị', value: 'Địa chỉ IP, loại trình duyệt, hệ điều hành.' }
+                  { label: t("sections.collection_items.id"), value: t("sections.collection_items.id_desc") },
+                  { label: t("sections.collection_items.contact"), value: t("sections.collection_items.contact_desc") },
+                  { label: t("sections.collection_items.payment"), value: t("sections.collection_items.payment_desc") },
+                  { label: t("sections.collection_items.device"), value: t("sections.collection_items.device_desc") }
                 ].map((item, i) => (
                   <div key={i} className={`p-6 rounded-3xl border ${themeColors.border} ${themeColors.card}`}>
                     <h4 className={`font-bold mb-2 ${themeColors.text}`}>{item.label}</h4>
@@ -235,17 +237,12 @@ export default function PrivacyPolicyPage() {
               <div className={`w-10 h-10 rounded-xl ${themeColors.accentBg} text-white flex items-center justify-center`}>
                 <Eye size={20} />
               </div>
-              Cách chúng tôi sử dụng thông tin
+              {t("sections.usage")}
             </h2>
             <div className={`space-y-4 ${themeColors.subtext} font-medium`}>
-              <p>Vivu sử dụng thông tin của bạn vào các mục đích minh bạch sau:</p>
+              <p>{t("sections.usage_desc")}</p>
               <ul className="space-y-4">
-                {[
-                  'Xác nhận và quản lý các yêu cầu đặt chỗ du lịch.',
-                  'Gửi thông báo cập nhật về hành trình và thay đổi dịch vụ.',
-                  'Cải thiện trải nghiệm người dùng trên nền tảng Vivu.',
-                  'Ngăn chặn các hoạt động gian lận và bảo vệ an toàn cho hệ thống.'
-                ].map((text, i) => (
+                {(t.raw("sections.usage_items") as string[]).map((text, i) => (
                   <li key={i} className="flex items-start gap-3">
                     <div className={`mt-1.5 w-1.5 h-1.5 rounded-full ${themeColors.accentBg} shrink-0`}></div>
                     <span>{text}</span>

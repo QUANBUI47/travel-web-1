@@ -69,6 +69,8 @@ model Region {
   updatedAt   DateTime @updatedAt @map("updated_at")
 
   destinations Destination[]
+
+  @@map("regions")
 }
 
 // ——— Điểm đến ———
@@ -89,6 +91,8 @@ model Destination {
   region Region   @relation(fields: [regionId], references: [id], onDelete: Cascade)
   hotels Hotel[]
   tours  Tour[]
+
+  @@map("destinations")
 }
 
 // ——— Khách sạn ———
@@ -113,6 +117,8 @@ model Hotel {
   destination   Destination   @relation(fields: [destinationId], references: [id], onDelete: Cascade)
   rooms         Room[]
   reviews       Review[]
+
+  @@map("hotels")
 }
 
 // ——— Phòng ———
@@ -131,6 +137,8 @@ model Room {
 
   hotel          Hotel           @relation(fields: [hotelId], references: [id], onDelete: Cascade)
   hotelBookings  HotelBooking[]
+
+  @@map("rooms")
 }
 
 // ——— Tour ———
@@ -152,6 +160,8 @@ model Tour {
   itineraries   TourItinerary[]
   reviews       Review[]
   tourBookings  TourBooking[]
+
+  @@map("tours")
 }
 
 // ——— Lịch trình tour ———
@@ -189,6 +199,8 @@ model Booking {
   hotelBooking  HotelBooking?
   tourBooking   TourBooking?
   payments      Payment[]
+
+  @@map("bookings")
 }
 
 // ——— Chi tiết đặt khách sạn ———
@@ -202,6 +214,8 @@ model HotelBooking {
 
   booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
   room    Room    @relation(fields: [roomId], references: [id], onDelete: Restrict)
+
+  @@map("hotel_bookings")
 }
 
 // ——— Chi tiết đặt tour ———
@@ -214,6 +228,8 @@ model TourBooking {
 
   booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
   tour    Tour    @relation(fields: [tourId], references: [id], onDelete: Restrict)
+
+  @@map("tour_bookings")
 }
 
 // ——— Đánh giá ———
@@ -233,6 +249,8 @@ model Review {
   profile Profile @relation(fields: [userId], references: [id], onDelete: Cascade)
   hotel   Hotel?  @relation(fields: [hotelId], references: [id], onDelete: Cascade)
   tour    Tour?   @relation(fields: [tourId], references: [id], onDelete: Cascade)
+
+  @@map("reviews")
 }
 
 // ——— SEO (trang) ———

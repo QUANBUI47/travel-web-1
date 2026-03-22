@@ -42,12 +42,21 @@ function StatCard({ title, value, description, icon, color }: StatCardProps) {
 }
 
 export default async function AdminDashboardPage() {
-  // Fetch stats from DB
-  const [bookingCount, tourCount, userCount, revenue] = await Promise.all([
+  // Fetch stats and recent bookings from DB
+  const [bookingCount, tourCount, userCount, revenue, recentBookings] = await Promise.all([
     prisma.booking.count(),
     prisma.tour.count({ where: { isActive: true } }),
     prisma.profile.count({ where: { role: "USER" } }),
     prisma.payment.aggregate({ _sum: { amount: true }, where: { status: "SUCCESS" } }),
+    prisma.booking.findMany({
+      take: 5,
+      orderBy: { createdAt: "desc" },
+      include: {
+        profile: true,
+        tourBooking: { include: { tour: true } },
+        hotelBooking: { include: { room: { include: { hotel: true } } } }
+      }
+    })
   ]);
 
   const totalRevenue = Number(revenue._sum.amount || 0).toLocaleString("vi-VN");
@@ -91,12 +100,12 @@ export default async function AdminDashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-2 border-none shadow-sm">
+        <Card className="lg:col-span-2 border-none shadow-sm h-full flex flex-col">
           <CardHeader className="flex flex-col items-start px-6 pt-6 pb-2">
             <h2 className="text-lg font-bold">Đơn hàng gần đây</h2>
-            <p className="text-default-400 text-xs">5 giao dịch cuối cùng được xử lý</p>
+            <p className="text-default-400 text-xs">{recentBookings.length} giao dịch cuối cùng được xử lý</p>
           </CardHeader>
-          <CardBody className="px-6 pb-6">
+          <CardBody className="px-6 pb-6 flex-1 flex flex-col justify-between">
             <div className="w-full overflow-x-auto">
               <table className="w-full text-left text-sm">
                 <thead>
@@ -108,24 +117,43 @@ export default async function AdminDashboardPage() {
                    </tr>
                 </thead>
                 <tbody className="divide-y divide-default-100">
-                   {[
-                     { name: "Nguyễn Văn A", service: "Tour Hạ Long 3N2Đ", price: "2,500,000", status: "Hoàn tất", color: "text-success" },
-                     { name: "Trần Thị B", service: "Khách sạn Mường Thanh", price: "1,200,000", status: "Chờ thanh toán", color: "text-warning" },
-                     { name: "Lê Văn C", service: "Tour Phú Quốc", price: "4,800,000", status: "Đã hủy", color: "text-danger" },
-                   ].map((item, idx) => (
-                     <tr key={idx} className="hover:bg-default-50 transition-colors">
-                       <td className="py-4 px-2 font-medium">{item.name}</td>
-                       <td className="py-4 px-2 text-default-600">{item.service}</td>
-                       <td className="py-4 px-2 font-semibold">₫{item.price}</td>
-                       <td className={clsx("py-4 px-2 text-right font-bold", item.color)}>{item.status}</td>
+                   {recentBookings.map((booking) => {
+                     let service = "Khác";
+                     if (booking.bookingType === "TOUR" && booking.tourBooking?.tour) service = booking.tourBooking.tour.nameVi;
+                     if (booking.bookingType === "HOTEL" && booking.hotelBooking?.room?.hotel) service = booking.hotelBooking.room.hotel.nameVi;
+                     
+                     let color = "text-default-500";
+                     let statusName: string = booking.status;
+                     if (booking.status === "COMPLETED") { color = "text-success"; statusName = "Hoàn tất"; }
+                     if (booking.status === "PENDING") { color = "text-warning"; statusName = "Chờ xử lý"; }
+                     if (booking.status === "CONFIRMED") { color = "text-primary"; statusName = "Đã xác nhận"; }
+                     if (booking.status === "CANCELLED") { color = "text-danger"; statusName = "Đã hủy"; }
+                     
+                     return (
+                       <tr key={booking.id} className="hover:bg-default-50 transition-colors">
+                         <td className="py-4 px-2 font-medium">{booking.guestName || booking.profile?.displayName || "Khách hàng"}</td>
+                         <td className="py-4 px-2 text-default-600">
+                            <span className="line-clamp-1">{service}</span>
+                         </td>
+                         <td className="py-4 px-2 font-semibold">₫{Number(booking.totalAmount).toLocaleString("vi-VN")}</td>
+                         <td className={clsx("py-4 px-2 text-right font-bold w-[120px]", color)}>{statusName}</td>
+                       </tr>
+                     );
+                   })}
+                   {recentBookings.length === 0 && (
+                     <tr>
+                       <td colSpan={4} className="text-center py-6 text-default-400 font-medium italic">Không có giao dịch nào gần đây</td>
                      </tr>
-                   ))}
+                   )}
                 </tbody>
               </table>
             </div>
-            <Divider className="my-4" />
-            <div className="flex justify-center">
-               <button className="text-xs text-primary font-bold hover:underline">Xem tất cả đơn hàng →</button>
+            
+            <div className="mt-auto">
+              <Divider className="my-4" />
+              <div className="flex justify-center">
+                <button className="text-xs text-primary font-bold hover:underline">Xem tất cả đơn hàng →</button>
+              </div>
             </div>
           </CardBody>
         </Card>

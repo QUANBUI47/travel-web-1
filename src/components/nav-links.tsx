@@ -8,11 +8,14 @@ import clsx from "clsx";
 import { usePathname } from "next/navigation";
 import { ROUTES } from "@/config/routes";
 
+import { useTranslations } from "next-intl";
+
 interface NavLinksProps {
   items: { label: string; href: string }[];
 }
 
 export function DesktopNavLinks({ items }: NavLinksProps) {
+  const t = useTranslations("Navbar");
   const { activeSegment, handleClick } = useScrollSpy(items);
   const pathname = usePathname();
 
@@ -38,7 +41,7 @@ export function DesktopNavLinks({ items }: NavLinksProps) {
               )}
               href={item.href}
             >
-              {item.label}
+              {t(item.label as any)}
             </NextLink>
           </NavbarItem>
         );
@@ -48,6 +51,7 @@ export function DesktopNavLinks({ items }: NavLinksProps) {
 }
 
 export function MobileNavLinks({ items }: NavLinksProps) {
+  const t = useTranslations("Navbar");
   const { activeSegment, handleClick } = useScrollSpy(items);
   const pathname = usePathname();
 
@@ -71,7 +75,7 @@ export function MobileNavLinks({ items }: NavLinksProps) {
               )}
               href={item.href}
             >
-              {item.label}
+              {t(item.label as any)}
             </NextLink>
           </NavbarMenuItem>
         );
@@ -81,7 +85,7 @@ export function MobileNavLinks({ items }: NavLinksProps) {
           href={ROUTES.LOGIN}
           className='text-lg block py-2 text-primary font-bold'
         >
-          Đăng nhập / Đăng ký
+          {t("login")} / {t("signup")}
         </NextLink>
       </NavbarMenuItem>
     </div>

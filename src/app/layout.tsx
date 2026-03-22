@@ -30,13 +30,19 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function RootLayout({
+import { I18nProvider } from "@/components/i18n-provider";
+import { getLocale, getMessages } from "next-intl/server";
+
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const locale = await getLocale();
+  const messages = await getMessages();
+
   return (
-    <html suppressHydrationWarning lang='en'>
+    <html suppressHydrationWarning lang={locale}>
       <head />
       <body
         className={clsx(
@@ -45,9 +51,11 @@ export default function RootLayout({
           fontHeading.variable,
         )}
       >
-        <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
-          {children}
-        </Providers>
+        <I18nProvider locale={locale} messages={messages}>
+          <Providers themeProps={{ attribute: "class", defaultTheme: "system" }}>
+            {children}
+          </Providers>
+        </I18nProvider>
       </body>
     </html>
   );

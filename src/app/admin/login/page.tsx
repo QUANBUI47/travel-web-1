@@ -1,223 +1,258 @@
 "use client";
 
-import React from "react";
-import Image from "next/image";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
-import { Switch } from "@heroui/switch";
-import { Link } from "@heroui/link";
-import { Mail, Lock, Eye, EyeOff, Globe, Apple } from "lucide-react";
+import { Image as HeroUI_Image } from "@heroui/image";
+import NextLink from "next/link";
+import {
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  ShieldCheck,
+  ChevronRight,
+  ArrowLeft,
+  Globe,
+  Zap,
+  ShieldAlert
+} from "lucide-react";
+import { useState } from "react";
+import Image from "next/image";
+
 import { ROUTES } from "@/config/routes";
 
+import { useRouter } from "next/navigation";
+
 export default function AdminLoginPage() {
-  const [isVisible, setIsVisible] = React.useState(false);
-  const toggleVisibility = () => setIsVisible(!isVisible);
+  const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [isPending, setIsPending] = useState(false);
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setErrorMsg(null);
+    setIsPending(true);
+
+    const formData = new FormData(event.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+
+    try {
+      // Dùng chung REST API cho Web cũng như Mobile
+      const res = await fetch("/api/v1/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const result = await res.json();
+
+      if (!res.ok || !result.success) {
+        setErrorMsg(result.message || "Đăng nhập thất bại");
+        setIsPending(false);
+        return;
+      }
+
+      // Check role theo kết quả trả về
+      if (result.data?.user?.role !== "ADMIN") {
+        setErrorMsg("Tài khoản không có quyền truy cập quản trị viên.");
+        // Logout via API (để xóa cookie nhầm)
+        await fetch("/api/v1/auth/logout", { method: "POST" });
+        setIsPending(false);
+        return;
+      }
+
+      // Web tự động lưu cookie từ Next.js server (Set-Cookie).
+      // Đối với App Mobile, chúng ta có thể lưu result.data.session.access_token vào AsyncStorage ở đây.
+      
+      // Chuyển hướng
+      router.push("/admin");
+      router.refresh(); // Làm mới layout để nạp profile mới
+    } catch (error) {
+      setErrorMsg("Lỗi kết nối máy chủ");
+      setIsPending(false);
+    }
+  }
 
   return (
-    <div className='flex min-h-screen bg-white font-sans'>
-      {/* Left side - Visual & Branding */}
-      <div className='hidden lg:flex lg:w-1/2 relative bg-[#0d1117] flex-col justify-between p-12 overflow-hidden'>
-        {/* Abstract Background pattern */}
-        <div className='absolute top-0 right-0 w-full h-full opacity-20 pointer-events-none'>
-          <div className='absolute top-1/4 right-1/4 w-96 h-96 bg-primary rounded-full blur-[120px]' />
-          <div className='absolute bottom-1/4 left-1/4 w-96 h-96 bg-secondary rounded-full blur-[120px]' />
+    <div className='min-h-[100dvh] w-full flex bg-slate-100 dark:bg-slate-950 font-sans'>
+      {/* Left Panel - Admin Branding Area (Hidden on mobile) */}
+      <div className='hidden lg:flex w-1/2 relative flex-col justify-between p-10 xl:p-12 overflow-hidden bg-[#006fee]'>
+        {/* Background Overlay / Pattern */}
+        <div className='absolute inset-0 z-0 opacity-20'>
+          <div className='absolute -top-20 -right-20 w-[600px] h-[600px] border border-white rounded-full' />
+          <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] border-[0.5px] border-white rotate-45' />
         </div>
 
-        <div className='relative z-10'>
-          <Link href={ROUTES.HOME} className='flex items-center gap-3 decoration-none'>
-            <div className='w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20'>
-              <Globe className='text-white' size={24} />
-            </div>
-            <span className='text-2xl font-black text-white tracking-tighter'>
-              Vivu Admin
+        {/* Top Left: Logo */}
+        <NextLink href={ROUTES.HOME} className='relative z-10 block transition-transform hover:opacity-90 max-w-fit'>
+          <HeroUI_Image
+            src='/images/vivu-logo-dark.svg'
+            alt='Vivu Logo'
+            width={120}
+            className='object-contain xl:w-[140px]'
+            removeWrapper
+          />
+        </NextLink>
+
+        {/* Middle: Content */}
+        <div className='relative z-10 flex flex-col gap-5 xl:gap-8 mt-6 xl:mt-10'>
+          <div className='self-start'>
+            <span className='px-4 py-1.5 xl:px-5 xl:py-2 rounded-full border border-white/40 text-white text-[10px] xl:text-xs font-black uppercase tracking-[0.2em] backdrop-blur-sm bg-white/10'>
+              Hệ thống quản trị nghiệp vụ
             </span>
-          </Link>
-        </div>
-
-        <div className='relative z-10 max-w-lg'>
-          <h1 className='text-5xl font-black text-white leading-tight tracking-tighter mb-6'>
-            Làm chủ <span className='text-primary italic'>trải nghiệm</span> du
-            lịch của bạn.
-          </h1>
-          <p className='text-gray-400 text-lg font-medium leading-relaxed'>
-            Hệ thống quản trị thông minh dành cho Vivu Travel. Theo dõi
-            bookings, quản lý điểm đến và tối ưu doanh thu chỉ trong một giao
-            diện duy nhất.
-          </p>
-        </div>
-
-        <div className='relative z-10 flex items-center gap-8 border-t border-white/10 pt-12'>
-          <div className='flex -space-x-3 overflow-hidden'>
-            {[1, 2, 3, 4].map((i) => (
-              <div
-                key={i}
-                className='inline-block h-10 w-10 rounded-full ring-4 ring-[#0d1117] bg-slate-700 overflow-hidden text-center justify-center align-middle'
-              >
-                <Image
-                  src={`https://i.pravatar.cc/100?img=${i + 10}`}
-                  alt='avatar'
-                  width={40}
-                  height={40}
-                />
-              </div>
-            ))}
           </div>
-          <p className='text-sm font-bold text-gray-500'>
-            <span className='text-white'>+500 nhà quản lý</span> đang sử dụng
-            hàng ngày
+
+          <h1 className='text-white text-5xl lg:text-5xl xl:text-6xl font-black leading-[1.15] tracking-tight font-serif mt-2 xl:mt-4'>
+            Quản lý <br />
+            di sản Việt Nam.
+          </h1>
+
+          <p className='text-white/80 text-sm xl:text-base max-w-sm xl:max-w-md font-medium leading-relaxed'>
+            Cổng thông tin bảo mật dành riêng cho đội ngũ vận hành và quản trị của Vivu Travel. 
+            Vui lòng xác thực quyền hạn để tiếp tục.
           </p>
+        </div>
+
+        {/* Bottom stats/icons */}
+        <div className='relative z-10 grid grid-cols-2 gap-8 mb-4 border-t border-white/10 pt-8'>
+          <div className='flex items-center gap-3'>
+             <ShieldCheck className='text-white/80' size={24} />
+             <div>
+                <p className='text-white font-bold text-[10px] uppercase tracking-wider'>Bản mật</p>
+                <p className='text-white/60 text-[9px]'>AES-256 Encrypted</p>
+             </div>
+          </div>
+          <div className='flex items-center gap-3'>
+             <Zap className='text-white/80' size={24} />
+             <div>
+                <p className='text-white font-bold text-[10px] uppercase tracking-wider'>Hiệu năng</p>
+                <p className='text-white/60 text-[9px]'>Real-time Sync</p>
+             </div>
+          </div>
         </div>
       </div>
 
-      {/* Right side - Login Form */}
-      <div className='w-full lg:w-1/2 flex items-center justify-center p-8 md:p-16'>
-        <div className='w-full max-w-md'>
-          <div className='mb-12'>
-            <div className='lg:hidden flex items-center gap-2 mb-8'>
-              <Globe className='text-primary' size={32} />
-              <span className='text-2xl font-black tracking-tighter'>
-                Vivu Admin
-              </span>
-            </div>
-            <h2 className='text-3xl font-black tracking-tighter mb-3'>
-              Đăng nhập tài khoản
+      {/* Right Panel - Form Area */}
+      <div className='w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 lg:p-8 xl:p-12 bg-white dark:bg-slate-900 rounded-none lg:rounded-l-3xl relative shadow-[-10px_0_30px_rgba(0,0,0,0.05)] dark:shadow-[-10px_0_30px_rgba(0,0,0,0.3)] min-h-[100dvh] overflow-y-auto'>
+        <div className='w-full max-w-[420px] xl:max-w-[460px] flex flex-col py-2'>
+
+          {/* Header */}
+          <div className='mb-8 xl:mb-10'>
+            <h2 className='text-3xl sm:text-3xl lg:text-4xl font-black font-serif text-slate-900 dark:text-white tracking-tight mb-2 xl:mb-3'>
+              Xác thực Quản trị
             </h2>
-            <p className='text-gray-500 font-medium'>
-              Chào mừng bạn quay trở lại! Vui lòng nhập thông tin đăng nhập dành
-              cho quản trị viên.
+            <p className='text-slate-500 dark:text-slate-400 text-sm xl:text-base font-medium'>
+              Đăng nhập bằng tài khoản nội bộ được cấp phép.
             </p>
           </div>
 
-          <form
-            className='flex flex-col gap-6'
-            onSubmit={(e) => e.preventDefault()}
-          >
-            <Input
-              label='Email Address'
-              placeholder='admin@vivu.com'
-              labelPlacement='outside'
-              type='email'
-              variant='bordered'
-              radius='lg'
-              size='lg'
-              classNames={{
-                label:
-                  "font-black text-xs uppercase tracking-widest text-gray-400 mb-2",
-                input: "font-bold text-sm",
-                inputWrapper:
-                  "border-gray-200 hover:border-primary focus-within:border-primary px-4 h-14",
-              }}
-              startContent={
-                <Mail className='text-gray-400 pointer-events-none' size={20} />
-              }
-            />
+          {errorMsg && (
+            <div className='bg-danger-50 border-l-4 border-danger px-4 py-3 text-danger text-sm font-bold animate-shake mb-5 xl:mb-6 rounded-r bg-red-50 dark:bg-danger-900/20 flex items-center gap-2'>
+              <ShieldAlert size={16} />
+              {errorMsg}
+            </div>
+          )}
 
-            <div className='flex flex-col gap-2'>
+          {/* Form Credentials */}
+          <form onSubmit={handleSubmit} className='flex flex-col gap-5 xl:gap-6'>
+            {/* Email Field */}
+            <div className='flex flex-col gap-1.5 xl:gap-2'>
+              <label className='text-[10px] xl:text-[11px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 ml-1'>
+                Email Quản trị
+              </label>
               <Input
-                label='Password'
-                placeholder='••••••••'
-                labelPlacement='outside'
-                variant='bordered'
-                radius='lg'
-                size='lg'
-                type={isVisible ? "text" : "password"}
+                isRequired
                 classNames={{
-                  label:
-                    "font-black text-xs uppercase tracking-widest text-gray-400 mb-2",
-                  input: "font-bold text-sm",
+                  input: "text-sm xl:text-[15px] font-medium text-slate-900 dark:text-slate-100",
                   inputWrapper:
-                    "border-gray-200 hover:border-primary focus-within:border-primary px-4 h-14",
+                    "h-12 xl:h-14 bg-slate-50 dark:bg-slate-800/50 border-1.5 border-slate-100 dark:border-slate-700 hover:border-slate-200 dark:hover:border-slate-600 focus-within:!border-primary dark:focus-within:!border-primary transition-all duration-200",
                 }}
+                name='email'
+                placeholder='admin@vivu.com.vn'
                 startContent={
-                  <Lock
-                    className='text-gray-400 pointer-events-none'
-                    size={20}
-                  />
+                  <Mail size={16} className='text-slate-400 dark:text-slate-500 mr-2 xl:w-[18px] xl:h-[18px]' />
                 }
+                type='email'
+                variant='bordered'
+              />
+            </div>
+
+            {/* Password Field */}
+            <div className='flex flex-col gap-1.5 xl:gap-2'>
+              <div className='flex justify-between items-center w-full px-1'>
+                <label className='text-[10px] xl:text-[11px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500'>
+                  Mật mã
+                </label>
+                <NextLink
+                  href='#'
+                  className='text-[10px] xl:text-[11px] font-black uppercase tracking-widest text-primary hover:opacity-70 transition-opacity'
+                >
+                  Quên?
+                </NextLink>
+              </div>
+              <Input
+                isRequired
+                classNames={{
+                  input: "text-sm xl:text-[15px] font-medium text-slate-900 dark:text-slate-100",
+                  inputWrapper:
+                    "h-12 xl:h-14 bg-slate-50 dark:bg-slate-800/50 border-1.5 border-slate-100 dark:border-slate-700 hover:border-slate-200 dark:hover:border-slate-600 focus-within:!border-primary dark:focus-within:!border-primary transition-all duration-200",
+                }}
                 endContent={
                   <button
-                    className='focus:outline-none'
                     type='button'
-                    onClick={toggleVisibility}
+                    className='text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors focus:outline-none'
+                    onClick={() => setShowPassword(!showPassword)}
                   >
-                    {isVisible ? (
-                      <EyeOff className='text-gray-400' size={20} />
-                    ) : (
-                      <Eye className='text-gray-400' size={20} />
-                    )}
+                    {showPassword ? <EyeOff size={16} className="xl:w-[18px] xl:h-[18px]" /> : <Eye size={16} className="xl:w-[18px] xl:h-[18px]" />}
                   </button>
                 }
+                name='password'
+                placeholder='••••••••'
+                startContent={
+                  <Lock size={16} className='text-slate-400 dark:text-slate-500 mr-2 xl:w-[18px] xl:h-[18px]' />
+                }
+                type={showPassword ? "text" : "password"}
+                variant='bordered'
               />
-              <div className='flex items-center justify-between mt-2'>
-                <Switch
-                  size="sm"
-                  classNames={{ label: "text-sm font-bold text-gray-500" }}
-                >
-                  Ghi nhớ đăng nhập
-                </Switch>
-                <Link
-                  className='text-sm font-black text-primary hover:opacity-70 transition-opacity'
-                  href='#'
-                >
-                  Quên mật khẩu?
-                </Link>
-              </div>
             </div>
 
             <Button
+              className='w-full h-12 xl:h-14 text-sm xl:text-[15px] font-bold shadow-xl shadow-primary/20 dark:shadow-none mt-2 xl:mt-4 hover:scale-[1.02] transition-all bg-[#006fee]'
               color='primary'
+              isLoading={isPending}
               size='lg'
+              type='submit'
               radius='lg'
-              className='h-14 font-black shadow-lg shadow-primary/20 mt-4'
+              endContent={!isPending && <ChevronRight size={16} className="xl:w-[18px] xl:h-[18px]" />}
             >
-              Đăng nhập ngay
+              XÁC THỰC HỆ THỐNG
             </Button>
-
-            <div className='relative flex items-center py-4'>
-              <div className='flex-grow border-t border-gray-100'></div>
-              <span className='flex-shrink mx-4 text-gray-400 text-[10px] font-black uppercase tracking-widest'>
-                Hoặc đăng nhập với
-              </span>
-              <div className='flex-grow border-t border-gray-100'></div>
-            </div>
-
-            <div className='grid grid-cols-2 gap-4'>
-              <Button
-                variant='bordered'
-                radius='lg'
-                className='h-14 font-bold border-gray-100'
-                startContent={
-                  <Image
-                    src='https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png'
-                    alt='G'
-                    width={20}
-                    height={20}
-                  />
-                }
-              >
-                Google
-              </Button>
-              <Button
-                variant='bordered'
-                radius='lg'
-                className='h-14 font-bold border-gray-100'
-                startContent={<Apple size={20} />}
-              >
-                Apple
-              </Button>
-            </div>
           </form>
 
-          <p className='text-center mt-12 text-sm font-bold text-gray-400'>
-            Bạn chưa có tài khoản?{" "}
-            <Link href={ROUTES.SIGNUP} className='text-primary font-black ml-1'>
-              Tạo tài khoản mới
-            </Link>
-          </p>
+          {/* Warning Message instead of Signup */}
+          <div className='mt-12 p-5 bg-orange-50 dark:bg-orange-900/10 border border-orange-100 dark:border-orange-900/20 rounded-2xl flex gap-4 items-start'>
+            <div className='w-10 h-10 rounded-xl bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center flex-shrink-0'>
+                <ShieldAlert className='text-orange-600 dark:text-orange-400' size={20} />
+            </div>
+            <div className='flex flex-col gap-0.5'>
+               <h4 className='font-black text-[10px] uppercase tracking-widest text-orange-900 dark:text-orange-300'>Truy cập hạn chế</h4>
+               <p className='text-orange-800/70 dark:text-orange-400/70 text-[10px] font-medium leading-relaxed italic'>
+                 Hệ thống chỉ dành cho nhân viên có thẩm quyền. Mọi hành vi xâm nhập trái phép sẽ bị truy cứu trách nhiệm.
+               </p>
+            </div>
+          </div>
 
-          <p className='text-center mt-12 text-[10px] font-black text-gray-300 uppercase tracking-widest'>
-            © 2026 Vivu Travel . All Rights Reserved
-          </p>
+          {/* Trust Badge */}
+          <div className='mt-8 flex justify-center w-full'>
+            <div className='flex items-center justify-center gap-2 text-slate-400 dark:text-slate-500 py-3 w-full border-t border-slate-100 dark:border-slate-800'>
+              <ShieldCheck size={14} />
+              <span className='text-[9px] font-black uppercase tracking-[0.2em]'>
+                SECURE ADMIN GATEWAY
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

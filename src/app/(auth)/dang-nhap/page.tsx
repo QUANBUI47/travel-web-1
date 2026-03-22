@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { useState, useTransition } from "react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 import { ROUTES } from "@/config/routes";
 import { login, signInWithGoogle } from "../actions";
@@ -24,6 +25,7 @@ export default function LoginPage({
 }: {
   searchParams: Promise<{ error?: string; redirect?: string }>;
 }) {
+  const t = useTranslations("Auth");
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -42,7 +44,7 @@ export default function LoginPage({
         {/* Background Image with Overlay */}
         <div className='absolute inset-0 z-0'>
           <Image
-            src='/images/vivu-hero-landscape-1.png'
+            src='https://images.unsplash.com/photo-1528127269322-539801943592?q=80&w=2070&auto=format&fit=crop'
             alt='Ha Long Bay'
             fill
             className='object-cover'
@@ -53,7 +55,10 @@ export default function LoginPage({
         </div>
 
         {/* Top Left: Logo */}
-        <NextLink href={ROUTES.HOME} className='relative z-10 block transition-transform group-hover:scale-105 hover:opacity-90 max-w-fit'>
+        <NextLink
+          href={ROUTES.HOME}
+          className='relative z-10 block transition-transform group-hover:scale-105 hover:opacity-90 max-w-fit'
+        >
           <HeroUI_Image
             src='/images/vivu-logo-dark.svg'
             alt='Vivu Logo'
@@ -67,53 +72,50 @@ export default function LoginPage({
         <div className='relative z-10 flex flex-col gap-5 xl:gap-8 mt-6 xl:mt-10'>
           <div className='self-start'>
             <span className='px-4 py-1.5 xl:px-5 xl:py-2 rounded-full border border-white/40 text-white text-[10px] xl:text-xs font-black uppercase tracking-[0.2em] backdrop-blur-sm bg-white/10'>
-              Khám phá di sản Việt
+              {t("login.explore_heritage")}
             </span>
           </div>
 
           <h1 className='text-white text-5xl lg:text-5xl xl:text-6xl font-black leading-[1.15] tracking-tight font-serif mt-2 xl:mt-4'>
-            Hành trình bắt đầu <br />
-            từ đây.
+            {t("login.hero_title")}
           </h1>
 
           <p className='text-white/80 text-sm xl:text-base max-w-sm xl:max-w-md font-medium leading-relaxed'>
-            Đăng nhập để quản lý các chuyến đi của bạn và nhận những ưu đãi dành
-            riêng cho thành viên của Vivu.
+            {t("login.hero_desc")}
           </p>
         </div>
 
         {/* Bottom indicator */}
         <div className='relative z-10 flex items-center gap-2 xl:gap-4 text-white/70 text-[9px] xl:text-[11px] font-black uppercase tracking-[0.2em] mb-2 xl:mb-4'>
-          <span>Hà Nội</span>
+          <span>{t("login.destinations.hanoi")}</span>
           <span className='w-1 h-1 rounded-full bg-primary-300' />
-          <span>Hạ Long</span>
+          <span>{t("login.destinations.halong")}</span>
           <span className='w-1 h-1 rounded-full bg-white/30' />
-          <span>Hội An</span>
+          <span>{t("login.destinations.hoian")}</span>
           <span className='w-1 h-1 rounded-full bg-primary-400' />
-          <span>Phú Quốc</span>
+          <span>{t("login.destinations.phuquoc")}</span>
         </div>
       </div>
 
       {/* Right Panel - Form Area */}
-      <div className='w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 lg:p-8 xl:p-12 bg-white dark:bg-slate-900 rounded-none lg:rounded-l-3xl relative shadow-[-10px_0_30px_rgba(0,0,0,0.05)] dark:shadow-[-10px_0_30px_rgba(0,0,0,0.3)] min-h-[100dvh] overflow-y-auto'>
+      <div className='w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 lg:p-8 xl:p-12 bg-white dark:bg-slate-900 rounded-none relative shadow-[-10px_0_30px_rgba(0,0,0,0.05)] dark:shadow-[-10px_0_30px_rgba(0,0,0,0.3)] min-h-[100dvh] overflow-y-auto'>
         {/* Back Button */}
         <NextLink
           href={ROUTES.HOME}
           className='absolute top-6 left-6 xl:top-8 xl:left-8 inline-flex items-center text-[13px] font-bold text-slate-500 hover:text-primary transition-colors group z-10'
         >
           <ArrowLeft className='w-4 h-4 mr-1.5 transition-transform group-hover:-translate-x-1' />
-          Trang chủ
+          {t("back_to_home")}
         </NextLink>
 
         <div className='w-full max-w-[420px] xl:max-w-[460px] flex flex-col py-2'>
-
           {/* Header */}
           <div className='mb-8 xl:mb-10'>
             <h2 className='text-3xl sm:text-3xl lg:text-4xl font-black font-serif text-slate-900 dark:text-white tracking-tight mb-2 xl:mb-3'>
-              Chào mừng bạn trở lại
+              {t("login.welcome")}
             </h2>
             <p className='text-slate-500 dark:text-slate-400 text-sm xl:text-base font-medium'>
-              Nhập thông tin tài khoản Vivu của bạn.
+              {t("login.welcome_desc")}
             </p>
           </div>
 
@@ -132,7 +134,10 @@ export default function LoginPage({
                 type='submit'
               >
                 <div className='flex items-center gap-2 text-[10px] xl:text-[11px] uppercase tracking-widest'>
-                  <svg viewBox='0 0 24 24' className='w-3.5 h-3.5 xl:w-4 xl:h-4'>
+                  <svg
+                    viewBox='0 0 24 24'
+                    className='w-3.5 h-3.5 xl:w-4 xl:h-4'
+                  >
                     <path
                       fill='#4285F4'
                       d='M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z'
@@ -175,30 +180,37 @@ export default function LoginPage({
           <div className='flex items-center gap-4 py-3 xl:py-4 w-full'>
             <div className='flex-1 h-px bg-slate-100 dark:bg-slate-800'></div>
             <span className='text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-[0.2em]'>
-              Hoặc dùng Email
+              {t("or_with_email")}
             </span>
             <div className='flex-1 h-px bg-slate-100 dark:bg-slate-800'></div>
           </div>
 
           {/* Form Credentials */}
-          <form action={handleSubmit} className='flex flex-col gap-4 xl:gap-5 mt-3 xl:mt-4'>
+          <form
+            action={handleSubmit}
+            className='flex flex-col gap-4 xl:gap-5 mt-3 xl:mt-4'
+          >
             {/* Email Field */}
             <div className='flex flex-col gap-1.5 xl:gap-2'>
               <label className='text-[10px] xl:text-[11px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500'>
-                Địa chỉ Email
+                {t("login.email_label")}
               </label>
               <Input
                 isRequired
                 classNames={{
-                  input: "text-sm xl:text-[15px] font-medium text-slate-900 dark:text-slate-100",
+                  input:
+                    "text-sm xl:text-[15px] font-medium text-slate-900 dark:text-slate-100",
                   inputWrapper:
                     "h-12 xl:h-14 bg-slate-50 dark:bg-slate-800/50 border-1.5 border-slate-100 dark:border-slate-700 hover:border-slate-200 dark:hover:border-slate-600 focus-within:!border-primary dark:focus-within:!border-primary transition-all duration-200",
                 }}
-                aria-label='Địa chỉ Email'
+                aria-label={t("login.email_label")}
                 name='email'
                 placeholder='example@vivu.com.vn'
                 startContent={
-                  <Mail size={16} className='text-slate-400 dark:text-slate-500 mr-2 xl:w-[18px] xl:h-[18px]' />
+                  <Mail
+                    size={16}
+                    className='text-slate-400 dark:text-slate-500 mr-2 xl:w-[18px] xl:h-[18px]'
+                  />
                 }
                 type='email'
                 variant='bordered'
@@ -209,36 +221,44 @@ export default function LoginPage({
             <div className='flex flex-col gap-1.5 xl:gap-2'>
               <div className='flex justify-between items-center w-full'>
                 <label className='text-[10px] xl:text-[11px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500'>
-                  Mật khẩu
+                  {t("login.password_label")}
                 </label>
                 <NextLink
                   href='#'
                   className='text-[10px] xl:text-[11px] font-black uppercase tracking-widest text-primary hover:opacity-70 transition-opacity'
                 >
-                  Quên mật khẩu?
+                  {t("login.forgot_password")}
                 </NextLink>
               </div>
               <Input
                 isRequired
                 classNames={{
-                  input: "text-sm xl:text-[15px] font-medium text-slate-900 dark:text-slate-100",
+                  input:
+                    "text-sm xl:text-[15px] font-medium text-slate-900 dark:text-slate-100",
                   inputWrapper:
                     "h-12 xl:h-14 bg-slate-50 dark:bg-slate-800/50 border-1.5 border-slate-100 dark:border-slate-700 hover:border-slate-200 dark:hover:border-slate-600 focus-within:!border-primary dark:focus-within:!border-primary transition-all duration-200",
                 }}
-                aria-label='Mật khẩu'
+                aria-label={t("login.password_label")}
                 endContent={
                   <button
                     type='button'
                     className='text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors focus:outline-none'
                     onClick={() => setShowPassword(!showPassword)}
                   >
-                    {showPassword ? <EyeOff size={16} className="xl:w-[18px] xl:h-[18px]" /> : <Eye size={16} className="xl:w-[18px] xl:h-[18px]" />}
+                    {showPassword ? (
+                      <EyeOff size={16} className='xl:w-[18px] xl:h-[18px]' />
+                    ) : (
+                      <Eye size={16} className='xl:w-[18px] xl:h-[18px]' />
+                    )}
                   </button>
                 }
                 name='password'
                 placeholder='••••••••'
                 startContent={
-                  <Lock size={16} className='text-slate-400 dark:text-slate-500 mr-2 xl:w-[18px] xl:h-[18px]' />
+                  <Lock
+                    size={16}
+                    className='text-slate-400 dark:text-slate-500 mr-2 xl:w-[18px] xl:h-[18px]'
+                  />
                 }
                 type={showPassword ? "text" : "password"}
                 variant='bordered'
@@ -272,7 +292,7 @@ export default function LoginPage({
                 htmlFor='remember'
                 className='text-xs xl:text-sm text-slate-600 dark:text-slate-300 font-medium cursor-pointer select-none'
               >
-                Ghi nhớ đăng nhập
+                {t("login.remember_me")}
               </label>
             </div>
 
@@ -283,21 +303,25 @@ export default function LoginPage({
               size='lg'
               type='submit'
               radius='lg'
-              endContent={!isPending && <ChevronRight size={16} className="xl:w-[18px] xl:h-[18px]" />}
+              endContent={
+                !isPending && (
+                  <ChevronRight size={16} className='xl:w-[18px] xl:h-[18px]' />
+                )
+              }
             >
-              ĐĂNG NHẬP
+              {t("login.button")}
             </Button>
           </form>
 
           {/* Footer Signup Link */}
           <div className='mt-6 xl:mt-8 flex justify-center'>
             <p className='text-xs xl:text-sm text-slate-500 dark:text-slate-400 font-medium'>
-              Chưa có tài khoản?{" "}
+              {t("login.no_account")}{" "}
               <NextLink
                 href={ROUTES.SIGNUP}
                 className='text-primary hover:underline font-black ml-1 uppercase text-[10px] xl:text-[11px] tracking-wider'
               >
-                Đăng ký ngay
+                {t("login.signup_now")}
               </NextLink>
             </p>
           </div>
@@ -305,9 +329,9 @@ export default function LoginPage({
           {/* Trust Badge */}
           <div className='mt-8 xl:mt-12 flex justify-center w-full'>
             <div className='flex items-center justify-center gap-1.5 xl:gap-2 bg-[#f0fbf4] dark:bg-emerald-900/20 text-[#138e4b] dark:text-emerald-400 border border-[#e1f5eb] dark:border-emerald-800/30 py-2.5 px-4 xl:py-3 xl:px-6 rounded-xl w-full'>
-              <ShieldCheck size={16} className="xl:w-[18px] xl:h-[18px]" />
+              <ShieldCheck size={16} className='xl:w-[18px] xl:h-[18px]' />
               <span className='text-[8px] xl:text-[9px] font-black uppercase tracking-widest'>
-                Đăng nhập bảo mật bởi Vivu Safecare
+                {t("login.trust_badge")}
               </span>
             </div>
           </div>

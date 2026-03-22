@@ -17,11 +17,13 @@ import {
 } from "lucide-react";
 import { useState, useTransition } from "react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 import { ROUTES } from "@/config/routes";
 import { signup, signInWithGoogle } from "../actions";
 
 export default function SignupPage() {
+  const t = useTranslations("Auth");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -32,7 +34,7 @@ export default function SignupPage() {
     const confirmPwd = formData.get("confirmPassword") as string;
 
     if (pwd !== confirmPwd) {
-      setErrorMsg("Mật khẩu xác nhận không khớp.");
+      setErrorMsg(t("signup.password_mismatch"));
       return;
     }
 
@@ -52,17 +54,17 @@ export default function SignupPage() {
           className='absolute top-6 left-6 xl:top-8 xl:left-8 inline-flex items-center text-[11px] xl:text-[13px] font-black uppercase text-slate-500 hover:text-primary transition-colors group z-10 tracking-widest'
         >
           <ArrowLeft className='w-4 h-4 mr-1.5 transition-transform group-hover:-translate-x-1' />
-          Trang chủ
+          {t("back_to_home")}
         </NextLink>
 
         <div className='w-full max-w-[420px] xl:max-w-[460px] flex flex-col py-2'>
           {/* Header */}
           <div className='mb-6 xl:mb-10'>
             <h2 className='text-3xl sm:text-3xl lg:text-4xl font-black font-serif text-slate-900 dark:text-white tracking-tight mb-2 xl:mb-3'>
-              Tạo tài khoản mới
+              {t("signup.title")}
             </h2>
             <p className='text-slate-500 dark:text-slate-400 text-sm xl:text-base font-medium'>
-              Khởi đầu chuyến phiêu lưu di sản của bạn ngay hôm nay.
+              {t("signup.desc")}
             </p>
           </div>
 
@@ -127,7 +129,7 @@ export default function SignupPage() {
           <div className='flex items-center gap-4 py-3 xl:py-4 w-full'>
             <div className='flex-1 h-px bg-slate-100 dark:bg-slate-800'></div>
             <span className='text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-[0.2em]'>
-              Hoặc thông tin cá nhân
+              {t("or_with_info")}
             </span>
             <div className='flex-1 h-px bg-slate-100 dark:bg-slate-800'></div>
           </div>
@@ -140,7 +142,7 @@ export default function SignupPage() {
             {/* Full Name Field */}
             <div className='flex flex-col gap-1.5 xl:gap-2'>
               <label className='text-[10px] xl:text-[11px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500'>
-                Họ và tên
+                {t("signup.fullname_label")}
               </label>
               <Input
                 isRequired
@@ -150,9 +152,9 @@ export default function SignupPage() {
                   inputWrapper:
                     "h-12 xl:h-14 bg-slate-50 dark:bg-slate-800/50 border-1.5 border-slate-100 dark:border-slate-700 hover:border-slate-200 dark:hover:border-slate-600 focus-within:!border-primary dark:focus-within:!border-primary transition-all duration-200",
                 }}
-                aria-label='Họ và tên'
+                aria-label={t("signup.fullname_label")}
                 name='fullName'
-                placeholder='Nguyễn Văn A'
+                placeholder={t("signup.fullname_placeholder")}
                 startContent={
                   <User
                     size={16}
@@ -167,7 +169,7 @@ export default function SignupPage() {
             {/* Email Field */}
             <div className='flex flex-col gap-1.5 xl:gap-2'>
               <label className='text-[10px] xl:text-[11px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500'>
-                Địa chỉ Email
+                {t("login.email_label")}
               </label>
               <Input
                 isRequired
@@ -177,7 +179,7 @@ export default function SignupPage() {
                   inputWrapper:
                     "h-12 xl:h-14 bg-slate-50 dark:bg-slate-800/50 border-1.5 border-slate-100 dark:border-slate-700 hover:border-slate-200 dark:hover:border-slate-600 focus-within:!border-primary dark:focus-within:!border-primary transition-all duration-200",
                 }}
-                aria-label='Địa chỉ Email'
+                aria-label={t("login.email_label")}
                 name='email'
                 placeholder='example@vivu.com.vn'
                 startContent={
@@ -196,7 +198,7 @@ export default function SignupPage() {
               {/* Password */}
               <div className='flex flex-col gap-1.5 xl:gap-2'>
                 <label className='text-[10px] xl:text-[11px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500'>
-                  Mật khẩu
+                  {t("login.password_label")}
                 </label>
                 <Input
                   isRequired
@@ -206,7 +208,7 @@ export default function SignupPage() {
                     inputWrapper:
                       "h-12 xl:h-14 bg-slate-50 dark:bg-slate-800/50 border-1.5 border-slate-100 dark:border-slate-700 hover:border-slate-200 dark:hover:border-slate-600 focus-within:!border-primary dark:focus-within:!border-primary transition-all duration-200",
                   }}
-                  aria-label='Mật khẩu'
+                  aria-label={t("login.password_label")}
                   endContent={
                     <button
                       type='button'
@@ -236,7 +238,7 @@ export default function SignupPage() {
               {/* Confirm Password */}
               <div className='flex flex-col gap-1.5 xl:gap-2'>
                 <label className='text-[10px] xl:text-[11px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500'>
-                  Xác nhận
+                  {t("signup.confirm_password_label")}
                 </label>
                 <Input
                   isRequired
@@ -246,7 +248,7 @@ export default function SignupPage() {
                     inputWrapper:
                       "h-12 xl:h-14 bg-slate-50 dark:bg-slate-800/50 border-1.5 border-slate-100 dark:border-slate-700 hover:border-slate-200 dark:hover:border-slate-600 focus-within:!border-primary dark:focus-within:!border-primary transition-all duration-200",
                   }}
-                  aria-label='Xác nhận mật khẩu'
+                  aria-label={t("signup.confirm_password_label")}
                   endContent={
                     <button
                       type='button'
@@ -263,7 +265,7 @@ export default function SignupPage() {
                     </button>
                   }
                   name='confirmPassword'
-                  placeholder='••••••••'
+                  placeholder={t("signup.confirm_password_placeholder")}
                   startContent={
                     <Lock
                       size={16}
@@ -302,17 +304,17 @@ export default function SignupPage() {
               </div>
               <label
                 htmlFor='terms'
-                className='text-[11px] xl:text-xs text-slate-500 dark:text-slate-400 font-medium cursor-pointer select-none leading-relaxed'
+                className='text-xs xl:text-sm text-slate-600 dark:text-slate-300 font-medium cursor-pointer select-none'
               >
-                Tôi đồng ý với{" "}
+                {t("signup.terms_prefix")}
                 <NextLink href='/dieu-khoan-dich-vu' className='text-primary hover:underline'>
-                  Điều khoản dịch vụ
+                  {t("signup.terms_link")}
                 </NextLink>{" "}
-                và{" "}
+                {t("signup.terms_and")}{" "}
                 <NextLink href='/chinh-sach-bao-mat' className='text-primary hover:underline'>
-                  Chính sách bảo mật
+                  {t("signup.privacy_link")}
                 </NextLink>{" "}
-                của Vivu Travel.
+                {t("signup.terms_suffix")}
               </label>
             </div>
 
@@ -329,21 +331,21 @@ export default function SignupPage() {
                 )
               }
             >
-              TẠO TÀI KHOẢN
+              {t("signup.button")}
             </Button>
           </form>
 
           {/* Footer SignIn Link */}
           <div className='mt-6 xl:mt-8 flex justify-center'>
-            <p className='text-xs xl:text-sm text-slate-500 dark:text-slate-400 font-medium'>
-              Đã là thành viên?{" "}
-              <NextLink
-                href={ROUTES.LOGIN}
-                className='text-primary hover:underline font-black ml-1 uppercase text-[10px] xl:text-[11px] tracking-wider'
-              >
-                Đăng nhập
-              </NextLink>
-            </p>
+              <p className='text-xs xl:text-sm text-slate-500 dark:text-slate-400 font-medium'>
+                {t("signup.already_member")}{" "}
+                <NextLink
+                  href={ROUTES.LOGIN}
+                  className='text-primary hover:underline font-black ml-1 uppercase text-[10px] xl:text-[11px] tracking-wider'
+                >
+                  {t("signup.login_now")}
+                </NextLink>
+              </p>
           </div>
 
           {/* Trust Badge */}
@@ -351,7 +353,7 @@ export default function SignupPage() {
             <div className='flex items-center justify-center gap-1.5 xl:gap-2 bg-[#f0fbf4] dark:bg-emerald-900/20 text-[#138e4b] dark:text-emerald-400 border border-[#e1f5eb] dark:border-emerald-800/30 py-2.5 px-4 xl:py-3 xl:px-6 rounded-xl w-full'>
               <ShieldCheck size={16} className='xl:w-[18px] xl:h-[18px]' />
               <span className='text-[8px] xl:text-[9px] font-black uppercase tracking-widest'>
-                Giao dịch an toàn & bảo mật 100%
+                {t("signup.trust_badge")}
               </span>
             </div>
           </div>
@@ -363,7 +365,7 @@ export default function SignupPage() {
         {/* Background Image with Overlay */}
         <div className='absolute inset-0 z-0'>
           <Image
-            src='/images/vivu-hero-landscape-3.png'
+            src='https://images.unsplash.com/photo-1543681534-75eb8bdbe9b8?q=80&w=2072&auto=format&fit=crop'
             alt='Sapa Terraces'
             fill
             className='object-cover opacity-60'
@@ -386,39 +388,37 @@ export default function SignupPage() {
         <div className='relative z-10 flex flex-col gap-5 xl:gap-8 mt-6 xl:mt-10'>
           <div className='self-start'>
             <span className='px-4 py-1.5 xl:px-5 xl:py-2 rounded-full border border-white/20 text-white text-[10px] xl:text-xs font-black uppercase tracking-widest backdrop-blur-sm bg-white/5'>
-              BẮT ĐẦU HÀNH TRÌNH MỚI
+              {t("signup.start_adventure")}
             </span>
           </div>
 
           <h1 className='text-white text-5xl lg:text-5xl xl:text-6xl font-black leading-[1.15] tracking-tight font-serif mt-2 xl:mt-4'>
-            Gia nhập <br />
-            cộng đồng Vivu.
+            {t("signup.hero_title")}
           </h1>
 
           <p className='text-white/70 text-sm xl:text-base max-w-sm xl:max-w-md font-medium leading-relaxed'>
-            Tạo tài khoản để mở khóa những trải nghiệm du lịch độc bản và nhận
-            thông báo về những tour di sản sớm nhất.
+            {t("signup.hero_desc")}
           </p>
 
           <ul className='flex flex-col gap-3 xl:gap-4 mt-2'>
             <li className='flex items-center gap-3 text-white/90 font-bold text-sm xl:text-base'>
               <CheckCircle2 className='text-[#fcc219] w-5 h-5' />
-              Tích lũy điểm thưởng
+              {t("signup.benefits.points")}
             </li>
             <li className='flex items-center gap-3 text-white/90 font-bold text-sm xl:text-base'>
               <CheckCircle2 className='text-[#fcc219] w-5 h-5' />
-              Ưu đãi đặt chỗ sớm
+              {t("signup.benefits.early_bird")}
             </li>
             <li className='flex items-center gap-3 text-white/90 font-bold text-sm xl:text-base'>
               <CheckCircle2 className='text-[#fcc219] w-5 h-5' />
-              Hỗ trợ 24/7
+              {t("signup.benefits.support")}
             </li>
           </ul>
         </div>
 
         {/* Bottom indicator */}
         <div className='relative z-10 text-white/50 text-[9px] xl:text-[11px] font-black uppercase tracking-widest mb-2 xl:mb-4'>
-          KHÁM PHÁ VIỆT NAM &nbsp;&bull;&nbsp; JOIN THE JOURNEY
+          {t("signup.footer_text")} &nbsp;&bull;&nbsp; JOIN THE JOURNEY
         </div>
       </div>
     </div>

@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { ROUTES, ROLES } from "@/constants";
 
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -34,30 +35,51 @@ export async function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
-  // Bảo vệ /admin/* — phải đăng nhập
-  if (pathname.startsWith("/admin")) {
+  // Bảo vệ /admin/* — phải đăng nhập và là ADMIN
+  if (pathname.startsWith(ROUTES.ADMIN.HOME)) {
+    // Cho phép truy cập /admin/login mà không cần login
+    if (pathname === ROUTES.ADMIN.LOGIN) {
+      if (user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", user.id)
+          .single();
+        
+        if (profile?.role === ROLES.ADMIN) {
+          return NextResponse.redirect(new URL(ROUTES.ADMIN.HOME, request.url));
+        }
+      }
+      return supabaseResponse;
+    }
+
     if (!user) {
-      const loginUrl = new URL("/dang-nhap", request.url);
-      loginUrl.searchParams.set("redirect", pathname);
+      const loginUrl = new URL(ROUTES.ADMIN.LOGIN, request.url);
       return NextResponse.redirect(loginUrl);
     }
 
-    // Kiểm tra role ADMIN trong bảng profiles
     const { data: profile } = await supabase
       .from("profiles")
       .select("role")
       .eq("id", user.id)
       .single();
 
-    if (!profile || profile.role !== "ADMIN") {
-      // User thường → về trang chủ
-      return NextResponse.redirect(new URL("/", request.url));
+    if (!profile || profile.role !== ROLES.ADMIN) {
+      return NextResponse.redirect(new URL(ROUTES.HOME, request.url));
     }
   }
 
-  // Nếu đã login mà truy cập trang auth → redirect về trang chủ
-  if (user && (pathname === "/dang-nhap" || pathname === "/dang-ky")) {
-    return NextResponse.redirect(new URL("/", request.url));
+  // Ngăn chặn KHÁCH HÀNG đã đăng nhập truy cập trang login/register (không áp dụng cho ADMIN)
+  if (user && (pathname === ROUTES.LOGIN || pathname === ROUTES.REGISTER)) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+
+    if (profile?.role !== ROLES.ADMIN) {
+      return NextResponse.redirect(new URL(ROUTES.HOME, request.url));
+    }
   }
 
   return supabaseResponse;

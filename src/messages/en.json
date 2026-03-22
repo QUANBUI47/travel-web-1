@@ -1,0 +1,289 @@
+{
+  "API": {
+    "VIVU_API_SUCCESS_200": "Operation successful",
+    "VIVU_API_SUCCESS_201": "Created successfully",
+    "VIVU_API_SUCCESS_204": "Updated successfully",
+    "VIVU_API_ERROR_400": "Invalid input data",
+    "VIVU_API_ERROR_400_MISSING": "Please fill in all required fields",
+    "VIVU_API_ERROR_400_FORMAT": "Incorrect data format",
+    "VIVU_API_ERROR_401": "Please login to continue",
+    "VIVU_API_ERROR_401_EXPIRED": "Session has expired",
+    "VIVU_API_ERROR_403": "You do not have permission to perform this action",
+    "VIVU_API_ERROR_404": "Data not found",
+    "VIVU_API_ERROR_404_USER": "User account does not exist",
+    "VIVU_API_ERROR_409": "Data already exists or conflicts",
+    "VIVU_API_ERROR_409_EMAIL": "This email is already registered",
+    "VIVU_API_ERROR_500": "Internal server error, please try again later"
+  },
+  "Common": {
+    "error": "Error",
+    "success": "Success",
+    "loading": "Loading...",
+    "back_to_home": "Back to Home",
+    "confirm": "Confirm",
+    "cancel": "Cancel"
+  },
+  "Validation": {
+    "required": "This field is required",
+    "email": "Invalid email address",
+    "min_length": "Must be at least {min} characters",
+    "max_length": "Must not exceed {max} characters",
+    "password_mismatch": "Passwords do not match",
+    "invalid_phone": "Invalid phone number",
+    "invalid_url": "Invalid URL",
+    "numeric": "Please enter only numbers"
+  },
+  "NotFound": {
+    "error_code": "ERROR: LOCATION NOT FOUND",
+    "title": "This journey <br /> has been lost.",
+    "description": "It seems the location you are looking for is not on Vivu's heritage map. Please go back to start again.",
+    "back_home": "Back to Home",
+    "view_tours": "View Hot Tours",
+    "footer": "VIVU TRAVEL DESIGN © 2026 • PEACE OF MIND EVERYWHERE"
+  },
+  "Navbar": {
+    "home": "Home",
+    "destinations": "Destinations",
+    "promo": "Promotions",
+    "why_vivu": "Why Vivu",
+    "contact": "Contact",
+    "login": "Login",
+    "signup": "Sign up",
+    "admin_panel": "Admin Panel"
+  },
+  "Auth": {
+    "login_success": "Login successful",
+    "invalid_credentials": "Incorrect email or password.",
+    "no_admin_access": "Account does not have administrator privileges.",
+    "email_required": "Please enter email",
+    "password_required": "Please enter password",
+    "password_min_length": "Password must be at least 6 characters",
+    "invalid_email": "Invalid email",
+    "back_to_home": "Home",
+    "or_with_email": "Or with Email",
+    "or_with_info": "Or with Personal Info",
+    "login": {
+      "welcome": "Welcome back!",
+      "welcome_desc": "Sign in to start your next heritage journey.",
+      "email_label": "Email Address",
+      "password_label": "Password",
+      "forgot_password": "Forgot password?",
+      "remember_me": "Remember me",
+      "button": "Login Now",
+      "no_account": "Don't have an account?",
+      "signup_now": "Sign up now",
+      "trust_badge": "Secured by Vivu Safecare . SSL 256-bit",
+      "hero_title": "The heritage journey starts here.",
+      "hero_desc": "Explore hidden gems and authentic cultural experiences with Vivu.",
+      "explore_heritage": "Explore Vietnam Heritage",
+      "destinations": {
+        "hanoi": "Hanoi",
+        "halong": "Ha Long",
+        "hoian": "Hoi An",
+        "phuquoc": "Phu Quoc"
+      }
+    },
+    "signup": {
+      "start_adventure": "START A NEW JOURNEY",
+      "hero_title": "Join the Vivu community.",
+      "hero_desc": "Create an account to unlock unique travel experiences and receive heritage tour alerts.",
+      "benefits": {
+        "points": "Earn Vivu Miles rewards",
+        "early_bird": "Exclusive Early Bird offers",
+        "support": "24/7 support throughout the journey"
+      },
+      "title": "Create New Account",
+      "desc": "Start your heritage adventure today.",
+      "fullname_label": "Full Name",
+      "fullname_placeholder": "John Doe",
+      "confirm_password_label": "Confirm",
+      "confirm_password_placeholder": "••••••••",
+      "terms_prefix": "I agree to the ",
+      "terms_link": "Terms of Service",
+      "terms_and": " and ",
+      "privacy_link": "Privacy Policy",
+      "terms_suffix": " of Vivu Travel.",
+      "button": "CREATE ACCOUNT",
+      "already_member": "Already a member?",
+      "login_now": "Log in",
+      "trust_badge": "100% safe & secure transactions",
+      "password_mismatch": "Confirm password does not match."
+    }
+  },
+  "Home": {
+    "title": "Welcome to Vivu",
+    "description": "Book hotels, tours and destination experiences in Vietnam."
+  },
+  "HomePage": {
+    "Hero": {
+      "title_main": "Plan your ",
+      "title_highlight": "Vivu",
+      "title_suffix": " now",
+      "description": "Discover Vietnam's best destinations with exclusive deals only at Vivu Travel.",
+      "search": {
+        "location_label": "Where to?",
+        "location_placeholder": "Search destinations...",
+        "time_label": "Date",
+        "time_value": "Add dates",
+        "guests_label": "Travelers",
+        "guests_value": "Add guests",
+        "button": "Search"
+      }
+    },
+    "Stats": {
+      "provinces": "Provinces",
+      "hotels": "Hotels",
+      "tours": "Tours",
+      "customers": "Customers"
+    },
+    "WhyVivu": {
+      "safe": {
+        "title": "Secure Booking",
+        "description": "International standard security system, 100% protection for your info and transactions."
+      },
+      "support": {
+        "title": "24/7 Support",
+        "description": "Our team of experts is always ready to assist you anytime, anywhere."
+      },
+      "local": {
+        "title": "Local Experience",
+        "description": "Exclusive tours designed by experts to discover hidden gems."
+      }
+    },
+    "Destinations": {
+      "title": "Top Destinations",
+      "description": "Most loved places by the Vivu Travel community",
+      "view_all": "View all",
+      "stays_count": "{count} stays"
+    },
+    "Promo": {
+      "badge": "Limited Offer",
+      "title_prefix": "Glorious Summer in ",
+      "title_highlight": "Phu Quoc",
+      "description_prefix": "All-inclusive 3D2N at 5-star Resort from only ",
+      "description_highlight": "3,990,000đ",
+      "description_suffix": ". Round-trip airfare included.",
+      "bookings_count": "{count} bookings",
+      "button": "Book Now"
+    }
+  },
+  "Maintenance": {
+    "title": "System under maintenance",
+    "description": "We are upgrading our system to provide you with the best experience. Please check back in a few minutes."
+  },
+  "UserMenu": {
+    "account": "Account",
+    "profile": "Profile",
+    "bookings": "My Bookings",
+    "favorites": "Favorites",
+    "settings": "Settings",
+    "admin_panel": "Admin Panel",
+    "logout": "Logout"
+  },
+  "About": {
+    "title": "About Vivu"
+  },
+  "Blog": {
+    "title": "Travel Blog"
+  },
+  "Pricing": {
+    "title": "Pricing Plans"
+  },
+  "Docs": {
+    "title": "Documentation"
+  },
+  "Legal": {
+    "privacy": {
+      "title": "Privacy Policy",
+      "breadcrumb": "Privacy protection commitment",
+      "updated_at": "Updated: March 20, 2024",
+      "hero_title": "Privacy Policy",
+      "hero_desc": "At Vivu, your personal data's safety is our top priority. We protect your information as we protect our most precious heritage.",
+      "nav_title": "Policy Navigation",
+      "sections": {
+        "collection": "1. Information Collection",
+        "collection_desc": "We collect the following information to ensure your journey goes smoothly:",
+        "collection_items": {
+          "id": "Identification Info",
+          "id_desc": "Full name, date of birth, ID/Passport number when booking.",
+          "contact": "Contact Info",
+          "contact_desc": "Email address, phone number, billing address.",
+          "payment": "Payment Info",
+          "payment_desc": "Transaction details (we do not store credit card numbers).",
+          "device": "Device Data",
+          "device_desc": "IP address, browser type, operating system."
+        },
+        "usage": "2. Information Usage",
+        "usage_desc": "Vivu uses your information for the following transparent purposes:",
+        "usage_items": [
+          "Confirm and manage travel booking requests.",
+          "Send update notifications about journeys and service changes.",
+          "Improve user experience on the Vivu platform.",
+          "Prevent fraudulent activities and ensure system safety."
+        ],
+        "security": "3. Data Security",
+        "cookies": "4. Cookies & Tracking",
+        "sharing": "5. Third-Party Sharing",
+        "rights": "6. Your Rights",
+        "contact": "7. Contact Us"
+      },
+      "safecare": "Your data is encrypted using military-grade AES-256 standard.",
+      "print": "Print Policy",
+      "download": "Download PDF (.pdf)"
+    },
+    "terms": {
+      "title": "Terms of Service",
+      "updated_at": "Last updated: March 15, 2024",
+      "hero_title": "Terms of Service",
+      "hero_desc": "Please read these terms carefully before using Vivu's services to understand your rights and responsibilities.",
+      "nav_title": "Table of Contents",
+      "sections": {
+        "intro": "1. Introduction",
+        "definitions": "2. Definitions",
+        "accounts": "3. User Accounts",
+        "bookings": "4. Bookings & Payments",
+        "cancellation": "5. Cancellation & Refunds",
+        "privacy": "6. Information Security",
+        "ip": "7. Intellectual Property"
+      },
+      "legal_help": "Need help?",
+      "legal_contact": "Legal Contact",
+      "print": "Print Terms",
+      "download": "Download PDF"
+    }
+  },
+  "Footer": {
+    "about": "A travel platform connecting you with the heritage beauty and authentic experiences of Vietnam.",
+    "explore": "Explore",
+    "support": "Support",
+    "newsletter_title": "Newsletter signup",
+    "newsletter_description": "Get early notifications about promotional tours.",
+    "email_placeholder": "Your email",
+    "copyright_suffix": "Discover Vietnam's Beauty",
+    "destinations": {
+      "halong": "Ha Long Bay",
+      "hoian": "Hoi An Ancient Town",
+      "phuquoc": "Phu Quoc Island",
+      "sapa": "Sapa Terraced Fields",
+      "hue": "Hue Ancient Capital"
+    },
+    "links": {
+      "help_center": "Help Center",
+      "refund_policy": "Refund Policy",
+      "terms_of_service": "Terms of Service",
+      "privacy_policy": "Privacy Policy",
+      "collaboration": "Partnership"
+    }
+  },
+  "ImageUploader": {
+    "error_max_files": "Only up to {maxFiles} images are allowed.",
+    "error_config": "Configuration Error",
+    "error_config_desc": "Missing Cloudinary keys in .env.local",
+    "error_upload": "Upload Error",
+    "error_upload_desc": "An error occurred during image upload",
+    "uploading": "Compressing & Uploading...",
+    "click_to_upload": "Click to upload images (Max {maxFiles} images)",
+    "seo_note": "Automatically compress to SEO-friendly WebP before upload",
+    "delete_image": "Delete image"
+  }
+}
