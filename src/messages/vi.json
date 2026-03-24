@@ -281,9 +281,9 @@
     "error_config_desc": "Thiếu Cloudinary keys trong .env.local",
     "error_upload": "Lỗi Upload",
     "error_upload_desc": "Đã có lỗi trong quá trình tải ảnh",
-    "uploading": "Đang nén & Tải lên...",
-    "click_to_upload": "Click để tải ảnh lên (Tối đa {maxFiles} ảnh)",
-    "seo_note": "Tự động nén thành WebP chuẩn SEO trước khi Upload",
+    "uploading": "Đang tải ảnh lên...",
+    "click_to_upload": "Nhấp để chọn ảnh (Tối đa {maxFiles} ảnh)",
+    "seo_note": "Định dạng: JPG, PNG, WEBP. Tối đa: 2MB/ảnh.",
     "delete_image": "Xóa ảnh"
   }
 }

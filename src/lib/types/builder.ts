@@ -8,6 +8,7 @@ export type ModuleType =
   | 'WHY_VIVU' 
   | 'PROMO' 
   | 'PROMOTION'
+  | 'STORYTELLING'
   | 'TESTIMONIALS';
 
 export interface HomeModule {
@@ -94,6 +95,38 @@ export function migrateToModules(oldData: any): HomeModule[] {
             backgroundImage: ''
         }
     });
+
+    // 6. Storytelling
+    modules.push({
+        id: 'story_default',
+        type: 'STORYTELLING',
+        isVisible: true,
+        content: {
+            title: { vi: 'Hành trình ngập tràn cảm xúc lữ hành.', en: 'Journeys full of traveler emotions.' },
+            items: [
+                { author: "Anh Hoàng Nam", role: "Khách hàng thân thiết", quote: "Chuyến đi Phú Quốc thực sự đẳng cấp. Resort 5 sao và dịch vụ của Vivu không làm tôi thất vọng.", rating: 5 },
+                { author: "Chị Minh Thư", role: "Bloger du lịch", quote: "Hội An đẹp huyền ảo qua cách thiết kế tour của các bạn. Rất tinh tế và sâu sắc.", rating: 5 },
+                { author: "Gia đình Bác Hùng", role: "Tour xuyên Việt", quote: "Lần đầu tiên cả nhà đi tour mà không thấy mệt. Cảm ơn đội ngũ Vivu tận tâm.", rating: 5 }
+            ]
+        }
+    });
+  }
+
+  // Ensure Storytelling exists before patching
+  if (!modules.some(m => m.type === 'STORYTELLING')) {
+    modules.push({
+        id: 'story_default',
+        type: 'STORYTELLING',
+        isVisible: true,
+        content: {
+            title: { vi: 'Hành trình ngập tràn cảm xúc lữ hành.', en: 'Journeys full of traveler emotions.' },
+            items: [
+                { author: "Anh Hoàng Nam", role: "Khách hàng thân thiết", quote: "Chuyến đi Phú Quốc thực sự đẳng cấp. Resort 5 sao và dịch vụ của Vivu không làm tôi thất vọng.", rating: 5 },
+                { author: "Chị Minh Thư", role: "Bloger du lịch", quote: "Hội An đẹp huyền ảo qua cách thiết kế tour của các bạn. Rất tinh tế và sâu sắc.", rating: 5 },
+                { author: "Gia đình Bác Hùng", role: "Tour xuyên Việt", quote: "Lần đầu tiên cả nhà đi tour mà không thấy mệt. Cảm ơn đội ngũ Vivu tận tâm.", rating: 5 }
+            ]
+        }
+    });
   }
 
   // PATCHING: Đảm bảo các module luôn có dữ liệu mặc định nếu content trống
@@ -106,6 +139,7 @@ export function migrateToModules(oldData: any): HomeModule[] {
                   ...m.content,
                   sectionTitle: m.content?.sectionTitle || { vi: 'Tại sao nên chọn Vivu?', en: 'Why Choose Vivu?' },
                   sectionSubtitle: m.content?.sectionSubtitle || { vi: 'Hành trình tuyệt vời bắt đầu từ sự tin tưởng và trọn vẹn trong từng dịch vụ.', en: 'Great journeys start with trust and perfection in every service.' },
+                  featuredImage: m.content?.featuredImage || "https://images.unsplash.com/photo-1506461883276-594a12b11cf3?q=80&w=1200",
                   items: m.content?.items?.length > 0 ? m.content.items : [
                     { 
                         icon: 'ShieldCheck', 
@@ -125,6 +159,22 @@ export function migrateToModules(oldData: any): HomeModule[] {
                         title: { vi: 'Trải nghiệm bản địa', en: 'Local Experiences' }, 
                         desc: { vi: 'Khám phá những góc nhìn chân thực và độc đáo nhất tại mỗi điểm đến.', en: 'Discover the most authentic and unique perspectives at every destination.' } 
                     },
+                  ]
+              }
+          };
+      }
+      
+      // Patch Storytelling
+      if (m.type === 'STORYTELLING' && (!m.content?.items || m.content.items.length === 0)) {
+          return {
+              ...m,
+              content: {
+                  ...m.content,
+                  title: m.content?.title || { vi: 'Hành trình ngập tràn cảm xúc lữ hành.', en: 'Journeys full of traveler emotions.' },
+                  items: [
+                    { author: "Anh Hoàng Nam", role: "Khách hàng thân thiết", quote: "Chuyến đi Phú Quốc thực sự đẳng cấp. Resort 5 sao và dịch vụ của Vivu không làm tôi thất vọng.", rating: 5 },
+                    { author: "Chị Minh Thư", role: "Bloger du lịch", quote: "Hội An đẹp huyền ảo qua cách thiết kế tour của các bạn. Rất tinh tế và sâu sắc.", rating: 5 },
+                    { author: "Gia đình Bác Hùng", role: "Tour xuyên Việt", quote: "Lần đầu tiên cả nhà đi tour mà không thấy mệt. Cảm ơn đội ngũ Vivu tận tâm.", rating: 5 }
                   ]
               }
           };

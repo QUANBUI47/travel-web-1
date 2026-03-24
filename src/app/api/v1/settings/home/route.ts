@@ -30,6 +30,11 @@ export async function POST(request: Request) {
 
     const body = await request.json();
     await HomeService.updateSettings(body);
+    
+    // Invalidate main site paths
+    const { revalidatePath } = await import("next/cache");
+    revalidatePath("/", "layout");
+    revalidatePath("/admin/settings/homepage", "page");
 
     return NextResponse.json({ success: true, message: "Đã lưu cài đặt" });
   } catch (error: any) {

@@ -7,86 +7,61 @@ interface WhyVivuSectionProps {
   locale: string;
 }
 
-const IconMap: Record<string, any> = {
-  ShieldCheck: LucideIcons.ShieldCheck,
-  Clock: LucideIcons.Clock,
-  Map: LucideIcons.Map,
-  Zap: LucideIcons.Zap,
-  Star: LucideIcons.Star,
-  Heart: LucideIcons.Heart,
-  Rocket: LucideIcons.Rocket,
-  Search: LucideIcons.Search,
-  Globe: LucideIcons.Globe,
-  Camera: LucideIcons.Camera,
-  Compass: LucideIcons.Compass,
-  Smile: LucideIcons.Smile,
-};
+import { PlayCircle, ShieldCheck, ChevronRight } from "lucide-react";
 
 export function WhyVivuSection({ content, locale }: WhyVivuSectionProps) {
   const items = content?.items || [];
-  const sectionTitle = getLocalizedValue(content?.sectionTitle, locale);
-  const sectionSubtitle = getLocalizedValue(content?.sectionSubtitle, locale);
+  const sectionTitle = getLocalizedValue(content?.sectionTitle, locale) || "Nâng tầm trải nghiệm Việt.";
+  const sectionSubtitle = getLocalizedValue(content?.sectionSubtitle, locale) || "Chúng tôi không chỉ bán tour, chúng tôi thiết kế những mảnh ghép ký ức tuyệt đẹp cho hành trình của bạn.";
+  const featuredImage = content?.featuredImage || "https://images.unsplash.com/photo-1506461883276-594a12b11cf3?q=80&w=1200";
 
   return (
-    <section className="py-12 bg-white relative overflow-hidden">
-      {/* Subtle Background Decorations */}
-      <div className="absolute inset-0 opacity-[0.03] pointer-events-none" 
-           style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
-      <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-b from-slate-50 to-transparent" />
-      
-      <div className="container mx-auto px-6 relative z-10">
-        {/* Section Header */}
-        {(sectionTitle || sectionSubtitle) && (
-            <div className="max-w-2xl mx-auto text-center mb-12 space-y-3">
-                {sectionTitle && (
-                    <h2 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight uppercase">
-                        {sectionTitle}
-                    </h2>
-                )}
-                {sectionSubtitle && (
-                    <p className="text-slate-500 text-sm md:text-base leading-relaxed font-medium">
-                        {sectionSubtitle}
-                    </p>
-                )}
-                <div className="w-12 h-1 bg-primary mx-auto rounded-full mt-4" />
+    <section className="bg-slate-50 py-16 lg:py-20 mb-12 overflow-hidden relative">
+         <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-blue-100/10 rounded-full blur-[120px] translate-x-1/2 -translate-y-1/2"></div>
+         <div className="w-full px-8 lg:px-20 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
+            <div className="relative w-full">
+               <div className="w-full aspect-[4/3] lg:aspect-square rounded-[2.5rem] lg:rounded-[3.5rem] overflow-hidden shadow-2xl relative z-10">
+                  <Image src={featuredImage} alt="Travel guide" fill className="object-cover" />
+                  <div className="absolute inset-0 bg-blue-900/5"></div>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                     <PlayCircle size={80} className="text-white/80 animate-pulse cursor-pointer hover:text-white transition-colors" />
+                  </div>
+               </div>
+               <div className="absolute -bottom-6 -right-6 w-48 h-48 lg:-bottom-8 lg:-right-8 lg:w-64 lg:h-64 bg-[#fcc219] rounded-[2rem] lg:rounded-[2.5rem] -z-0 shadow-xl opacity-40 lg:opacity-50"></div>
             </div>
-        )}
 
-        {/* Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {items.map((item: any, i: number) => {
-            const Icon = IconMap[item.icon] || LucideIcons.ShieldCheck;
-            const title = getLocalizedValue(item.title, locale);
-            const desc = getLocalizedValue(item.desc, locale);
-
-            return (
-              <div key={i} className="flex flex-col items-center text-center p-8 bg-slate-50/30 rounded-3xl border border-slate-100/50 hover:bg-white hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
-                <div className="w-14 h-14 bg-primary/10 text-primary rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-white transition-all duration-300 shadow-sm">
-                   {item.imageUrl ? (
-                     <div className="relative w-7 h-7">
-                       <Image 
-                        src={item.imageUrl} 
-                        alt={title || "Icon"} 
-                        fill
-                        className="object-contain group-hover:brightness-0 group-hover:invert transition-all"
-                       />
-                     </div>
-                   ) : (
-                     <Icon size={28} strokeWidth={1.5} />
-                   )}
-                </div>
-                
-                <h3 className="font-bold text-lg mb-3 text-slate-900">
-                  {title}
-                </h3>
-                <p className="text-slate-500 text-xs leading-relaxed max-w-[240px]">
-                  {desc}
-                </p>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </section>
+            <div className="space-y-8 text-left">
+               <div className="space-y-4">
+                  <span className="text-primary font-black uppercase tracking-[0.4em] text-[10px]">Tại sao chọn Vivu?</span>
+                  <h2 className="text-4xl lg:text-5xl font-black font-['Plus_Jakarta_Sans'] tracking-tighter leading-tight text-slate-900">
+                    {sectionTitle}
+                  </h2>
+                  <p className="text-slate-500 text-lg leading-relaxed font-medium">
+                    {sectionSubtitle}
+                  </p>
+               </div>
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8 mt-4 pt-6 border-t border-slate-100">
+                  {items.map((item: any, i: number) => {
+                    const IconNode = (LucideIcons as any)[item.icon] || ShieldCheck;
+                    return (
+                      <div key={i} className="flex gap-4 group cursor-default">
+                         <div className="w-12 h-12 bg-white rounded-2xl shadow-sm border border-slate-100 flex items-center justify-center text-primary group-hover:scale-110 group-hover:bg-primary group-hover:text-white transition-all duration-500 shrink-0">
+                            {item.imageUrl ? (
+                                <Image src={item.imageUrl} alt={getLocalizedValue(item.title, locale)} width={24} height={24} className="w-6 h-6 object-contain" />
+                            ) : (
+                                <IconNode size={22} strokeWidth={2.5} />
+                            )}
+                         </div>
+                         <div>
+                            <h4 className="font-black text-[11px] uppercase tracking-widest mb-1 text-slate-800">{getLocalizedValue(item.title, locale)}</h4>
+                            <p className="text-[10px] text-slate-400 font-bold leading-relaxed uppercase tracking-wide">{getLocalizedValue(item.desc, locale)}</p>
+                         </div>
+                      </div>
+                    );
+                  })}
+               </div>
+            </div>
+         </div>
+      </section>
   );
 }

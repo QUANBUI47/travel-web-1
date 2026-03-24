@@ -7,8 +7,8 @@ import { HeroSection } from "@/components/home/hero-section";
 import { StatsSection } from "@/components/home/stats-section";
 import { WhyVivuSection } from "@/components/home/why-vivu-section";
 import { DestinationsSection } from "@/components/home/destinations-section";
-import { PromotionSection } from "@/components/home/promotion-section";
-import { PromoSection } from "@/components/home/promotion-section";
+import { PromotionSection, PromoSection } from "@/components/home/promotion-section";
+import { StorytellingSection } from "@/components/home/storytelling-section";
 
 export default function HomePreviewPage() {
   const [modules, setModules] = useState<HomeModule[]>([]);
@@ -52,7 +52,7 @@ export default function HomePreviewPage() {
           scrollbar-width: none;
         }
       `}} />
-      <div className='flex flex-col gap-10 md:gap-16 lg:gap-24 w-full'>
+      <div className='flex flex-col w-full'>
         {modules
           .filter((m) => m.isVisible)
           .map((module, index) => (
@@ -72,6 +72,8 @@ export default function HomePreviewPage() {
                 />
               ) : module.type === "PROMOTION" || module.type === "FLASH_SALE" ? (
                 <PromotionSection content={module.content} locale={locale} />
+              ) : module.type === "STORYTELLING" ? (
+                <StorytellingSection content={module.content} locale={locale} />
               ) : module.type === "PROMO" ? (
                 <PromoSection t={t} />
               ) : null}

@@ -281,9 +281,9 @@
     "error_config_desc": "Missing Cloudinary keys in .env.local",
     "error_upload": "Upload Error",
     "error_upload_desc": "An error occurred during image upload",
-    "uploading": "Compressing & Uploading...",
-    "click_to_upload": "Click to upload images (Max {maxFiles} images)",
-    "seo_note": "Automatically compress to SEO-friendly WebP before upload",
+    "uploading": "Uploading images...",
+    "click_to_upload": "Click to select images (Max {maxFiles} images)",
+    "seo_note": "Formats: JPG, PNG, WEBP. Max: 2MB/image.",
     "delete_image": "Delete image"
   }
 }

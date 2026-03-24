@@ -35,6 +35,14 @@ export function ImageUploader({ value = [], onChange, maxFiles = 5 }: ImageUploa
       return;
     }
 
+    // Check file sizes
+    for (let i = 0; i < files.length; i++) {
+        if (files[i].size > 5 * 1024 * 1024) { // 5MB limit for original
+            addToast({ title: "File quá lớn", description: "Vui lòng chọn ảnh dưới 5MB", color: "warning" });
+            return;
+        }
+    }
+
     setIsUploading(true);
     const newUrls: string[] = [];
     const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
@@ -95,10 +103,10 @@ export function ImageUploader({ value = [], onChange, maxFiles = 5 }: ImageUploa
       {/* Upload Zone */}
       <label 
         htmlFor="image-file-upload"
-        className={`relative flex flex-col items-center justify-center p-8 border-2 border-dashed rounded-2xl transition-all ${
+        className={`relative flex flex-row items-center justify-center gap-6 p-6 border-2 border-dashed rounded-[2rem] transition-all group ${
           isUploading 
-            ? "border-default-300 bg-default-100 cursor-not-allowed opacity-60" 
-            : "border-primary/40 bg-primary/5 hover:bg-primary/10 hover:border-primary cursor-pointer active:scale-[0.98]"
+            ? "border-slate-200 bg-slate-50 cursor-not-allowed opacity-60" 
+            : "border-slate-200 bg-white hover:bg-primary/[0.02] hover:border-primary/50 cursor-pointer active:scale-[0.99]"
         }`}
       >
         <input 
@@ -112,36 +120,40 @@ export function ImageUploader({ value = [], onChange, maxFiles = 5 }: ImageUploa
           disabled={isUploading}
         />
         
-        {isUploading ? (
-          <div className="flex flex-col items-center text-primary">
-            <Loader2 className="w-10 h-10 mb-3 animate-spin mx-auto" />
-            <p className="font-semibold text-sm">{t("uploading")}</p>
-          </div>
-        ) : (
-          <div className="flex flex-col items-center text-primary/80">
-            <UploadCloud className="w-12 h-12 mb-3 mx-auto" />
-            <p className="font-semibold text-base mb-1">{t("click_to_upload", { maxFiles })}</p>
-            <p className="text-xs text-default-500">{t("seo_note")}</p>
-          </div>
-        )}
+        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-colors shadow-sm ${
+            isUploading ? "bg-slate-100 text-slate-400" : "bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white"
+        }`}>
+            {isUploading ? (
+                <Loader2 className="w-7 h-7 animate-spin" />
+            ) : (
+                <UploadCloud className="w-7 h-7" />
+            )}
+        </div>
+
+        <div className="flex-1 text-left">
+            <p className="font-black text-xs uppercase tracking-widest text-slate-800 mb-1">
+                {isUploading ? t("uploading") : t("click_to_upload", { maxFiles })}
+            </p>
+            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t("seo_note")}</p>
+        </div>
       </label>
 
       {/* Gallery Grid */}
       {value.length > 0 && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
           {value.map((url, idx) => (
-            <div key={idx} className="relative aspect-video rounded-xl overflow-hidden border border-default-200 group bg-default-100">
+            <div key={idx} className="relative aspect-square rounded-2xl overflow-hidden border border-slate-100 group shadow-sm bg-slate-50">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={url} alt={`Uploaded ${idx}`} className="w-full h-full object-cover" />
+              <img src={url} alt={`Uploaded ${idx}`} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
               
               <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                 <button
                   type="button"
                   onClick={(e) => { e.stopPropagation(); removeImage(idx); }}
-                  className="p-2 bg-danger text-white rounded-full hover:scale-110 transition-transform shadow-lg"
+                  className="p-2.5 bg-white/20 backdrop-blur-md text-white rounded-xl hover:bg-danger hover:scale-110 transition-all shadow-xl border border-white/20"
                   aria-label={t("delete_image")}
                 >
-                  <X size={16} className="font-bold" />
+                  <X size={14} className="stroke-[3]" />
                 </button>
               </div>
             </div>

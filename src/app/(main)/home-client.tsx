@@ -23,6 +23,7 @@ import { WhyVivuSection } from "@/components/home/why-vivu-section";
 import { DestinationsSection } from "@/components/home/destinations-section";
 import { PromotionSection } from "@/components/home/promotion-section";
 import { PromoSection } from "@/components/home/promotion-section";
+import { StorytellingSection } from "@/components/home/storytelling-section";
 
 interface HomeClientProps {
   initialData: any;
@@ -34,7 +35,7 @@ export function HomeClient({ initialData, allDestinations }: HomeClientProps) {
   const modules = useMemo(() => migrateToModules(initialData), [initialData]);
 
   return (
-    <div className='flex flex-col gap-6 md:gap-8 xl:gap-10 py-4 md:py-6 pb-12 md:pb-16'>
+    <div className='flex flex-col py-4 md:py-6 pb-12 md:pb-16'>
       {modules.filter(m => m.isVisible).map((module, index) => (
         <ModuleRenderer 
             key={module.id || index} 
@@ -79,6 +80,8 @@ function ModuleRenderer({
       return <PromotionSection content={module.content} locale={locale} />;
     case 'PROMO':
       return <PromoSection t={t} />;
+    case 'STORYTELLING':
+      return <StorytellingSection content={module.content} locale={locale} />;
     default:
       return null;
   }

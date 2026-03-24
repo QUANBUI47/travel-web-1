@@ -27,6 +27,8 @@ export function ModuleSidebar({
       case 'HERO': return <LucideIcons.Tv2 size={16} />;
       case 'STATS': return <LucideIcons.Hash size={16} />;
       case 'DESTINATIONS': return <LucideIcons.MapPin size={16} />;
+      case 'WHY_VIVU': return <LucideIcons.ShieldCheck size={16} />;
+      case 'STORYTELLING': return <LucideIcons.Heart size={16} />;
       case 'FLASH_SALE': 
       case 'PROMOTION': 
         return <LucideIcons.Zap size={16} />;
@@ -39,10 +41,12 @@ export function ModuleSidebar({
       case 'HERO': return 'Banner chính';
       case 'STATS': return 'Số liệu uy tín';
       case 'DESTINATIONS': return 'Điểm đến Hot';
+      case 'WHY_VIVU': return 'Tại sao chọn Vivu';
+      case 'STORYTELLING': return 'Cảm hứng lữ hành';
       case 'FLASH_SALE': 
       case 'PROMOTION': 
         return 'Khuyến mại Flash Sale';
-        default: return type;
+      default: return type;
     }
   };
 

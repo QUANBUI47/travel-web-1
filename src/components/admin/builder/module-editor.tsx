@@ -102,23 +102,33 @@ export function ModuleEditor({ module, onUpdate, allDestinations = [] }: ModuleE
         return (
           <div className="space-y-8 animate-in fade-in duration-500">
              {/* Section Header Editor */}
-             <div className="p-6 bg-primary/5 rounded-[2rem] border border-primary/10 space-y-6">
+             <div className="p-6 bg-primary/5 rounded-[3rem] border border-primary/10 space-y-6">
                 <div className="flex items-center gap-2 mb-2">
                     <LucideIcons.Layout size={18} className="text-primary" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-primary">Cấu hình tiêu đề vùng</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-primary">Phần tiêu đề đầu vùng (Header)</span>
                 </div>
                 <BilingualInput 
-                    label="Tiêu đề chính vùng" 
+                    label="1. Tiêu đề lớn (Headline)" 
                     name="why_section_title"
                     value={module.content?.sectionTitle}
                     onValueChange={(val) => onUpdate({ sectionTitle: val })}
+                    placeholder="VD: Nâng tầm trải nghiệm Việt"
                 />
                 <BilingualTextarea 
-                    label="Mô tả phụ vùng" 
+                    label="2. Mô tả chi tiết (Description)" 
                     name="why_section_subtitle"
                     value={module.content?.sectionSubtitle}
                     onValueChange={(val) => onUpdate({ sectionSubtitle: val })}
+                    placeholder="Mô tả ngắn gọn phía dưới tiêu đề chính..."
                 />
+                
+                <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">3. Hình ảnh minh họa (Featured Image)</label>
+                    <ImageUploader 
+                        value={module.content?.featuredImage ? [module.content.featuredImage] : []}
+                        onChange={(urls) => onUpdate({ featuredImage: urls[0] || '' })}
+                    />
+                </div>
              </div>
 
              <hr className="border-slate-100" />
@@ -431,6 +441,112 @@ export function ModuleEditor({ module, onUpdate, allDestinations = [] }: ModuleE
           </div>
         );
       }
+
+      case 'STORYTELLING':
+        return (
+          <div className="space-y-8 animate-in fade-in duration-500">
+             <BilingualInput 
+                label="Tiêu đề vùng" 
+                name="story_section_title" 
+                defaultValue={module.content?.title} 
+                onValueChange={(val) => onUpdate({ title: val })}
+             />
+             
+             <div className="flex justify-between items-center mb-2 px-2">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Danh sách đánh giá (Quotes)</label>
+                <button 
+                    onClick={() => {
+                        const newItems = [...(module.content?.items || [])];
+                        newItems.push({ author: 'Khách hàng', role: 'Vivu Traveler', quote: '', rating: 5 });
+                        onUpdate({ items: newItems });
+                    }}
+                    className="text-primary text-[10px] font-bold uppercase flex items-center gap-1 hover:underline"
+                >
+                    <LucideIcons.Plus size={14}/> Thêm đánh giá
+                </button>
+             </div>
+
+             {(module.content?.items || []).map((item: any, idx: number) => (
+              <div key={idx} className="relative group p-6 bg-slate-50/50 rounded-[2.5rem] border border-slate-100 space-y-6">
+                 <div className="flex flex-col gap-6 items-start">
+                    <div className="flex-1 space-y-6 w-full">
+                       <div className="space-y-4">
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Tên tác giả</label>
+                                <input 
+                                    type="text" 
+                                    value={item.author}
+                                    onChange={(e) => {
+                                        const newItems = [...module.content.items];
+                                        newItems[idx].author = e.target.value;
+                                        onUpdate({ items: newItems });
+                                    }}
+                                    placeholder="VD: Anh Nam"
+                                    className="w-full bg-white border border-slate-200 rounded-2xl p-4 text-xs font-black text-slate-800 focus:border-primary outline-none shadow-sm"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Chức danh / Vai trò</label>
+                                <input 
+                                    type="text" 
+                                    value={item.role}
+                                    onChange={(e) => {
+                                        const newItems = [...module.content.items];
+                                        newItems[idx].role = e.target.value;
+                                        onUpdate({ items: newItems });
+                                    }}
+                                    placeholder="VD: Khách hàng thân thiết"
+                                    className="w-full bg-white border border-slate-200 rounded-2xl p-4 text-xs font-bold text-slate-400 focus:border-primary outline-none shadow-sm"
+                                />
+                            </div>
+                       </div>
+                       
+                       <div className="p-4 bg-primary/5 rounded-2xl border border-primary/10 space-y-2">
+                           <label className="text-[10px] font-black text-primary uppercase tracking-widest ml-1 text-center block">Số sao đánh giá (Rating)</label>
+                           <select 
+                             value={item.rating || 5}
+                             onChange={(e) => {
+                                 const newItems = [...module.content.items];
+                                 newItems[idx].rating = parseInt(e.target.value);
+                                 onUpdate({ items: newItems });
+                             }}
+                             className="w-full bg-white border border-primary/20 rounded-xl p-3 text-sm font-black text-primary outline-none appearance-none text-center cursor-pointer hover:border-primary transition-all shadow-sm"
+                           >
+                             <option value="5">5 ★★★★★</option>
+                             <option value="4">4 ★★★★</option>
+                             <option value="3">3 ★★★</option>
+                           </select>
+                       </div>
+
+                       <div className="space-y-2">
+                          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Nội dung trải nghiệm (Quote)</label>
+                          <textarea 
+                             value={item.quote}
+                             onChange={(e) => {
+                                 const newItems = [...module.content.items];
+                                 newItems[idx].quote = e.target.value;
+                                 onUpdate({ items: newItems });
+                             }}
+                             placeholder="Nhập nội dung đánh giá của khách hàng..."
+                             className="w-full bg-white border border-slate-200 rounded-2xl p-4 text-xs font-medium text-slate-700 focus:border-primary outline-none shadow-sm min-h-[100px] leading-relaxed resize-none"
+                          />
+                       </div>
+                    </div>
+                 </div>
+                   
+                   <button 
+                    onClick={() => {
+                        const newItems = (module.content.items || []).filter((_: any, i: number) => i !== idx);
+                        onUpdate({ items: newItems });
+                    }}
+                    className="absolute -top-2 -right-2 w-10 h-10 bg-white shadow-xl border border-slate-100 rounded-full flex items-center justify-center text-danger opacity-0 group-hover:opacity-100 transition-all hover:scale-110 active:scale-95 z-20"
+                   >
+                    <LucideIcons.Trash2 size={16}/>
+                   </button>
+                </div>
+             ))}
+          </div>
+        );
 
       default:
         return (
