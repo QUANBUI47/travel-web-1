@@ -118,8 +118,9 @@ export const Footer = () => {
             <p className='text-default-500 text-sm font-medium'>
               {t("newsletter_description")}
             </p>
-            <div className='relative group'>
+            <div className='relative group' suppressHydrationWarning>
               <Input
+                suppressHydrationWarning
                 placeholder={t("email_placeholder")}
                 variant='flat'
                 radius='lg'
@@ -130,6 +131,7 @@ export const Footer = () => {
                 }}
               />
               <Button
+                suppressHydrationWarning
                 isIconOnly
                 color='primary'
                 radius='md'

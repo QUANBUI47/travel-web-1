@@ -8,6 +8,7 @@ import { ScrollShadow } from "@heroui/scroll-shadow";
 import { siteConfig } from "@/config/site";
 import { Divider } from "@heroui/divider";
 import Image from "next/image";
+
 export function AdminSidebar() {
   const pathname = usePathname();
 
@@ -59,24 +60,26 @@ export function AdminSidebar() {
                  {hasChildren && isActive && (
                    <div className="ml-9 space-y-1 animate-in slide-in-from-top-2 duration-300">
                      {items.map((subItem: any) => {
-                       const isSubActive = pathname + (window.location.search || "") === subItem.href || (subItem.href.includes('?') && pathname === subItem.href.split('?')[0] && window.location.search === '?' + subItem.href.split('?')[1]);
-                       // Note: window.location might not be available during SSR, but this is a client component.
-                       // Better to use useSearchParams if needed, but for now let's just check the href.
-                       
-                       return (
-                         <NextLink
-                           key={subItem.href}
-                           href={subItem.href}
-                           className={clsx(
-                             "flex items-center gap-3 px-4 py-2 rounded-lg text-xs font-medium transition-all",
-                             pathname + (typeof window !== 'undefined' ? window.location.search : '') === subItem.href
+                        const search = typeof window !== 'undefined' ? window.location.search : '';
+                        const isSubActive = pathname + search === subItem.href || 
+                                          (subItem.href.includes('?') && 
+                                           pathname === subItem.href.split('?')[0] && 
+                                           search === '?' + subItem.href.split('?')[1]);
+                        
+                        return (
+                          <NextLink
+                            key={subItem.href}
+                            href={subItem.href}
+                            className={clsx(
+                              "flex items-center gap-3 px-4 py-2 rounded-lg text-xs font-medium transition-all",
+                              isSubActive
                                ? "text-primary font-bold"
                                : "text-default-500 hover:text-default-900"
-                           )}
-                         >
-                            {subItem.label}
-                         </NextLink>
-                       );
+                            )}
+                          >
+                             {subItem.label}
+                          </NextLink>
+                        );
                      })}
                    </div>
                  )}

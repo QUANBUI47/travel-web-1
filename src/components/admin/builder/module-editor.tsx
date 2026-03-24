@@ -93,6 +93,148 @@ export function ModuleEditor({ module, onUpdate, allDestinations = [] }: ModuleE
           </div>
         );
       
+      case 'WHY_VIVU':
+        const iconList = [
+          'ShieldCheck', 'Clock', 'Map', 'Zap', 'Star', 'Heart', 
+          'Rocket', 'Search', 'Globe', 'Camera', 'Compass', 'Smile'
+        ];
+        
+        return (
+          <div className="space-y-8 animate-in fade-in duration-500">
+             {/* Section Header Editor */}
+             <div className="p-6 bg-primary/5 rounded-[2rem] border border-primary/10 space-y-6">
+                <div className="flex items-center gap-2 mb-2">
+                    <LucideIcons.Layout size={18} className="text-primary" />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-primary">Cấu hình tiêu đề vùng</span>
+                </div>
+                <BilingualInput 
+                    label="Tiêu đề chính vùng" 
+                    name="why_section_title"
+                    value={module.content?.sectionTitle}
+                    onValueChange={(val) => onUpdate({ sectionTitle: val })}
+                />
+                <BilingualTextarea 
+                    label="Mô tả phụ vùng" 
+                    name="why_section_subtitle"
+                    value={module.content?.sectionSubtitle}
+                    onValueChange={(val) => onUpdate({ sectionSubtitle: val })}
+                />
+             </div>
+
+             <hr className="border-slate-100" />
+
+             <div className="flex items-center gap-2 px-2">
+                <LucideIcons.List size={18} className="text-slate-400" />
+                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Danh sách các mục đặc điểm</span>
+             </div>
+
+             {(module.content?.items || []).map((item: any, idx: number) => (
+                <div key={idx} className="relative group p-6 bg-slate-50/50 rounded-3xl border border-slate-100 hover:border-primary/20 hover:bg-white transition-all space-y-6">
+                  <div className="flex flex-col gap-4">
+                    <div className="flex justify-between items-center">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Hình ảnh hoặc Biểu tượng</label>
+                        <span className="text-[10px] font-bold text-primary bg-primary/5 px-2 py-0.5 rounded-full">Mục #{idx + 1}</span>
+                    </div>
+
+                    <div className="space-y-6">
+                        {/* Biểu tượng Library */}
+                        <div className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm space-y-3">
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">1. Chọn từ thư viện Icon</p>
+                            <div className="flex flex-wrap gap-2">
+                                {iconList.map(iconName => {
+                                    const IconNode = (LucideIcons as any)[iconName] || LucideIcons.HelpCircle;
+                                    const isSelected = item.icon === iconName && !item.imageUrl;
+                                    return (
+                                        <button 
+                                            key={iconName}
+                                            onClick={() => {
+                                                const newItems = [...module.content.items];
+                                                newItems[idx].icon = iconName;
+                                                newItems[idx].imageUrl = ''; // Clear image if icon picked
+                                                onUpdate({ items: newItems });
+                                            }}
+                                            className={`w-10 h-10 rounded-xl border flex items-center justify-center transition-all ${isSelected ? 'bg-primary border-primary text-white shadow-md' : 'bg-slate-50 border-slate-100 text-slate-400 hover:border-primary/40 hover:text-primary'}`}
+                                            title={iconName}
+                                        >
+                                            <IconNode size={18} strokeWidth={isSelected ? 2.5 : 1.5} />
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        {/* Tải ảnh lên */}
+                        <div className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm space-y-3">
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">2. Hoặc tải ảnh/biểu tượng riêng</p>
+                            <ImageUploader 
+                                value={item.imageUrl ? [item.imageUrl] : []}
+                                maxFiles={1}
+                                onChange={(urls) => {
+                                    const newItems = [...module.content.items];
+                                    newItems[idx].imageUrl = urls[0] || '';
+                                    onUpdate({ items: newItems });
+                                }}
+                            />
+                        </div>
+                    </div>
+                  </div>
+
+                  <hr className="border-slate-100" />
+
+                  <BilingualInput 
+                    label="Tiêu đề" 
+                    name={`why_title_${idx}`}
+                    value={item.title}
+                    onValueChange={(val) => {
+                        const newItems = [...module.content.items];
+                        newItems[idx].title = val;
+                        onUpdate({ items: newItems });
+                    }}
+                  />
+
+                  <BilingualTextarea 
+                    label="Mô tả" 
+                    name={`why_desc_${idx}`}
+                    value={item.desc}
+                    onValueChange={(val) => {
+                        const newItems = [...module.content.items];
+                        newItems[idx].desc = val;
+                        onUpdate({ items: newItems });
+                    }}
+                  />
+
+                  <button 
+                    onClick={() => {
+                        const newItems = (module.content.items || []).filter((_: any, i: number) => i !== idx);
+                        onUpdate({ items: newItems });
+                    }}
+                    className="absolute -top-2 -right-2 w-8 h-8 bg-white shadow-xl border border-slate-100 rounded-full flex items-center justify-center text-danger opacity-0 group-hover:opacity-100 transition-all hover:scale-110 active:scale-90 z-20"
+                  >
+                    <LucideIcons.Trash2 size={14}/>
+                  </button>
+                </div>
+             ))}
+
+             <button 
+                onClick={() => {
+                    const newItems = [...(module.content?.items || []), { 
+                        icon: 'ShieldCheck', 
+                        imageUrl: '',
+                        title: { vi: '', en: '' }, 
+                        desc: { vi: '', en: '' } 
+                    }];
+                    onUpdate({ items: newItems });
+                }}
+                className="w-full py-8 border-2 border-dashed border-slate-200 rounded-[2.5rem] text-[10px] font-black uppercase text-slate-400 hover:border-primary hover:text-primary hover:bg-primary/5 transition-all flex flex-col items-center justify-center gap-2 group"
+             >
+                <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
+                    <LucideIcons.Plus size={20}/>
+                </div>
+                Thêm mục Why Vivu mới
+             </button>
+          </div>
+        );
+
       case 'STATS':
         return (
           <div className="space-y-4 animate-in fade-in duration-500">
@@ -162,8 +304,9 @@ export function ModuleEditor({ module, onUpdate, allDestinations = [] }: ModuleE
           </div>
         );
 
+      case 'FLASH_SALE':
       case 'PROMOTION':
-        return (
+          return (
           <div className="space-y-6 animate-in fade-in duration-500">
              <BilingualInput 
                 label="Nội dung khuyến mại" 
@@ -197,6 +340,15 @@ export function ModuleEditor({ module, onUpdate, allDestinations = [] }: ModuleE
                         </button>
                     ))}
                 </div>
+             </div>
+
+             <div className="space-y-2">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Hình nền Banner (Tùy chọn)</label>
+                <ImageUploader 
+                    value={module.content?.backgroundImage ? [module.content.backgroundImage] : []} 
+                    onChange={(urls) => onUpdate({ backgroundImage: urls[0] })} 
+                />
+                <p className="text-[10px] text-slate-400 italic px-1">Lưu ý: Nếu có hình nền, hệ thống sẽ ưu tiên hiển thị hình nền thay cho màu Gradient.</p>
              </div>
           </div>
         );

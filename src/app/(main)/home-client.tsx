@@ -34,7 +34,7 @@ export function HomeClient({ initialData, allDestinations }: HomeClientProps) {
   const modules = useMemo(() => migrateToModules(initialData), [initialData]);
 
   return (
-    <div className='flex flex-col gap-16 md:gap-20 xl:gap-24 py-6 md:py-8 pb-32 md:pb-40'>
+    <div className='flex flex-col gap-6 md:gap-8 xl:gap-10 py-4 md:py-6 pb-12 md:pb-16'>
       {modules.filter(m => m.isVisible).map((module, index) => (
         <ModuleRenderer 
             key={module.id || index} 
@@ -64,7 +64,7 @@ function ModuleRenderer({
     case 'STATS':
       return <StatsSection content={module.content} locale={locale} />;
     case 'WHY_VIVU':
-      return <WhyVivuSection t={t} />;
+      return <WhyVivuSection content={module.content} locale={locale} />;
     case 'DESTINATIONS':
       return (
         <DestinationsSection 
@@ -74,6 +74,7 @@ function ModuleRenderer({
             allDestinations={allDestinations}
         />
       );
+    case 'FLASH_SALE':
     case 'PROMOTION':
       return <PromotionSection content={module.content} locale={locale} />;
     case 'PROMO':

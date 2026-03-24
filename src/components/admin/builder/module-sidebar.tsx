@@ -27,7 +27,9 @@ export function ModuleSidebar({
       case 'HERO': return <LucideIcons.Tv2 size={16} />;
       case 'STATS': return <LucideIcons.Hash size={16} />;
       case 'DESTINATIONS': return <LucideIcons.MapPin size={16} />;
-      case 'FLASH_SALE': return <LucideIcons.Zap size={16} />;
+      case 'FLASH_SALE': 
+      case 'PROMOTION': 
+        return <LucideIcons.Zap size={16} />;
       default: return <LucideIcons.Box size={16} />;
     }
   };
@@ -37,7 +39,9 @@ export function ModuleSidebar({
       case 'HERO': return 'Banner chính';
       case 'STATS': return 'Số liệu uy tín';
       case 'DESTINATIONS': return 'Điểm đến Hot';
-      case 'FLASH_SALE': return 'Khuyến mại Flash Sale';
+      case 'FLASH_SALE': 
+      case 'PROMOTION': 
+        return 'Khuyến mại Flash Sale';
         default: return type;
     }
   };

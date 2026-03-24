@@ -136,6 +136,17 @@ export function HomeBuilder({ initialData }: HomeBuilderProps) {
           : "h-[calc(100vh-64px)] w-full",
       )}
     >
+      {/* Resizing Overlay (Captures mouse moves even over iframe) */}
+      {resizing && (
+        <div 
+          className="fixed inset-0 z-[100] cursor-col-resize select-none"
+          onMouseMove={(e) => {
+            // Mouse move handled by window listener in useEffect
+          }}
+          onMouseUp={() => setResizing(null)}
+        />
+      )}
+
       {/* Header */}
       <nav className='flex items-center justify-between px-4 py-2 bg-white border-b border-slate-100 shrink-0 select-none'>
         <div className='flex items-center gap-3'>
@@ -249,20 +260,25 @@ export function HomeBuilder({ initialData }: HomeBuilderProps) {
                 onToggleVisibility={toggleVisibility}
               />
             </div>
-            {/* Sidebar Resize Handle (Inline) */}
+            {/* Sidebar Resize Handle (Improved) */}
             <div
               onMouseDown={() => setResizing("sidebar")}
               className={cn(
-                "w-1 cursor-col-resize z-50 transition-colors group relative shrink-0",
-                resizing === "sidebar"
-                  ? "bg-primary"
-                  : "bg-slate-100 hover:bg-primary/30",
+                "w-6 -mx-3 cursor-col-resize z-50 transition-colors group relative shrink-0",
+                resizing === "sidebar" ? "z-[101]" : ""
               )}
             >
-              <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-8 bg-white border border-slate-200 rounded-md opacity-0 group-hover:opacity-100 shadow-sm flex items-center justify-center transition-opacity pointer-events-none z-50'>
+              <div className={cn(
+                "absolute inset-y-0 left-1/2 -translate-x-1/2 w-[2px] transition-colors",
+                resizing === "sidebar" ? "bg-primary" : "bg-slate-100 group-hover:bg-primary/30"
+              )} />
+              <div className={cn(
+                "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-8 bg-white border border-slate-200 rounded-md shadow-sm flex items-center justify-center transition-all z-50",
+                resizing === "sidebar" ? "opacity-100 scale-110 border-primary shadow-primary/20" : "opacity-0 group-hover:opacity-100"
+              )}>
                 <LucideIcons.GripVertical
                   size={10}
-                  className='text-slate-400'
+                  className={cn("transition-colors", resizing === "sidebar" ? "text-primary" : "text-slate-400")}
                 />
               </div>
             </div>
@@ -299,20 +315,25 @@ export function HomeBuilder({ initialData }: HomeBuilderProps) {
                 </div>
               )}
             </div>
-            {/* Editor Resize Handle (Inline) */}
+            {/* Editor Resize Handle (Improved) */}
             <div
               onMouseDown={() => setResizing("editor")}
               className={cn(
-                "w-1 cursor-col-resize z-50 transition-colors group relative shrink-0",
-                resizing === "editor"
-                  ? "bg-primary"
-                  : "bg-slate-100 hover:bg-primary/30",
+                "w-6 -mx-3 cursor-col-resize z-50 transition-colors group relative shrink-0",
+                resizing === "editor" ? "z-[101]" : ""
               )}
             >
-              <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-8 bg-white border border-slate-200 rounded-md opacity-0 group-hover:opacity-100 shadow-sm flex items-center justify-center transition-opacity pointer-events-none z-50'>
+              <div className={cn(
+                "absolute inset-y-0 left-1/2 -translate-x-1/2 w-[2px] transition-colors",
+                resizing === "editor" ? "bg-primary" : "bg-slate-100 group-hover:bg-primary/30"
+              )} />
+              <div className={cn(
+                "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-8 bg-white border border-slate-200 rounded-md shadow-sm flex items-center justify-center transition-all z-50",
+                resizing === "editor" ? "opacity-100 scale-110 border-primary shadow-primary/20" : "opacity-0 group-hover:opacity-100"
+              )}>
                 <LucideIcons.GripVertical
                   size={10}
-                  className='text-slate-400'
+                  className={cn("transition-colors", resizing === "editor" ? "text-primary" : "text-slate-400")}
                 />
               </div>
             </div>
@@ -323,7 +344,7 @@ export function HomeBuilder({ initialData }: HomeBuilderProps) {
         <div
           className={cn(
             "flex-1 min-w-0 bg-[#f8fafc] flex flex-col items-center justify-center transition-all duration-300 overflow-hidden relative",
-            previewMode === "mobile" ? "p-4" : "p-0",
+            previewMode === "mobile" ? "p-10" : "p-0",
           )}
         >
           <DevicePreview

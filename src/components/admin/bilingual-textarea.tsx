@@ -1,7 +1,7 @@
 "use client";
 
 import { Textarea } from "@heroui/input";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface BilingualTextareaProps {
   label: string;
@@ -28,10 +28,22 @@ export function BilingualTextarea({
 }: BilingualTextareaProps) {
   const [vi, setVi] = useState(value?.vi || defaultValue?.vi || (typeof defaultValue === "string" ? defaultValue : ""));
   const [en, setEn] = useState(value?.en || defaultValue?.en || "");
+
+  // Sync state when props change
+  useEffect(() => {
+    if (value) {
+      setVi(value.vi || "");
+      setEn(value.en || "");
+    } else if (defaultValue) {
+      setVi(defaultValue.vi || (typeof defaultValue === "string" ? defaultValue : ""));
+      setEn(defaultValue.en || "");
+    }
+  }, [value, defaultValue]);
+
   const p = placeholder || "";
 
   const handleChange = (lang: "vi" | "en", val: string) => {
-    const newVal = lang === "vi" ? { vi: val, en } : { vi, en: val };
+    const newVal = lang === "vi" ? { vi: val, en } : { vi: val !== undefined ? vi : "", en: val };
     if (lang === "vi") setVi(val); else setEn(val);
     if (onValueChange) onValueChange(newVal);
   };

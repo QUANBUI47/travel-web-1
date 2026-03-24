@@ -23,8 +23,9 @@ export default function AdminLayoutClient({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const isLoginPage = pathname === "/admin/login";
+  const isPreviewPage = pathname === "/admin/settings/homepage/preview";
 
-  if (isLoginPage) {
+  if (isLoginPage || isPreviewPage) {
     return <>{children}</>;
   }
 

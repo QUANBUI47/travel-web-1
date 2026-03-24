@@ -78,7 +78,7 @@ export async function Navbar() {
         className='hidden sm:flex basis-1/5 sm:basis-full'
         justify='end'
       >
-        <NavbarItem className='flex items-center gap-2'>
+        <NavbarItem className='flex items-center gap-2' suppressHydrationWarning>
           <LocaleSwitcher />
           <ThemeSwitch />
         </NavbarItem>
@@ -99,9 +99,9 @@ export async function Navbar() {
             </NavbarItem>
             <NavbarItem>
               <UserMenu
-                displayName={profile?.display_name ?? null}
+                displayName={profile?.displayName ?? null}
                 email={user.email ?? null}
-                avatarUrl={profile?.avatar_url ?? null}
+                avatarUrl={profile?.avatarUrl ?? null}
               />
             </NavbarItem>
           </div>
@@ -138,9 +138,9 @@ export async function Navbar() {
         <ThemeSwitch />
         {user ? (
           <UserMenu
-            displayName={profile?.display_name ?? null}
+            displayName={profile?.displayName ?? null}
             email={user.email ?? null}
-            avatarUrl={profile?.avatar_url ?? null}
+            avatarUrl={profile?.avatarUrl ?? null}
           />
         ) : (
           <Button as={NextLink} href='/dang-nhap' size='sm' variant='flat'>
