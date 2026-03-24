@@ -1,53 +1,63 @@
-# Next.js & HeroUI Template
+# Vivu Travel - Web Application
 
-This is a template for creating applications using Next.js 14 (app directory) and HeroUI (v2).
+Vivu Travel là một nền tảng du lịch hiện đại dành cho thị trường Việt Nam, chuyên về đặt phòng khách sạn và các tour du lịch đa dạng. Dự án được xây dựng với mục tiêu mang lại trải nghiệm người dùng mượt mà, tối ưu SEO và hỗ trợ đa ngôn ngữ.
 
-[Try it on CodeSandbox](https://githubbox.com/heroui-inc/heroui/next-app-template)
+## 🚀 Công nghệ sử dụng
 
-## Technologies Used
+- **Frontend**: [Next.js 14](https://nextjs.org/) (App Router), [HeroUI v2](https://heroui.com/) (formerly NextUI), [Tailwind CSS](https://tailwindcss.com/).
+- **Backend & Database**: [Prisma](https://www.prisma.io/) ORM, [PostgreSQL](https://www.postgresql.org/) (hosted on Supabase).
+- **Authentication**: [Supabase Auth](https://supabase.com/auth).
+- **Quản lý ảnh**: [Cloudinary](https://cloudinary.com/).
+- **Đa ngôn ngữ**: `next-intl` (Hỗ trợ Tiếng Việt & Tiếng Anh).
 
-- [Next.js 14](https://nextjs.org/docs/getting-started)
-- [HeroUI v2](https://heroui.com/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [Tailwind Variants](https://tailwind-variants.org)
-- [TypeScript](https://www.typescriptlang.org/)
-- [Framer Motion](https://www.framer.com/motion/)
-- [next-themes](https://github.com/pacocoursey/next-themes)
+## ✨ Tính năng chính
 
-## How to Use
+- **Đặt phòng & Tour**: Hệ thống tìm kiếm và đặt chỗ linh hoạt.
+- **Admin Dashboard**: Quản lý nội dung (CMS), cấu hình hệ thống, quản lý đơn hàng.
+- **i18n**: Chuyển đổi ngôn ngữ VI/EN toàn diện.
+- **Tối ưu SEO**: Metadata chuẩn SEO cho từng trang, sitemap và robots.txt tự động.
+- **Responsive Design**: Giao diện tối ưu cho mọi thiết bị (Desktop, Mobile).
 
-### Use the template with create-next-app
+## 🛠️ Cài đặt & Chạy dự án
 
-To create a new project based on this template using `create-next-app`, run the following command:
-
-```bash
-npx create-next-app -e https://github.com/heroui-inc/next-app-template
-```
-
-### Install dependencies
-
-You can use one of them `npm`, `yarn`, `pnpm`, `bun`, Example using `npm`:
+### 1. Cài đặt dependencies
 
 ```bash
 npm install
 ```
 
-### Run the development server
+### 2. Cấu hình biến môi trường
+
+Sao chép tệp `.env.example` thành `.env.local` và điền thông tin:
+
+```bash
+cp .env.example .env.local
+```
+
+### 3. Thiết lập Database (Prisma)
+
+```bash
+npx prisma generate
+npx prisma db push
+```
+
+### 4. Chạy server phát triển
 
 ```bash
 npm run dev
 ```
 
-### Setup pnpm (optional)
+Truy cập `http://localhost:3000` để xem kết quả.
 
-If you are using `pnpm`, you need to add the following code to your `.npmrc` file:
+## 📖 Tài liệu hướng dẫn thêm
 
-```bash
-public-hoist-pattern[]=*@heroui/*
-```
+Để hiểu sâu hơn về dự án, vui lòng tham khảo các tài liệu trong thư mục `docs/`:
 
-After modifying the `.npmrc` file, you need to run `pnpm install` again to ensure that the dependencies are installed correctly.
+- [Kiến trúc hệ thống (Architecture)](./docs/ARCHITECTURE.md)
+- [Cấu trúc Database](./docs/DATABASE.md)
+- [Hệ thống xác thực (Authentication)](./docs/AUTHENTICATION.md)
+- [Hướng dẫn đa ngôn ngữ (i18n)](./docs/I18N.md)
 
-## License
+## 📄 License
 
-Licensed under the [MIT license](https://github.com/heroui-inc/next-app-template/blob/main/LICENSE).
+Project này được phát triển bởi Vivu Travel Team.
