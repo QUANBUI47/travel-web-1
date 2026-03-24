@@ -1,18 +1,52 @@
-import { Card, CardBody, CardHeader } from "@heroui/card";
+"use client";
+
+import React, { useState, useEffect } from "react";
+import { Card, CardBody } from "@heroui/card";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
 import { Chip } from "@heroui/chip";
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from "@heroui/table";
 import { User } from "@heroui/user";
+import { Tooltip } from "@heroui/tooltip";
 import * as LucideIcons from "lucide-react";
-import { prisma } from "@/lib/prisma";
+import axios from "axios";
+import { addToast } from "@heroui/toast";
 
-export default async function AdminToursPage() {
-  const tours = await prisma.tour.findMany({
-    include: { destination: true },
-    orderBy: { createdAt: "desc" },
-    take: 10,
-  });
+export default function AdminToursPage() {
+  const [tours, setTours] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetchTours();
+  }, []);
+
+  const fetchTours = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get("/api/v1/tours");
+      if (response.data.success) {
+        setTours(response.data.data);
+      }
+    } catch (error) {
+      console.error(error);
+      addToast({ title: "Lỗi tải danh sách tour", color: "danger" });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Bạn có chắc chắn muốn xóa tour này?")) return;
+    try {
+      const response = await axios.delete(`/api/v1/tours/${id}`);
+      if (response.data.success) {
+        addToast({ title: "Đã xóa tour thành công", color: "success" });
+        fetchTours();
+      }
+    } catch (error) {
+      addToast({ title: "Lỗi khi xóa tour", color: "danger" });
+    }
+  };
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -47,15 +81,19 @@ export default async function AdminToursPage() {
               <TableColumn className="bg-default-100/50">TRẠNG THÁI</TableColumn>
               <TableColumn className="bg-default-100/50 text-right">THAO TÁC</TableColumn>
             </TableHeader>
-            <TableBody emptyContent={"Chưa có tour nào được khởi tạo."}>
-              {tours.map((tour: any) => (
+            <TableBody 
+              items={tours} 
+              isLoading={isLoading} 
+              emptyContent={isLoading ? "Đang tải dữ liệu..." : "Chưa có tour nào được khởi tạo."}
+            >
+              {(tour) => (
                 <TableRow key={tour.id} className="hover:bg-default-50 transition-colors">
                   <TableCell>
                     <User
                       name={tour.nameVi}
                       description={tour.slug}
                       avatarProps={{
-                        src: tour.imageUrls[0] || "https://images.unsplash.com/photo-1528127269322-539801943592?q=80&w=200&auto=format&fit=crop",
+                        src: tour.imageUrls?.[0] || "https://images.unsplash.com/photo-1528127269322-539801943592?q=80&w=200&auto=format&fit=crop",
                         radius: "lg"
                       }}
                     />
@@ -84,13 +122,19 @@ export default async function AdminToursPage() {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
-                      <Button isIconOnly variant="light" size="sm"><LucideIcons.Eye size={18} className="text-default-400" /></Button>
-                      <Button isIconOnly variant="light" size="sm"><LucideIcons.Edit2 size={16} className="text-primary" /></Button>
-                      <Button isIconOnly variant="light" size="sm"><LucideIcons.Trash2 size={18} className="text-danger" /></Button>
+                      <Tooltip content="Xem chi tiết">
+                        <Button isIconOnly variant="light" size="sm"><LucideIcons.Eye size={18} className="text-default-400" /></Button>
+                      </Tooltip>
+                      <Tooltip content="Chỉnh sửa">
+                        <Button isIconOnly variant="light" size="sm"><LucideIcons.Edit2 size={16} className="text-primary" /></Button>
+                      </Tooltip>
+                      <Tooltip content="Xóa tour" color="danger">
+                        <Button isIconOnly variant="light" size="sm" onClick={() => handleDelete(tour.id)}><LucideIcons.Trash2 size={18} className="text-danger" /></Button>
+                      </Tooltip>
                     </div>
                   </TableCell>
                 </TableRow>
-              ))}
+              )}
             </TableBody>
           </Table>
         </CardBody>
@@ -98,3 +142,4 @@ export default async function AdminToursPage() {
     </div>
   );
 }
+

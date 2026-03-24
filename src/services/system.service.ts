@@ -5,12 +5,12 @@ export class SystemService {
   /**
    * Lấy cấu hình hệ thống bao gồm thông tin công ty, SEO, Mạng xã hội, Bảo trì
    */
-  static async getSettings(): Promise<Record<string, any>> {
+  static async getSettings(): Promise<Record<string, unknown>> {
     try {
       const settings = await prisma.systemSetting.findMany();
-      const consolidated: Record<string, any> = {};
+      const consolidated: Record<string, unknown> = {};
       
-      settings.forEach((setting: any) => {
+      settings.forEach((setting) => {
         consolidated[setting.key] = setting.value;
       });
       
@@ -38,15 +38,15 @@ export class SystemService {
   /**
    * Cập nhật các key-value của hệ thống (Bulk update)
    */
-  static async updateSettings(group: string, settings: Record<string, any>) {
+  static async updateSettings(group: string, settings: Record<string, unknown>) {
     try {
       // Sử dụng transaction để đảm bảo tính nhất quán
       await prisma.$transaction(
         Object.entries(settings).map(([key, value]) => 
           prisma.systemSetting.upsert({
             where: { key },
-            update: { value, group },
-            create: { key, value, group },
+            update: { value: value as any, group },
+            create: { key, value: value as any, group },
           })
         )
       );

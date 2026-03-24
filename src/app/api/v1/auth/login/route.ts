@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma";
+import { UserProfile } from "@/types";
 
 export async function POST(request: Request) {
   try {
@@ -14,7 +15,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // supabase/server sẽ tự động Set-Cookie cho Web Client nếu dùng trên Web
     const supabase = await createClient();
     
     const { data: authData, error } = await supabase.auth.signInWithPassword({
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
     // Kiểm tra vai trò từ CSDL hiện tại
     const profile = await prisma.profile.findUnique({
       where: { id: authData.user.id },
-    });
+    }) as UserProfile | null;
 
     // Trả về luồng Token JWT chuẩn xác cho Mobile App lưu trữ (AsyncStorage/Keychain)
     return NextResponse.json({

@@ -25,6 +25,7 @@ export function LocaleSwitcher() {
     <Dropdown placement="bottom-end">
       <DropdownTrigger>
         <Button 
+          id="locale-switcher-button"
           suppressHydrationWarning
           variant="ghost" 
           size="sm"

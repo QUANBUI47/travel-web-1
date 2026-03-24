@@ -1,12 +1,14 @@
 import { prisma } from "@/lib/prisma";
 import { createClient } from "@/lib/supabase/server";
+import { UserProfile } from "@/types";
+import { User } from "@supabase/supabase-js";
 
 export class AuthService {
   /**
    * Lấy thông tin phiên đăng nhập hiện tại từ Supabase Cookies
    * và kết hợp với Profile từ Prisma Database
    */
-  static async getCurrentSession() {
+  static async getCurrentSession(): Promise<{ user: User | null; profile: UserProfile | null }> {
     try {
       const supabase = await createClient();
       const {
@@ -20,7 +22,7 @@ export class AuthService {
 
       const profile = await prisma.profile.findUnique({
         where: { id: user.id },
-      });
+      }) as UserProfile | null;
 
       return { user, profile };
     } catch (error) {

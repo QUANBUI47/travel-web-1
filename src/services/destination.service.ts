@@ -1,10 +1,11 @@
 import { prisma } from "@/lib/prisma";
+import { CreateDestinationInput, UpdateDestinationInput, Destination, Region } from "@/types";
 
 export class DestinationService {
   /**
    * Get all destinations with their regions
    */
-  static async getAll() {
+  static async getAll(): Promise<Destination[]> {
     return await prisma.destination.findMany({
       include: {
         region: true,
@@ -12,24 +13,24 @@ export class DestinationService {
       orderBy: {
         sortOrder: 'asc',
       },
-    });
+    }) as Destination[];
   }
 
   /**
    * Get all regions
    */
-  static async getRegions() {
+  static async getRegions(): Promise<Region[]> {
     return await prisma.region.findMany({
       orderBy: {
         sortOrder: 'asc',
       },
-    });
+    }) as Region[];
   }
 
   /**
    * Create a new destination
    */
-  static async create(data: any) {
+  static async create(data: CreateDestinationInput): Promise<Destination> {
     return await prisma.destination.create({
       data: {
         regionId: data.regionId,
@@ -42,13 +43,13 @@ export class DestinationService {
         longitude: data.longitude,
         sortOrder: data.sortOrder || 0,
       },
-    });
+    }) as Destination;
   }
 
   /**
    * Update a destination
    */
-  static async update(id: string, data: any) {
+  static async update(id: string, data: UpdateDestinationInput): Promise<Destination> {
     return await prisma.destination.update({
       where: { id },
       data: {
@@ -62,7 +63,7 @@ export class DestinationService {
         longitude: data.longitude,
         sortOrder: data.sortOrder,
       },
-    });
+    }) as Destination;
   }
 
   /**
