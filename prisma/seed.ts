@@ -109,9 +109,9 @@ async function main() {
     // 3. Tạo các Vùng miền (Bắc, Trung, Nam)
     console.log("🌏 Seeding regions...");
     const regions = [
-      { slug: "mien-bac", nameVi: "Miền Bắc", nameEn: "North", sortOrder: 1 },
-      { slug: "mien-trung", nameVi: "Miền Trung", nameEn: "Central", sortOrder: 2 },
-      { slug: "mien-nam", nameVi: "Miền Nam", nameEn: "South", sortOrder: 3 },
+      { code: "mb", slug: "mien-bac", nameVi: "Miền Bắc", nameEn: "North", sortOrder: 1 },
+      { code: "mt", slug: "mien-trung", nameVi: "Miền Trung", nameEn: "Central", sortOrder: 2 },
+      { code: "mn", slug: "mien-nam", nameVi: "Miền Nam", nameEn: "South", sortOrder: 3 },
     ];
 
     for (const region of regions) {
@@ -119,6 +119,7 @@ async function main() {
         where: { slug: region.slug },
         update: {},
         create: {
+          code: region.code,
           slug: region.slug,
           nameVi: region.nameVi,
           nameEn: region.nameEn,
@@ -129,13 +130,12 @@ async function main() {
     console.log("✅ Regions seeded.");
 
     console.log("✨ Seeding completed successfully!");
+  } catch (error) {
+    console.error("❌ Seeding failed:", error);
+    process.exit(1);
   } finally {
     await prisma.$disconnect();
   }
 }
 
-main()
-  .catch((e) => {
-    console.error("❌ Seeding failed:", e);
-    process.exit(1);
-  });
+main();

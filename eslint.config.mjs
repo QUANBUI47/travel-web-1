@@ -86,7 +86,7 @@ export default defineConfig([globalIgnores([
     files: ["**/*.ts", "**/*.tsx"],
 
     rules: {
-        "no-console": "warn",
+        "no-console": "error",
         "react/prop-types": "off",
         "react/jsx-uses-react": "off",
         "react/react-in-jsx-scope": "off",
@@ -95,8 +95,8 @@ export default defineConfig([globalIgnores([
         "jsx-a11y/interactive-supports-focus": "warn",
         "prettier/prettier": "warn",
         "no-unused-vars": "off",
-        "unused-imports/no-unused-vars": "off",
-        "unused-imports/no-unused-imports": "warn",
+        "unused-imports/no-unused-vars": "error",
+        "unused-imports/no-unused-imports": "error",
 
         "@typescript-eslint/no-unused-vars": ["warn", {
             args: "after-used",

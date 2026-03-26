@@ -24,6 +24,7 @@ model Profile {
 
 model Region {
   id           String        @id @default(uuid())
+  code         String        @unique @default("auto") // Mã vùng (e.g. mb, mt, mn)
   slug         String        @unique
   nameVi       String        @map("name_vi")
   nameEn       String?       @map("name_en")
@@ -47,6 +48,7 @@ model Destination {
   imageUrl    String?  @map("image_url")
   latitude    Float?
   longitude   Float?
+  isFeatured  Boolean  @default(false) @map("is_featured")
   sortOrder   Int      @default(0) @map("sort_order")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
@@ -267,9 +269,11 @@ enum BookingType {
 
 enum BookingStatus {
   PENDING
+  PAID
   CONFIRMED
   CANCELLED
   COMPLETED
+  REFUNDED
 }
 
 enum ReviewableType {
