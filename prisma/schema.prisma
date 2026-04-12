@@ -14,12 +14,26 @@ model Profile {
   displayName String?   @map("display_name")
   avatarUrl   String?   @map("avatar_url")
   phone       String?
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
   bookings    Booking[]
   reviews     Review[]
+  activityLogs ActivityLog[]
 
   @@map("profiles")
+}
+
+model ActivityLog {
+  id        String   @id @default(uuid())
+  userId    String?  @map("user_id")
+  action    String // e.g. "CREATE_TOUR", "UPDATE_SETTING"
+  entity    String? // e.g. "Tour", "HomeSetting"
+  entityId  String? @map("entity_id")
+  details   Json?
+  createdAt DateTime @default(now()) @map("created_at")
+  profile   Profile? @relation(fields: [userId], references: [id])
+
+  @@map("activity_logs")
 }
 
 model Region {
@@ -46,6 +60,7 @@ model Destination {
   nameEn      String?  @map("name_en")
   description String?
   imageUrl    String?  @map("image_url")
+  imageUrls   String[] @default([]) @map("image_urls")
   latitude    Float?
   longitude   Float?
   isFeatured  Boolean  @default(false) @map("is_featured")
@@ -109,17 +124,52 @@ model Tour {
   nameEn        String?         @map("name_en")
   description   String?
   durationDays  Int             @map("duration_days")
+  durationText  String?         @map("duration_text") // Vd: "3 ngày 2 đêm"
+  departurePoint String?        @map("departure_point") // Vd: "Hà Nội"
+  transport      String?        // Vd: "Máy bay", "Ô tô"
+  tourType       String?        @map("tour_type") // Vd: "Tour ghép", "Tour riêng"
   priceFrom     Decimal?        @map("price_from") @db.Decimal(14, 0)
+  oldPrice      Decimal?        @map("old_price") @db.Decimal(14, 0) // Giá cũ để hiển thị giảm giá
+  
+  inclusions    Json?           // Những gì bao gồm trong tour
+  exclusions    Json?           // Những gì không bao gồm
+  policy        Json?           // Chính sách hoàn hủy, trẻ em
+  tags          String[]        @default([]) // Các nhãn (Vd: "Giá tốt", "Hot")
+  
   imageUrls     String[]        @default([]) @map("image_urls")
   isActive      Boolean         @default(true) @map("is_active")
   createdAt     DateTime        @default(now()) @map("created_at")
   updatedAt     DateTime        @updatedAt @map("updated_at")
+  
   reviews       Review[]
   tourBookings  TourBooking[]
   itineraries   TourItinerary[]
+  departures    TourDeparture[]
   destination   Destination?    @relation(fields: [destinationId], references: [id])
 
+  @@index([destinationId])
+  @@index([isActive])
   @@map("tours")
+}
+
+model TourDeparture {
+  id            String        @id @default(uuid())
+  tourId        String        @map("tour_id")
+  startDate     DateTime      @map("start_date") @db.Date
+  endDate       DateTime?     @map("end_date") @db.Date
+  priceOverride Decimal?      @map("price_override") @db.Decimal(14, 0)
+  maxParticipants Int?        @map("max_participants")
+  bookedCount   Int           @default(0) @map("booked_count")
+  status        DepartureStatus @default(AVAILABLE)
+  notes         String?
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+  
+  tour          Tour          @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  tourBookings  TourBooking[]
+
+  @@index([tourId, startDate])
+  @@map("tour_departures")
 }
 
 model TourItinerary {
@@ -154,6 +204,9 @@ model Booking {
   payments      Payment[]
   tourBooking   TourBooking?
 
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
   @@map("bookings")
 }
 
@@ -174,10 +227,12 @@ model TourBooking {
   id           String  @id @default(uuid())
   bookingId    String  @unique @map("booking_id")
   tourId       String  @map("tour_id")
+  departureId  String? @map("departure_id")
   participants Int
   unitPrice    Decimal @map("unit_price") @db.Decimal(14, 0)
   booking      Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
   tour         Tour    @relation(fields: [tourId], references: [id])
+  departure    TourDeparture? @relation(fields: [departureId], references: [id])
 
   @@map("tour_bookings")
 }
@@ -243,6 +298,7 @@ model SystemSetting {
   value     Json
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  @@index([group])
   @@map("system_settings")
 }
 
@@ -285,4 +341,10 @@ enum PaymentStatus {
   PENDING
   SUCCESS
   FAILED
+}
+
+enum DepartureStatus {
+  AVAILABLE
+  FULL
+  CANCELLED
 }

@@ -13,15 +13,60 @@
     "VIVU_API_ERROR_404_USER": "User account does not exist",
     "VIVU_API_ERROR_409": "Data already exists or conflicts",
     "VIVU_API_ERROR_409_EMAIL": "This email is already registered",
-    "VIVU_API_ERROR_500": "Internal server error, please try again later"
+    "VIVU_API_ERROR_500": "Internal server error, please try again later",
+
+    "VIVU_ADMIN_ERROR_SAVE_HOMEPAGE": "Unable to save homepage configuration",
+    "VIVU_ADMIN_ERROR_UPDATE_SYSTEM": "Unable to update system configuration",
+
+    "VIVU_ADMIN_ERROR_GET_DESTINATIONS": "Unable to fetch destinations",
+    "VIVU_ADMIN_ERROR_GET_REGIONS": "Unable to fetch regions",
+    "VIVU_ADMIN_ERROR_CREATE_DESTINATION": "Unable to create destination",
+    "VIVU_ADMIN_ERROR_UPDATE_DESTINATION": "Unable to update destination",
+    "VIVU_ADMIN_ERROR_DELETE_DESTINATION": "Unable to delete destination",
+
+    "VIVU_ADMIN_ERROR_GET_TOURS": "Unable to fetch tours",
+    "VIVU_ADMIN_ERROR_CREATE_TOUR": "Unable to create tour",
+    "VIVU_ADMIN_ERROR_UPDATE_TOUR": "Unable to update tour",
+    "VIVU_ADMIN_ERROR_DELETE_TOUR": "Unable to delete tour",
+
+    "VIVU_ADMIN_ERROR_UPLOAD_CLOUDINARY": "Unable to upload file to Cloudinary",
+    "CLOUDINARY_NOT_CONFIGURED": "Missing CLOUDINARY_API_KEY / CLOUDINARY_API_SECRET in .env.local (do not use NEXT_PUBLIC_). Or use an unsigned upload preset.",
+    "AUTH_LOGIN_SUCCESS": "Login successful",
+    "AUTH_LOGIN_MISSING": "Please enter both email and password",
+    "AUTH_LOGIN_INVALID": "Invalid email or password",
+    "AUTH_LOGIN_ERROR": "System error during login",
+    "AUTH_LOGOUT_SUCCESS": "Logout successful",
+    "DELETE_SUCCESS": "Deleted successfully",
+    "DELETE_TOUR_SUCCESS": "Tour deleted successfully",
+    "TOUR_CREATE_SUCCESS": "Tour created successfully",
+    "TOUR_UPDATE_SUCCESS": "Tour updated successfully"
   },
   "Common": {
     "error": "Error",
     "success": "Success",
     "loading": "Loading...",
     "back_to_home": "Back to Home",
+    "site_description": "Vivu — Book hotels, tours and experiences across Vietnam. Great prices, easy booking.",
     "confirm": "Confirm",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+
+    "toast_homepage_saved": "Homepage configuration saved",
+    "toast_seo_updated": "SEO configuration updated",
+    "toast_system_updated": "System status updated",
+    "toast_cannot_save_config": "Unable to save configuration",
+
+    "toast_fill_required_fields": "Please fill in all required information",
+
+    "toast_deleted_destination": "Destination deleted",
+    "toast_delete_failed": "Delete failed",
+
+    "toast_deleted_tour_success": "Tour deleted successfully",
+    "toast_delete_tour_failed": "Tour deletion failed",
+
+    "toast_system_error": "System error",
+    "action_failed": "Operation failed",
+    "locale_vi": "Tiếng Việt",
+    "locale_en": "English"
   },
   "Validation": {
     "required": "This field is required",
@@ -31,7 +76,28 @@
     "password_mismatch": "Passwords do not match",
     "invalid_phone": "Invalid phone number",
     "invalid_url": "Invalid URL",
-    "numeric": "Please enter only numbers"
+    "numeric": "Please enter only numbers",
+    "slug_invalid": "Invalid slug (lowercase letters, numbers and hyphens only; no leading/trailing hyphen)",
+    "uuid_invalid": "Invalid ID",
+    "tour_id_invalid": "Invalid tour ID",
+    "tour_name_vi_min": "Vietnamese name must be at least 5 characters",
+    "slug_min": "Slug must be at least 5 characters",
+    "slug_min_short": "Slug must be at least 2 characters",
+    "description_min": "Description must be at least 20 characters",
+    "duration_min": "Duration must be at least 1 day",
+    "price_non_negative": "Price cannot be negative",
+    "image_url_invalid": "Invalid image URL format",
+    "itinerary_title_min": "Day title must be at least 5 characters",
+    "itinerary_min_days": "Tour must have at least 1 itinerary day",
+    "destination_name_vi_min": "Vietnamese name must be at least 2 characters",
+    "invalid_params": "Invalid parameters",
+    "invalid_tour_data": "Invalid tour data",
+    "invalid_destination_data": "Invalid destination data",
+    "invalid_itinerary_data": "Invalid itinerary data",
+    "invalid_departure_data": "Invalid departure schedule data",
+    "invalid_homepage_config": "Invalid homepage configuration",
+    "invalid_system_config": "Invalid configuration data",
+    "file_too_large": "File exceeds maximum allowed size"
   },
   "NotFound": {
     "error_code": "ERROR: LOCATION NOT FOUND",
@@ -44,12 +110,44 @@
   "Navbar": {
     "home": "Home",
     "destinations": "Destinations",
+    "tours": "Tours",
+    "tours_heritage": "Heritage Tours",
+    "tours_resort": "Resort Tours",
+    "tours_adventure": "Adventure Tours",
+    "tours_event": "Event Tours",
+    "region_north": "Northern Vietnam",
+    "region_central": "Central Vietnam",
+    "region_south": "Southern Vietnam",
+    "region_international": "International",
     "promo": "Promotions",
+    "inspiration": "Inspiration",
     "why_vivu": "Why Vivu",
     "contact": "Contact",
     "login": "Login",
     "signup": "Sign up",
-    "admin_panel": "Admin Panel"
+    "megamenu": {
+      "explore": "Explore",
+      "featured": "Featured",
+      "heritage_journey": "Heritage Journey",
+      "premium_experience": "Premium Experience",
+      "destination_desc": "Discover fascinating lands with unique cultural stories.",
+      "tour_desc": "Journeys crafted for those who appreciate traditional values.",
+      "view_all": "View all",
+      "view_all_arrow": "View all →",
+      "region": "Region",
+      "suggestion": "Suggestions",
+      "destination_col": "Destinations",
+      "see_more": "See more",
+      "for_you": "For you",
+      "explore_now": "Explore now",
+      "premium_title": "Vivu Premium",
+      "premium_desc": "Sign in to unlock exclusive privileges and manage your journeys.",
+      "start_now": "Get started",
+      "no_destinations": "No featured destinations yet",
+      "mock_halong": "Ha Long Bay",
+      "mock_phuquoc": "Phu Quoc Island",
+      "mock_sapa": "Sapa in the mist"
+    }
   },
   "Auth": {
     "login_success": "Login successful",
@@ -57,8 +155,19 @@
     "no_admin_access": "Account does not have administrator privileges.",
     "email_required": "Please enter email",
     "password_required": "Please enter password",
-    "password_min_length": "Password must be at least 6 characters",
+    "password_min_length": "Password must be at least 8 characters",
+    "password_uppercase": "Password must include an uppercase letter",
+    "password_lowercase": "Password must include a lowercase letter",
+    "password_number": "Password must include a number",
     "invalid_email": "Invalid email",
+    "login_system_error": "Something went wrong. Please try again later.",
+    "email_not_confirmed": "Your email is not confirmed yet. Check your inbox or resend the confirmation email.",
+    "rate_limit": "Too many attempts. Please wait a few minutes and try again.",
+    "email_send_failed": "We couldn't send the email. Please try again later or check your Spam folder.",
+    "signup_failed": "We couldn't create your account right now. Please try again later.",
+    "callback_failed": "This sign-in link is invalid or has expired. Please try again.",
+    "google_sign_in": "Continue with Google",
+    "google_sign_in_failed": "Could not sign in with Google. Please try again later.",
     "back_to_home": "Home",
     "or_with_email": "Or with Email",
     "or_with_info": "Or with Personal Info",
@@ -107,8 +216,53 @@
       "already_member": "Already a member?",
       "login_now": "Log in",
       "trust_badge": "100% safe & secure transactions",
-      "password_mismatch": "Confirm password does not match."
+      "password_mismatch": "Confirm password does not match.",
+      "fullname_required": "Please enter your full name (at least 2 characters).",
+      "terms_required": "You must accept the terms of service to continue.",
+      "email_exists": "This email is already registered.",
+      "footer_text": "VIVU TRAVEL DESIGN © 2026",
+      "footer_journey": "JOIN THE JOURNEY"
+    },
+    "forgot": {
+      "title": "Forgot password?",
+      "desc": "Enter your registered email — we'll send a secure reset link.",
+      "button": "Send reset link",
+      "sent_title": "Check your inbox",
+      "sent_desc": "If {email} exists in our system, you'll receive instructions shortly.",
+      "check_spam": "Don't see it? Check Spam or Promotions folders.",
+      "remember": "Remember your password?",
+      "back_login": "Back to login"
+    },
+    "reset": {
+      "title": "Set a new password",
+      "desc": "Create a strong password to protect your Vivu account.",
+      "new_password": "New password",
+      "password_hint": "At least 8 characters with uppercase, lowercase, and a number.",
+      "button": "Update password",
+      "session_expired": "Reset session expired. Please request a new link.",
+      "success_login": "Password updated! You can sign in now."
+    },
+    "verify": {
+      "title": "Confirm your email",
+      "desc": "We sent a confirmation email to {email}.",
+      "check_inbox": "Open the email and click the confirmation link to activate your Vivu account.",
+      "check_spam": "The link expires after a limited time. Check spam if needed.",
+      "resend": "Resend confirmation email",
+      "resend_success": "Confirmation email sent again.",
+      "success_login": "Email verified successfully! Please sign in to continue.",
+      "back_login": "Back to login"
     }
+  },
+  "Account": {
+    "title": "My account",
+    "desc": "Manage your Vivu Travel profile and bookings.",
+    "guest": "Vivu Guest",
+    "bookings_title": "My bookings",
+    "bookings_desc": "View tour and hotel history",
+    "bookings_empty": "No bookings yet. Explore heritage tours today!",
+    "edit_profile": "Edit profile",
+    "coming_soon": "Coming soon",
+    "security_note": "Your data is encrypted and protected by Vivu SafeCare."
   },
   "Home": {
     "title": "Welcome to Vivu",
@@ -116,6 +270,7 @@
   },
   "HomePage": {
     "Hero": {
+      "badge": "Modern Heritage Journey",
       "title_main": "Plan your ",
       "title_highlight": "Vivu",
       "title_suffix": " now",
@@ -123,12 +278,17 @@
       "search": {
         "location_label": "Where to?",
         "location_placeholder": "Search destinations...",
-        "time_label": "Date",
-        "time_value": "Add dates",
+        "location_help": "Where do you want to go?",
+        "time_label": "Time",
+        "time_placeholder": "Select dates",
         "guests_label": "Travelers",
-        "guests_value": "Add guests",
+        "guests_placeholder": "Add guests",
         "button": "Search"
-      }
+      },
+      "suggestions_label": "Suggestions:",
+      "scroll_label": "Scroll Down",
+      "title_fallback": "Discover Vietnam",
+      "description_fallback": "Vivu brings unique heritage travel experiences."
     },
     "Stats": {
       "provinces": "Provinces",
@@ -137,6 +297,9 @@
       "customers": "Customers"
     },
     "WhyVivu": {
+      "badge": "Why choose Vivu?",
+      "title_highlight": "Elevate your Vietnam experience.",
+      "description": "We don't just sell tours — we craft beautiful memory pieces for your journey.",
       "safe": {
         "title": "Secure Booking",
         "description": "International standard security system, 100% protection for your info and transactions."
@@ -151,21 +314,135 @@
       }
     },
     "Destinations": {
+      "badge": "Endless Inspiration",
       "title": "Top Destinations",
       "description": "Most loved places by the Vivu Travel community",
-      "view_all": "View all",
-      "stays_count": "{count} stays"
+      "view_all": "View All",
+      "category_heritage": "Wonder",
+      "discover": "Explore",
+      "see_more_regions": "More Regions"
     },
     "Promo": {
+      "fallback_title": "Glorious summer — hot deals",
+      "flash_sale_badge": "VIP FLASH SALE",
       "badge": "Limited Offer",
+      "badge_long": "Limited Offer - Book now or miss out!",
+      "time_remaining": "Time Remaining",
       "title_prefix": "Glorious Summer in ",
       "title_highlight": "Phu Quoc",
       "description_prefix": "All-inclusive 3D2N at 5-star Resort from only ",
       "description_highlight": "3,990,000đ",
       "description_suffix": ". Round-trip airfare included.",
       "bookings_count": "{count} bookings",
-      "button": "Book Now"
+      "button": "GET OFFER NOW"
+    },
+    "Storytelling": {
+      "badge": "Heritage Journey",
+      "title": "Stories of Vietnam",
+      "view_more": "View More Stories",
+      "demo_items": [
+        {
+          "author": { "vi": "Anh Hoàng Nam", "en": "Mr. Hoang Nam" },
+          "role": { "vi": "Khách hàng thân thiết", "en": "Loyal Customer" },
+          "quote": {
+            "vi": "Chuyến đi Phú Quốc thực sự đẳng cấp. Resort 5 sao và dịch vụ của Vivu không làm tôi thất vọng.",
+            "en": "The trip to Phu Quoc was truly world-class. The 5-star resort and Vivu's service did not disappoint."
+          }
+        },
+        {
+          "author": { "vi": "Chị Minh Thư", "en": "Ms. Minh Thu" },
+          "role": { "vi": "Bloger du lịch", "en": "Travel Blogger" },
+          "quote": {
+            "vi": "Hội An đẹp huyền ảo qua cách thiết kế tour của các bạn. Rất tinh tế và sâu sắc.",
+            "en": "Hoi An is magically beautiful through your tour design. Very delicate and profound."
+          }
+        },
+        {
+          "author": { "vi": "Gia đình Bác Hùng", "en": "Uncle Hung's Family" },
+          "role": { "vi": "Tour xuyên Việt", "en": "Cross-Vietnam Tour" },
+          "quote": {
+            "vi": "Lần đầu tiên cả nhà đi tour mà không thấy mệt. Cảm ơn đội ngũ Vivu tận tâm.",
+            "en": "For the first time, the whole family went on a tour without feeling tired. Thank you, Vivu's dedicated team."
+          }
+        }
+      ]
+    },
+    "Trending": {
+      "subtitle": "Trending now",
+      "title": "Travel trends",
+      "view_all": "View all tours →"
+    },
+    "Newsletter": {
+      "badge": "Don't miss out",
+      "title": "Subscribe to Vivu newsletter",
+      "subtitle": "Get 10% off your first trip.",
+      "placeholder": "Your email address...",
+      "button": "Subscribe now",
+      "privacy": "We protect your data and never send spam."
+    },
+    "Map": {
+      "badge": "Interactive map",
+      "title": "Explore on the map",
+      "description": "Find your dream journey on our interactive map. Every destination is a story waiting for you.",
+      "provinces": "Provinces & cities",
+      "provinces_count": "34",
+      "destinations": "Destinations",
+      "selected": "Selected",
+      "selected_location": "Da Nang, Vietnam",
+      "view_tours": "View tours",
+      "point_hanoi": "Hanoi",
+      "point_danang": "Da Nang",
+      "point_hcm": "Ho Chi Minh City",
+      "point_halong": "Ha Long Bay"
+    },
+    "Social": {
+      "title_fallback": "Vivu Moments",
+      "view_more_instagram": "See more on Instagram",
+      "follow_handle": "Follow @vivu.travel"
+    },
+    "Curated": {
+      "badge": "Curated collections",
+      "editors_choice": "Editor's Choice",
+      "places_count": "{count} places",
+      "explore": "Explore collection",
+      "demo_collections": [
+        {
+          "id": "c1",
+          "title": {
+            "vi": "Thiên đường biển đảo",
+            "en": "Beach & Island Paradises"
+          },
+          "color": "from-blue-600/80",
+          "slugHints": ["dao", "bien", "phu-quoc"],
+          "defaultCount": 5
+        },
+        {
+          "id": "c2",
+          "title": { "vi": "Hành trình di sản", "en": "Heritage Journeys" },
+          "color": "from-amber-600/80",
+          "slugHints": ["di-san", "hue", "hoi-an"],
+          "defaultCount": 8
+        },
+        {
+          "id": "c3",
+          "title": { "vi": "Vẻ đẹp vùng cao", "en": "Highland Discovery" },
+          "color": "from-emerald-600/80",
+          "slugHints": ["sa-pa", "ninh-binh"],
+          "defaultCount": 6
+        },
+        {
+          "id": "c4",
+          "title": { "vi": "Ẩm thực & Văn hóa", "en": "Food & Culture" },
+          "color": "from-red-600/80",
+          "slugHints": [],
+          "defaultCount": 12,
+          "useHalfTourCount": true
+        }
+      ]
     }
+  },
+  "Metadata": {
+    "default_title_suffix": "Vietnamese Heritage Travel"
   },
   "Maintenance": {
     "title": "System under maintenance",
@@ -182,15 +459,6 @@
   },
   "About": {
     "title": "About Vivu"
-  },
-  "Blog": {
-    "title": "Travel Blog"
-  },
-  "Pricing": {
-    "title": "Pricing Plans"
-  },
-  "Docs": {
-    "title": "Documentation"
   },
   "Legal": {
     "privacy": {
@@ -224,12 +492,55 @@
         "security": "3. Data Security",
         "cookies": "4. Cookies & Tracking",
         "sharing": "5. Third-Party Sharing",
+        "sharing_partner_desc": "Hotel and airline partners to complete your booking.",
+        "sharing_provider_title": "Service providers",
+        "sharing_payment_title": "Payment processing",
+        "sharing_payment_desc": "Secure payment gateways for financial transactions.",
+        "sharing_legal_title": "Legal requests",
+        "sharing_legal_desc": "When required by competent authorities under applicable law.",
         "rights": "6. Your Rights",
         "contact": "7. Contact Us"
       },
       "safecare": "Your data is encrypted using military-grade AES-256 standard.",
+      "safecare_brand": "Vivu SafeCare",
       "print": "Print Policy",
-      "download": "Download PDF (.pdf)"
+      "download": "Download PDF (.pdf)",
+      "hero_title_prefix": "Privacy",
+      "hero_title_highlight": "Policy",
+      "security_commitment_title": "Data security commitment",
+      "security_commitment_desc": "Information safety is at the heart of Vivu. We apply advanced technical measures to protect customer data.",
+      "security_ssl_title": "SSL encryption",
+      "security_ssl_desc": "All data transfers are protected with 256-bit SSL certificates.",
+      "security_access_title": "Access control",
+      "security_access_desc": "Only authorized staff can access your personal information.",
+      "cookies_title": "Cookies & tracking",
+      "cookies_intro": "We use cookies to personalize your experience and analyze website traffic.",
+      "cookie_essential_title": "Essential cookies",
+      "cookie_essential_desc": "Required for navigation and security features of the website.",
+      "cookie_performance_title": "Performance cookies",
+      "cookie_performance_desc": "Collect information on how customers use the site to help us improve services.",
+      "cookie_functional_title": "Functional cookies",
+      "cookie_functional_desc": "Allow the site to remember your choices (such as language or region).",
+      "sharing_intro_title": "Third-party sharing",
+      "sharing_intro": "Vivu does not sell your data. We only share information when necessary:",
+      "rights_title": "Your rights",
+      "rights_intro": "You always retain full control over your data:",
+      "right_access_title": "Right of access",
+      "right_access_desc": "You may request to review all information we store about you.",
+      "right_edit_title": "Right to rectification",
+      "right_edit_desc": "Request updates if information is inaccurate or outdated.",
+      "right_delete_title": "Right to erasure",
+      "right_delete_desc": "You may request permanent deletion of personal data in specific cases.",
+      "contact_title": "Contact us",
+      "contact_intro": "If you have any questions about this policy, contact our security team:",
+      "contact_hq": "Head office",
+      "contact_address": "12F, Heritage Building, 123 Le Loi, District 1, Ho Chi Minh City.",
+      "contact_email_label": "Support email",
+      "contact_hotline": "Hotline",
+      "contact_hotline_value": "1900 123 456 (Ext. 4)",
+      "contact_online": "Online channel",
+      "contact_online_value": "vivu.com.vn/help-center",
+      "copyright_line": "Discover the beauty of Vietnam"
     },
     "terms": {
       "title": "Terms of Service",
@@ -249,7 +560,69 @@
       "legal_help": "Need help?",
       "legal_contact": "Legal Contact",
       "print": "Print Terms",
-      "download": "Download PDF"
+      "download": "Download PDF",
+      "copyright_line": "Discover the beauty of Vietnam",
+      "intro_p1": "Welcome to Vivu. By accessing our website or using any services we provide, you agree to be bound by these Terms of Service.",
+      "intro_p2": "Vivu is an online travel platform offering tour, hotel and cultural experience bookings in Vietnam. We are committed to authentic heritage value through transparency and safety.",
+      "def_service_label": "\"Service\"",
+      "def_service_desc": "All travel products including tours, accommodation and attraction tickets on the Vivu system.",
+      "def_member_label": "\"Member\"",
+      "def_member_desc": "An individual or organization that has successfully registered an account on our platform.",
+      "accounts_p1": "To use certain features, you must register an account. You are responsible for securing your login credentials and all activity under your account.",
+      "accounts_items": [
+        "Information provided must be accurate and kept up to date.",
+        "You may not transfer your account to any third party.",
+        "Notify Vivu immediately if you detect unauthorized access."
+      ],
+      "bookings_pricing": "Prices are listed publicly and include basic taxes and fees unless otherwise noted.",
+      "bookings_payment_title": "Payment security notice",
+      "bookings_payment_desc": "Vivu uses high-grade encryption. All transactions are protected by Vivu SafeCare so third parties cannot access your card information.",
+      "cancellation_intro": "Refund policy depends on the service type and cancellation timing.",
+      "cancel_col_time": "Cancellation time",
+      "cancel_col_refund": "Refund amount",
+      "cancel_row_7d": "More than 7 days before departure",
+      "cancel_row_3_6d": "3–6 days before departure",
+      "cancel_row_48h": "Within 48 hours",
+      "privacy_p1": "Vivu is committed to protecting your personal information to the highest security standards. Data collection and use are fully transparent.",
+      "privacy_measures_title": "Protection measures we apply",
+      "privacy_measure_ssl_title": "256-bit SSL encryption",
+      "privacy_measure_ssl_desc": "All connections between your browser and our servers are fully encrypted.",
+      "privacy_measure_access_title": "Access control",
+      "privacy_measure_access_desc": "Only authorized staff can access user personal information.",
+      "privacy_measure_backup_title": "Regular backups",
+      "privacy_measure_backup_desc": "Data is backed up periodically to prevent loss in any situation.",
+      "privacy_measure_audit_title": "Security audits",
+      "privacy_measure_audit_desc": "The system is periodically audited by independent security experts.",
+      "privacy_link_prefix": "For more details on how we collect and process personal data, please see",
+      "privacy_link_label": "Privacy Policy",
+      "privacy_link_suffix": "of Vivu.",
+      "ip_p1": "All content on the Vivu platform including text, images, logos, icons, video and software is the exclusive intellectual property of Vivu or its licensors.",
+      "ip_rules_title": "Content usage rules",
+      "ip_allowed": "ALLOWED",
+      "ip_forbidden": "PROHIBITED",
+      "ip_rules": [
+        {
+          "allow": true,
+          "text": "Personal, non-commercial use with clear attribution."
+        },
+        {
+          "allow": true,
+          "text": "Sharing links to pages on the Vivu website."
+        },
+        {
+          "allow": false,
+          "text": "Copying, distributing or modifying content for commercial purposes."
+        },
+        {
+          "allow": false,
+          "text": "Using the Vivu logo or brand without written consent."
+        },
+        {
+          "allow": false,
+          "text": "Automated data extraction (scraping, crawling)."
+        }
+      ],
+      "ip_p2": "Any copyright infringement will be handled under Vietnamese law and international intellectual property conventions."
     }
   },
   "Footer": {
@@ -275,15 +648,119 @@
       "collaboration": "Partnership"
     }
   },
+  "Tours": {
+    "title": "Heritage Journeys",
+    "description": "Discover unique travel experiences with Vivu Travel",
+    "price_from": "Price from",
+    "duration": "{days} days",
+    "view_detail": "View Detail",
+    "book_now": "Book Now",
+    "no_tours": "No tours found matching your request.",
+    "search_placeholder": "Search tours, destinations...",
+    "search_destination": "Destination",
+    "search_dates": "Travel dates",
+    "search_button": "Search",
+    "clear_filters": "Clear filters",
+    "filtered_by_destination": "Tours in {name}",
+    "from": "Departure from",
+    "departure_schedule": "Departure Schedule",
+    "select_date": "Select date",
+    "guest_count": "Number of Guests",
+    "total": "Total",
+    "select_date_hint": "* Please select a departure date to continue",
+    "price_includes_tax": "* Price includes taxes and service fees",
+    "support_247": "24/7 Support",
+    "support_desc": "Need more advice about this tour? Contact our expert team at Vivu Travel.",
+    "tour_type_group": "Group tour",
+    "transport_bus": "Bus",
+    "transport_plane": "Flight",
+    "transport_ship": "Cruise",
+    "transport_train": "Train",
+    "transport_luxury_bus": "Luxury coach",
+    "tour_type_private": "Private tour",
+    "tab_overview": "Overview",
+    "tab_itinerary": "Itinerary",
+    "tab_inclusions": "Inclusions",
+    "tab_policy": "Policy",
+    "days": "{count} days",
+    "participants": "{count} guests",
+    "insurance_title": "Travel insurance",
+    "insurance_desc": "Coverage up to 100,000,000 VND per incident",
+    "guide_title": "Tour guide",
+    "guide_desc": "Professional guides with local expertise",
+    "itinerary_empty": "Itinerary is being updated",
+    "includes": "Included",
+    "excludes": "Not included",
+    "terms_conditions": "Terms & conditions"
+  },
+  "RichTextEditor": {
+    "bold": "Bold",
+    "italic": "Italic",
+    "underline": "Underline",
+    "bullet_list": "Bullet list",
+    "ordered_list": "Numbered list",
+    "insert_link": "Insert link",
+    "insert_youtube": "Insert YouTube video",
+    "youtube_prompt": "Paste a YouTube or Shorts URL (youtube.com, youtu.be)",
+    "youtube_invalid": "Invalid URL. Example: https://www.youtube.com/watch?v=... or https://youtube.com/shorts/...",
+    "remove_link": "Remove link",
+    "undo": "Undo",
+    "redo": "Redo",
+    "placeholder": "Enter content...",
+    "link_prompt": "URL"
+  },
   "ImageUploader": {
     "error_max_files": "Only up to {maxFiles} images are allowed.",
+    "error_file_too_large_title": "File too large",
+    "error_file_too_large_desc": "Please choose an image under {maxSizeMB}MB",
     "error_config": "Configuration Error",
-    "error_config_desc": "Missing Cloudinary keys in .env.local",
+    "error_config_desc": "Set NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME and NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET in .env.local",
     "error_upload": "Upload Error",
     "error_upload_desc": "An error occurred during image upload",
     "uploading": "Uploading images...",
     "click_to_upload": "Click to select images (Max {maxFiles} images)",
     "seo_note": "Formats: JPG, PNG, WEBP. Max: 2MB/image.",
     "delete_image": "Delete image"
+  },
+  "MediaUploader": {
+    "processing": "Processing...",
+    "click_upload": "Click to upload",
+    "file_too_large_title": "File too large",
+    "file_too_large_desc": "Please choose a file under {maxSizeMB}MB",
+    "upload_success": "Upload successful",
+    "upload_failed_title": "Upload Error",
+    "upload_failed_desc": "Unable to upload file to server"
+  },
+  "DestinationsPage": {
+    "title": "Destinations",
+    "description": "Explore featured places across every region",
+    "empty": "No destinations in this region yet.",
+    "discover": "Discover"
+  },
+  "DestinationDetail": {
+    "breadcrumb_home": "Home",
+    "breadcrumb_destinations": "Destinations",
+    "no_description": "Content is being updated. Check back soon for the full story of this place.",
+    "story_title": "The story of {name}",
+    "gallery_title": "Gallery",
+    "view_photo": "View photo",
+    "region_label": "Region",
+    "view_tours": "Browse tours here",
+    "stat_tours": "Tours",
+    "stat_photos": "Photos",
+    "map_title": "Location",
+    "open_maps": "Open in Google Maps",
+    "tours_badge": "Suggested trips",
+    "tours_title": "Tours in {name}",
+    "tours_view_all": "View all tours",
+    "tours_empty": "No tours linked to this destination yet."
+  },
+  "StaticPages": {
+    "promo_title": "Promotions",
+    "promo_description": "Tour deals and offers are being updated. Check back soon.",
+    "inspiration_title": "Travel inspiration",
+    "inspiration_description": "Stories and trip ideas will be available here soon.",
+    "view_tours": "View tours →",
+    "back_home": "← Home"
   }
 }

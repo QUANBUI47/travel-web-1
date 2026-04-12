@@ -1,47 +1,75 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import NextLink from "next/link";
 import { NavbarItem, NavbarMenuItem } from "@heroui/navbar";
-import { Link } from "@heroui/link";
+import { ChevronDown } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import clsx from "clsx";
 import { usePathname } from "next/navigation";
-import { ROUTES } from "@/config/routes";
-
 import { useTranslations } from "next-intl";
 
+import { Megamenu } from "@/components/navbar/megamenu";
+import { NavItem } from "@/config/site";
+import { ROUTES } from "@/constants";
+
 interface NavLinksProps {
-  items: { label: string; href: string }[];
+  items: NavItem[];
+  isTransparent?: boolean;
 }
 
-export function DesktopNavLinks({ items }: NavLinksProps) {
+// ── DESKTOP ────────────────────────────────────────────────────────────────────
+export function DesktopNavLinks({
+  items,
+  isTransparent = false,
+}: NavLinksProps) {
   const t = useTranslations("Navbar");
-  const { activeSegment, handleClick } = useScrollSpy(items);
   const pathname = usePathname();
 
   return (
-    <ul className="hidden lg:flex gap-10 justify-start ml-16">
+    <ul className="hidden lg:flex gap-8 justify-start ml-20 items-center">
       {items.map((item) => {
-        let isActive = false;
-        if (pathname === "/") {
-          isActive = activeSegment === item.href || (activeSegment === "" && item.href === "/");
-        } else {
-          isActive = pathname === item.href;
+        const isActive =
+          pathname === item.href ||
+          (item.children?.some((c) => pathname.startsWith(c.href)) ?? false);
+
+        const label = t(item.label);
+
+        // Items with children → render Megamenu
+        if (item.children && item.children.length > 0) {
+          return (
+            <NavbarItem key={item.href}>
+              <Megamenu
+                isActive={isActive}
+                isTransparent={isTransparent}
+                item={item}
+                label={label}
+              />
+            </NavbarItem>
+          );
         }
 
+        // Simple link
         return (
           <NavbarItem key={item.href}>
             <NextLink
-              onClick={(e) => handleClick(e, item.href)}
               className={clsx(
-                "text-[15px] font-bold tracking-tight transition-all duration-200",
+                "text-xs font-black uppercase transition-all duration-300 relative group cursor-pointer",
                 isActive
                   ? "text-primary"
-                  : "text-foreground/70 hover:text-primary hover:opacity-100"
+                  : isTransparent
+                    ? "text-white/80 hover:text-white"
+                    : "text-foreground/60 hover:text-primary",
               )}
               href={item.href}
             >
-              {t(item.label as any)}
+              {label}
+              <span
+                className={clsx(
+                  "absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full",
+                  isActive ? "w-full" : "",
+                )}
+              />
             </NextLink>
           </NavbarItem>
         );
@@ -50,108 +78,114 @@ export function DesktopNavLinks({ items }: NavLinksProps) {
   );
 }
 
+// ── MOBILE ─────────────────────────────────────────────────────────────────────
 export function MobileNavLinks({ items }: NavLinksProps) {
   const t = useTranslations("Navbar");
-  const { activeSegment, handleClick } = useScrollSpy(items);
   const pathname = usePathname();
+  const [openAccordion, setOpenAccordion] = useState<string | null>(null);
+
+  const toggleAccordion = (href: string) => {
+    setOpenAccordion((prev) => (prev === href ? null : href));
+  };
 
   return (
-    <div className='mx-4 mt-2 flex flex-col gap-2'>
+    <div className="mx-4 mt-1 flex flex-col gap-1">
       {items.map((item, index) => {
-        let isActive = false;
-        if (pathname === "/") {
-          isActive = activeSegment === item.href || (activeSegment === "" && item.href === "/");
-        } else {
-          isActive = pathname === item.href;
+        const isActive =
+          pathname === item.href ||
+          (item.children?.some((c) => pathname.startsWith(c.href)) ?? false);
+
+        const label = t(item.label);
+        const isExpanded = openAccordion === item.href;
+
+        // Items with children → Accordion
+        if (item.children && item.children.length > 0) {
+          return (
+            <NavbarMenuItem key={`${item.href}-${index}`}>
+              {/* Accordion header */}
+              <button
+                aria-expanded={isExpanded}
+                className={clsx(
+                  "flex items-center justify-between w-full text-lg py-3 font-bold transition-colors cursor-pointer",
+                  isActive ? "text-primary" : "text-foreground",
+                )}
+                onClick={() => toggleAccordion(item.href)}
+              >
+                {label}
+                <ChevronDown
+                  className={clsx(
+                    "transition-transform duration-200",
+                    isExpanded ? "rotate-180" : "rotate-0",
+                  )}
+                  size={18}
+                />
+              </button>
+
+              {/* Accordion body */}
+              <AnimatePresence initial={false}>
+                {isExpanded && (
+                  <motion.div
+                    key="accordion-content"
+                    animate={{ height: "auto", opacity: 1 }}
+                    className="overflow-hidden"
+                    exit={{ height: 0, opacity: 0 }}
+                    initial={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.25, ease: "easeInOut" }}
+                  >
+                    <div className="pl-4 pb-2 flex flex-col gap-1 border-l-2 border-primary/20 ml-2">
+                      {item.children.map((child) => (
+                        <NextLink
+                          key={child.href}
+                          className={clsx(
+                            "text-base py-2 px-3 rounded-xl font-semibold transition-colors cursor-pointer",
+                            pathname === child.href
+                              ? "text-primary bg-primary/5"
+                              : "text-foreground/70 hover:text-primary hover:bg-primary/5",
+                          )}
+                          href={child.href}
+                        >
+                          {child.label}
+                        </NextLink>
+                      ))}
+                      <NextLink
+                        className="text-xs font-black uppercase tracking-wider text-primary/60 hover:text-primary px-3 py-1.5 mt-1 cursor-pointer"
+                        href={item.href}
+                      >
+                        {t("megamenu.view_all_arrow")}
+                      </NextLink>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </NavbarMenuItem>
+          );
         }
 
+        // Simple link
         return (
           <NavbarMenuItem key={`${item.href}-${index}`}>
             <NextLink
-              onClick={(e) => handleClick(e, item.href)}
               className={clsx(
-                "text-lg block py-2",
-                isActive ? "text-primary font-bold" : "text-foreground"
+                "text-lg block py-2 cursor-pointer",
+                isActive ? "text-primary font-bold" : "text-foreground",
               )}
               href={item.href}
             >
-              {t(item.label as any)}
+              {label}
             </NextLink>
           </NavbarMenuItem>
         );
       })}
+
+      {/* Login / Signup always at bottom */}
       <NavbarMenuItem>
         <NextLink
+          className="text-lg block py-2 text-primary font-bold cursor-pointer"
           href={ROUTES.LOGIN}
-          className='text-lg block py-2 text-primary font-bold'
         >
           {t("login")} / {t("signup")}
         </NextLink>
       </NavbarMenuItem>
     </div>
   );
-}
-
-// Hook for Scroll Spy
-function useScrollSpy(items: { href: string }[]) {
-  const [activeSegment, setActiveSegment] = useState("");
-  const pathname = usePathname();
-
-  useEffect(() => {
-    if (pathname !== "/") return;
-
-    const handleScroll = () => {
-      let current = "";
-      for (const item of items) {
-        if (item.href.startsWith("/#")) {
-          const id = item.href.substring(2);
-          const element = document.getElementById(id);
-          if (element) {
-            const rect = element.getBoundingClientRect();
-            // Check if element is in viewport (considering navbar height)
-            if (rect.top <= 150 && rect.bottom >= 150) {
-              current = item.href;
-            }
-          }
-        }
-      }
-
-      if (current) {
-        setActiveSegment(current);
-      } else if (window.scrollY < 100) {
-        setActiveSegment("/");
-      }
-    };
-
-    handleScroll();
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [items, pathname]);
-
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    if (pathname !== "/") return; 
-
-    if (href.startsWith("/#")) {
-      e.preventDefault();
-      const id = href.substring(2);
-      const element = document.getElementById(id);
-      if (element) {
-        const offset = 80;
-        const elementPosition = element.getBoundingClientRect().top + window.scrollY;
-        
-        window.scrollTo({
-          top: elementPosition - offset,
-          behavior: "smooth"
-        });
-        
-        setActiveSegment(href);
-      }
-    } else if (href === "/") {
-      e.preventDefault();
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      setActiveSegment("/");
-    }
-  };
-
-  return { activeSegment, handleClick };
 }

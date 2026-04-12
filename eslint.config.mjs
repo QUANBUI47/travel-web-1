@@ -104,6 +104,8 @@ export default defineConfig([globalIgnores([
             argsIgnorePattern: "^_.*?$",
         }],
 
+        "@typescript-eslint/no-explicit-any": "warn",
+
         "import/order": ["warn", {
             groups: [
                 "type",

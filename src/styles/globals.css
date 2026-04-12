@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
-@plugin '../hero.ts';
+@plugin '../config/hero.config.ts';
+@plugin "@tailwindcss/typography";
 
 @source '../../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
 
@@ -149,4 +150,96 @@ h4,
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #cbd5e1;
+}
+
+/* YouTube embeds in rich-text (destinations, tours, admin editor) */
+.prose [data-youtube-video],
+.tiptap [data-youtube-video] {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: 16 / 9;
+  margin: 1.5rem 0;
+  overflow: hidden;
+  border-radius: 1rem;
+  background: #0f172a;
+}
+
+.prose [data-youtube-video] iframe,
+.tiptap [data-youtube-video] iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* Bản đồ vệ tinh — khám phá trang chủ (Leaflet) */
+.vietnam-exploration-map.leaflet-container {
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  font-family: inherit;
+  background: #0f172a;
+}
+
+.vietnam-exploration-map .leaflet-control-zoom {
+  border: none;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgb(15 23 42 / 20%);
+}
+
+.vietnam-exploration-map .leaflet-control-zoom a {
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  border: none;
+  background: rgb(255 255 255 / 95%);
+  color: #334155;
+}
+
+.dark .vietnam-exploration-map .leaflet-control-zoom a {
+  background: rgb(30 41 59 / 95%);
+  color: #e2e8f0;
+}
+
+.vietnam-exploration-map .leaflet-control-attribution {
+  font-size: 9px;
+  max-width: 70%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background: rgb(15 23 42 / 75%);
+  color: #cbd5e1;
+  border-radius: 8px 0 0 0;
+  padding: 2px 6px;
+}
+
+.vietnam-exploration-map .leaflet-control-attribution a {
+  color: #93c5fd;
+}
+
+.destination-mini-map.leaflet-container {
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  font-family: inherit;
+  background: #0f172a;
+}
+
+.leaflet-tooltip.map-exploration-tooltip {
+  border: 0;
+  background: #0f172a;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 900;
+  text-transform: uppercase;
+  border-radius: 8px;
+  padding: 4px 12px;
+  box-shadow: 0 10px 25px rgb(15 23 42 / 35%);
+}
+
+.leaflet-tooltip.map-exploration-tooltip::before {
+  border-top-color: #0f172a;
 }

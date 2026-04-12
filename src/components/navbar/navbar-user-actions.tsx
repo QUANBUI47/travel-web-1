@@ -1,37 +1,32 @@
+import type { UserProfile } from "@/types/auth";
+
 import { NavbarItem } from "@heroui/navbar";
 import { Button } from "@heroui/button";
 import NextLink from "next/link";
-import { ROUTES } from "@/config/routes";
-import { UserMenu } from "@/components/user-menu";
 import { User } from "@supabase/supabase-js";
+
+import { ROUTES } from "@/constants";
+import { UserMenu } from "@/components/user-menu";
 
 interface NavbarUserActionsProps {
   user: User | null;
-  profile: any;
+  profile: UserProfile | null;
   t: (key: string) => string;
 }
 
-export function NavbarUserActions({ user, profile, t }: NavbarUserActionsProps) {
+export function NavbarUserActions({
+  user,
+  profile,
+  t,
+}: NavbarUserActionsProps) {
   if (user) {
     return (
-      <div className='flex items-center gap-4'>
-        <NavbarItem className='hidden md:flex'>
-          <Button
-            as={NextLink}
-            href={ROUTES.ADMIN.DASHBOARD}
-            variant='flat'
-            color='primary'
-            className='font-bold h-10 px-6 rounded-full'
-            size='sm'
-          >
-            {t("admin_panel")}
-          </Button>
-        </NavbarItem>
+      <div className="flex items-center gap-4">
         <NavbarItem>
           <UserMenu
+            avatarUrl={profile?.avatarUrl ?? null}
             displayName={profile?.displayName ?? null}
             email={user.email ?? null}
-            avatarUrl={profile?.avatarUrl ?? null}
           />
         </NavbarItem>
       </div>
@@ -39,14 +34,14 @@ export function NavbarUserActions({ user, profile, t }: NavbarUserActionsProps) 
   }
 
   return (
-    <div className='flex items-center gap-2'>
-      <NavbarItem className='hidden md:flex'>
+    <div className="flex items-center gap-2">
+      <NavbarItem className="hidden md:flex">
         <Button
           as={NextLink}
+          className="font-black text-xs uppercase px-6 h-10 border-2 border-transparent hover:border-slate-200 dark:hover:border-white/20 hover:bg-slate-100 dark:hover:bg-white/10 transition-all text-slate-700 dark:text-slate-300 login-ghost-btn cursor-pointer"
           href={ROUTES.LOGIN}
-          variant='light'
-          className='font-bold text-[15px] px-6 text-foreground/80 hover:text-primary'
-          radius='full'
+          radius="full"
+          variant="light"
         >
           {t("login")}
         </Button>
@@ -54,10 +49,10 @@ export function NavbarUserActions({ user, profile, t }: NavbarUserActionsProps) 
       <NavbarItem>
         <Button
           as={NextLink}
-          href={ROUTES.SIGNUP}
-          color='primary'
-          radius='full'
-          className='font-bold text-[15px] px-8 h-11 shadow-xl shadow-primary/20 hover:scale-105 transition-all'
+          className="font-black text-xs uppercase px-8 h-10 shadow-lg shadow-primary/10 hover:shadow-primary/20 hover:-translate-y-0.5 transition-all bg-gradient-to-r from-blue-600 to-indigo-600 border-none text-white cursor-pointer"
+          color="primary"
+          href={ROUTES.REGISTER}
+          radius="full"
         >
           {t("signup")}
         </Button>

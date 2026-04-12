@@ -13,15 +13,60 @@
     "VIVU_API_ERROR_404_USER": "Tài khoản không tồn tại",
     "VIVU_API_ERROR_409": "Dữ liệu đã tồn tại hoặc bị trùng lặp",
     "VIVU_API_ERROR_409_EMAIL": "Email này đã được đăng ký",
-    "VIVU_API_ERROR_500": "Lỗi máy chủ nội bộ, vui lòng thử lại sau"
+    "VIVU_API_ERROR_500": "Lỗi máy chủ nội bộ, vui lòng thử lại sau",
+
+    "VIVU_ADMIN_ERROR_SAVE_HOMEPAGE": "Không thể lưu cấu hình trang chủ",
+    "VIVU_ADMIN_ERROR_UPDATE_SYSTEM": "Không thể cập nhật cấu hình hệ thống",
+
+    "VIVU_ADMIN_ERROR_GET_DESTINATIONS": "Không thể lấy danh sách điểm đến",
+    "VIVU_ADMIN_ERROR_GET_REGIONS": "Không thể lấy danh sách vùng miền",
+    "VIVU_ADMIN_ERROR_CREATE_DESTINATION": "Không thể tạo điểm đến mới",
+    "VIVU_ADMIN_ERROR_UPDATE_DESTINATION": "Không thể cập nhật điểm đến",
+    "VIVU_ADMIN_ERROR_DELETE_DESTINATION": "Không thể xóa điểm đến",
+
+    "VIVU_ADMIN_ERROR_GET_TOURS": "Không thể lấy danh sách tour",
+    "VIVU_ADMIN_ERROR_CREATE_TOUR": "Không thể tạo tour mới",
+    "VIVU_ADMIN_ERROR_UPDATE_TOUR": "Không thể cập nhật tour",
+    "VIVU_ADMIN_ERROR_DELETE_TOUR": "Không thể xóa tour",
+
+    "VIVU_ADMIN_ERROR_UPLOAD_CLOUDINARY": "Không thể tải file lên Cloudinary",
+    "CLOUDINARY_NOT_CONFIGURED": "Thiếu CLOUDINARY_API_KEY / CLOUDINARY_API_SECRET trong .env.local (không dùng NEXT_PUBLIC_). Hoặc dùng upload preset unsigned.",
+    "AUTH_LOGIN_SUCCESS": "Đăng nhập thành công",
+    "AUTH_LOGIN_MISSING": "Vui lòng nhập đầy đủ email và mật khẩu",
+    "AUTH_LOGIN_INVALID": "Email hoặc mật khẩu không chính xác",
+    "AUTH_LOGIN_ERROR": "Lỗi hệ thống khi đăng nhập",
+    "AUTH_LOGOUT_SUCCESS": "Đăng xuất thành công",
+    "DELETE_SUCCESS": "Đã xóa thành công",
+    "DELETE_TOUR_SUCCESS": "Đã xóa tour thành công",
+    "TOUR_CREATE_SUCCESS": "Tạo tour mới thành công",
+    "TOUR_UPDATE_SUCCESS": "Cập nhật tour thành công"
   },
   "Common": {
     "error": "Lỗi",
     "success": "Thành công",
     "loading": "Đang tải...",
     "back_to_home": "Quay lại Trang chủ",
+    "site_description": "Vivu — Đặt khách sạn, tour du lịch và trải nghiệm điểm đến Việt Nam. Giá tốt, đặt chỗ dễ dàng.",
     "confirm": "Xác nhận",
-    "cancel": "Hủy"
+    "cancel": "Hủy",
+
+    "toast_homepage_saved": "Đã lưu cấu hình trang chủ",
+    "toast_seo_updated": "Đã cập nhật cấu hình SEO",
+    "toast_system_updated": "Đã cập nhật trạng thái hệ thống",
+    "toast_cannot_save_config": "Không thể lưu cấu hình",
+
+    "toast_fill_required_fields": "Vui lòng nhập đầy đủ thông tin",
+
+    "toast_deleted_destination": "Đã xóa điểm đến",
+    "toast_delete_failed": "Lỗi khi xóa",
+
+    "toast_deleted_tour_success": "Đã xóa tour thành công",
+    "toast_delete_tour_failed": "Lỗi khi xóa tour",
+
+    "toast_system_error": "Lỗi hệ thống",
+    "action_failed": "Thao tác thất bại",
+    "locale_vi": "Tiếng Việt",
+    "locale_en": "English"
   },
   "Validation": {
     "required": "Trường này là bắt buộc",
@@ -31,7 +76,28 @@
     "password_mismatch": "Mật khẩu xác nhận không khớp",
     "invalid_phone": "Số điện thoại không hợp lệ",
     "invalid_url": "Đường dẫn không hợp lệ",
-    "numeric": "Vui lòng chỉ nhập số"
+    "numeric": "Vui lòng chỉ nhập số",
+    "slug_invalid": "Slug không hợp lệ (chỉ chấp nhận chữ thường, số và dấu gạch ngang, không để dấu gạch ngang ở đầu/cuối)",
+    "uuid_invalid": "ID không hợp lệ",
+    "tour_id_invalid": "ID tour không hợp lệ",
+    "tour_name_vi_min": "Tên tiếng Việt phải ít nhất 5 ký tự",
+    "slug_min": "Slug phải ít nhất 5 ký tự",
+    "slug_min_short": "Slug phải ít nhất 2 ký tự",
+    "description_min": "Mô tả phải ít nhất 20 ký tự",
+    "duration_min": "Thời gian phải ít nhất 1 ngày",
+    "price_non_negative": "Giá không được âm",
+    "image_url_invalid": "Định dạng ảnh không hợp lệ",
+    "itinerary_title_min": "Tiêu đề ngày phải ít nhất 5 ký tự",
+    "itinerary_min_days": "Tour phải có ít nhất 1 ngày lộ trình",
+    "destination_name_vi_min": "Tên tiếng Việt phải có ít nhất 2 ký tự",
+    "invalid_params": "Tham số không hợp lệ",
+    "invalid_tour_data": "Dữ liệu tour không hợp lệ",
+    "invalid_destination_data": "Dữ liệu điểm đến không hợp lệ",
+    "invalid_itinerary_data": "Dữ liệu lộ trình không hợp lệ",
+    "invalid_departure_data": "Dữ liệu lịch khởi hành không hợp lệ",
+    "invalid_homepage_config": "Cấu hình trang chủ không hợp lệ",
+    "invalid_system_config": "Dữ liệu cấu hình không hợp lệ",
+    "file_too_large": "File vượt quá dung lượng cho phép"
   },
   "NotFound": {
     "error_code": "LỖI: KHÔNG TÌM THẤY ĐỊA ĐIỂM",
@@ -44,21 +110,66 @@
   "Navbar": {
     "home": "Trang chủ",
     "destinations": "Điểm đến",
+    "tours": "Tour du lịch",
+    "tours_heritage": "Tour Di sản",
+    "tours_resort": "Tour Nghỉ dưỡng",
+    "tours_adventure": "Tour Mạo hiểm",
+    "tours_event": "Tour Sự kiện",
+    "region_north": "Miền Bắc",
+    "region_central": "Miền Trung",
+    "region_south": "Miền Nam",
+    "region_international": "Tour Quốc tế",
     "promo": "Ưu đãi",
+    "inspiration": "Cảm hứng",
     "why_vivu": "Tại sao chọn Vivu",
     "contact": "Liên hệ",
     "login": "Đăng nhập",
     "signup": "Đăng ký",
-    "admin_panel": "Quản trị"
+    "megamenu": {
+      "explore": "Khám phá",
+      "featured": "Nổi bật",
+      "heritage_journey": "Hành trình di sản",
+      "premium_experience": "Trải nghiệm đẳng cấp",
+      "destination_desc": "Khám phá những vùng đất đầy mê hoặc với những câu chuyện văn hóa độc đáo.",
+      "tour_desc": "Những chuyến đi được thiết kế riêng biệt cho người yêu thích giá trị truyền thống.",
+      "view_all": "Xem tất cả",
+      "view_all_arrow": "Xem tất cả →",
+      "region": "Phân vùng",
+      "suggestion": "Gợi ý",
+      "destination_col": "Điểm đến",
+      "see_more": "Xem thêm",
+      "for_you": "Dành cho bạn",
+      "explore_now": "Khám phá ngay",
+      "premium_title": "Vivu Premium",
+      "premium_desc": "Đăng nhập để nhận ưu đãi đặc quyền và quản lý hành trình của bạn.",
+      "start_now": "Bắt đầu ngay",
+      "no_destinations": "Chưa có điểm đến nổi bật",
+      "mock_halong": "Vịnh Hạ Long",
+      "mock_phuquoc": "Đảo Phú Quốc",
+      "mock_sapa": "Sapa mờ sương"
+    }
   },
   "Auth": {
     "login_success": "Đăng nhập thành công",
+    "login_missing_fields": "Vui lòng nhập đầy đủ email và mật khẩu",
+    "logout_success": "Đăng xuất thành công",
     "invalid_credentials": "Email hoặc mật khẩu không chính xác.",
     "no_admin_access": "Tài khoản không có quyền truy cập quản trị viên.",
     "email_required": "Vui lòng nhập email",
     "password_required": "Vui lòng nhập mật khẩu",
-    "password_min_length": "Mật khẩu phải từ 6 ký tự trở lên",
+    "password_min_length": "Mật khẩu phải từ 8 ký tự trở lên",
+    "password_uppercase": "Mật khẩu cần ít nhất 1 chữ in hoa",
+    "password_lowercase": "Mật khẩu cần ít nhất 1 chữ thường",
+    "password_number": "Mật khẩu cần ít nhất 1 chữ số",
     "invalid_email": "Email không hợp lệ",
+    "login_system_error": "Đã có lỗi xảy ra. Vui lòng thử lại sau.",
+    "email_not_confirmed": "Email chưa được xác nhận. Hãy mở hộp thư và bấm liên kết xác nhận, hoặc gửi lại email.",
+    "rate_limit": "Bạn thao tác quá nhanh. Vui lòng đợi vài phút rồi thử lại.",
+    "email_send_failed": "Chúng tôi chưa gửi được email. Vui lòng thử lại sau hoặc kiểm tra thư mục Spam.",
+    "signup_failed": "Không tạo được tài khoản lúc này. Vui lòng thử lại sau.",
+    "callback_failed": "Liên kết đăng nhập không hợp lệ hoặc đã hết hạn. Vui lòng thử lại.",
+    "google_sign_in": "Đăng nhập với Google",
+    "google_sign_in_failed": "Không thể đăng nhập bằng Google. Vui lòng thử lại sau.",
     "back_to_home": "Trang chủ",
     "or_with_email": "Hoặc dùng Email",
     "or_with_info": "Hoặc thông tin cá nhân",
@@ -107,8 +218,53 @@
       "already_member": "Đã là thành viên?",
       "login_now": "Đăng nhập",
       "trust_badge": "Giao dịch an toàn & bảo mật 100%",
-      "password_mismatch": "Mật khẩu xác nhận không khớp."
+      "password_mismatch": "Mật khẩu xác nhận không khớp.",
+      "fullname_required": "Vui lòng nhập họ và tên (ít nhất 2 ký tự).",
+      "terms_required": "Bạn cần đồng ý điều khoản dịch vụ để tiếp tục.",
+      "email_exists": "Email này đã được đăng ký.",
+      "footer_text": "VIVU TRAVEL DESIGN © 2026",
+      "footer_journey": "BẮT ĐẦU HÀNH TRÌNH"
+    },
+    "forgot": {
+      "title": "Quên mật khẩu?",
+      "desc": "Nhập email đăng ký — chúng tôi gửi liên kết đặt lại mật khẩu an toàn.",
+      "button": "Gửi liên kết đặt lại",
+      "sent_title": "Kiểm tra hộp thư",
+      "sent_desc": "Nếu {email} tồn tại trong hệ thống, bạn sẽ nhận email hướng dẫn trong vài phút.",
+      "check_spam": "Không thấy email? Kiểm tra thư mục Spam hoặc Quảng cáo.",
+      "remember": "Nhớ mật khẩu?",
+      "back_login": "Quay lại đăng nhập"
+    },
+    "reset": {
+      "title": "Đặt mật khẩu mới",
+      "desc": "Tạo mật khẩu mạnh để bảo vệ tài khoản Vivu của bạn.",
+      "new_password": "Mật khẩu mới",
+      "password_hint": "Tối thiểu 8 ký tự, gồm chữ hoa, chữ thường và số.",
+      "button": "Cập nhật mật khẩu",
+      "session_expired": "Phiên đặt lại mật khẩu đã hết hạn. Vui lòng yêu cầu liên kết mới.",
+      "success_login": "Đặt mật khẩu thành công! Bạn có thể đăng nhập ngay."
+    },
+    "verify": {
+      "title": "Xác nhận email",
+      "desc": "Chúng tôi đã gửi email xác nhận tới {email}.",
+      "check_inbox": "Mở email và nhấn liên kết xác nhận để kích hoạt tài khoản Vivu.",
+      "check_spam": "Liên kết có hiệu lực trong thời gian giới hạn. Kiểm tra cả thư rác nếu cần.",
+      "resend": "Gửi lại email xác nhận",
+      "resend_success": "Đã gửi lại email xác nhận.",
+      "success_login": "Email đã xác nhận thành công! Vui lòng đăng nhập để tiếp tục hành trình.",
+      "back_login": "Quay lại đăng nhập"
     }
+  },
+  "Account": {
+    "title": "Tài khoản của tôi",
+    "desc": "Quản lý thông tin và đặt chỗ Vivu Travel.",
+    "guest": "Khách Vivu",
+    "bookings_title": "Đơn đặt của tôi",
+    "bookings_desc": "Xem lịch sử tour và khách sạn",
+    "bookings_empty": "Bạn chưa có đơn đặt nào. Khám phá tour di sản ngay hôm nay!",
+    "edit_profile": "Chỉnh sửa hồ sơ",
+    "coming_soon": "Sắp ra mắt",
+    "security_note": "Thông tin được mã hóa và bảo vệ bởi Vivu SafeCare."
   },
   "Home": {
     "title": "Chào mừng đến với Vivu",
@@ -116,6 +272,7 @@
   },
   "HomePage": {
     "Hero": {
+      "badge": "Hành trình di sản hiện đại",
       "title_main": "Lên kế hoạch ",
       "title_highlight": "Vivu",
       "title_suffix": " ngay",
@@ -123,12 +280,17 @@
       "search": {
         "location_label": "Bạn muốn đi đâu?",
         "location_placeholder": "Địa điểm du lịch...",
+        "location_help": "Bạn muốn đi đâu?",
         "time_label": "Thời gian",
-        "time_value": "Thêm ngày",
+        "time_placeholder": "Chọn ngày đi",
         "guests_label": "Hành khách",
-        "guests_value": "Thêm người",
-        "button": "Tìm kiếm"
-      }
+        "guests_placeholder": "Thêm người",
+        "button": "TÌM KIẾM"
+      },
+      "suggestions_label": "Gợi ý:",
+      "scroll_label": "Kéo xuống",
+      "title_fallback": "Khám phá Việt Nam",
+      "description_fallback": "Vivu mang đến những trải nghiệm du lịch di sản độc bản."
     },
     "Stats": {
       "provinces": "Tỉnh thành",
@@ -137,6 +299,9 @@
       "customers": "Khách hàng"
     },
     "WhyVivu": {
+      "badge": "Tại sao chọn Vivu?",
+      "title_highlight": "Nâng tầm trải nghiệm Việt.",
+      "description": "Chúng tôi không chỉ bán tour, chúng tôi thiết kế những mảnh ghép ký ức tuyệt đẹp cho hành trình của bạn.",
       "safe": {
         "title": "Đặt chỗ an toàn",
         "description": "Hệ thống bảo mật tiêu chuẩn quốc tế, bảo vệ thông tin và giao dịch của bạn 100%."
@@ -151,21 +316,135 @@
       }
     },
     "Destinations": {
+      "badge": "Cảm hứng bất tận",
       "title": "Điểm đến hàng đầu",
       "description": "Những địa điểm được yêu thích nhất bởi cộng đồng Vivu Travel",
-      "view_all": "Xem tất cả",
-      "stays_count": "{count} chỗ nghỉ"
+      "view_all": "XEM TẤT CẢ",
+      "category_heritage": "Kỳ quan",
+      "discover": "Khám phá",
+      "see_more_regions": "Xem thêm vùng"
     },
     "Promo": {
+      "fallback_title": "Mùa hè rực rỡ - Ưu đãi hấp dẫn",
+      "flash_sale_badge": "VIP FLASH SALE",
       "badge": "Ưu đãi giới hạn",
+      "badge_long": "Ưu đãi giới hạn - Đặt ngay kẻo lỡ!",
+      "time_remaining": "Thời gian còn lại",
       "title_prefix": "Mùa hè rực rỡ tại ",
       "title_highlight": "Phú Quốc",
       "description_prefix": "Trọn gói 3 ngày 2 đêm tại Resort 5 sao chỉ từ ",
       "description_highlight": "3.990.000đ",
       "description_suffix": ". Đã bao gồm vé máy bay khứ hồi.",
       "bookings_count": "{count} lượt đặt",
-      "button": "Đặt ngay bây giờ"
+      "button": "NHẬN ƯU ĐÃI NGAY"
+    },
+    "Storytelling": {
+      "badge": "Hành trình di sản",
+      "title": "Những câu chuyện từ Việt Nam",
+      "view_more": "Xem thêm câu chuyện",
+      "demo_items": [
+        {
+          "author": { "vi": "Anh Hoàng Nam", "en": "Mr. Hoang Nam" },
+          "role": { "vi": "Khách hàng thân thiết", "en": "Loyal Customer" },
+          "quote": {
+            "vi": "Chuyến đi Phú Quốc thực sự đẳng cấp. Resort 5 sao và dịch vụ của Vivu không làm tôi thất vọng.",
+            "en": "The trip to Phu Quoc was truly world-class. The 5-star resort and Vivu's service did not disappoint."
+          }
+        },
+        {
+          "author": { "vi": "Chị Minh Thư", "en": "Ms. Minh Thu" },
+          "role": { "vi": "Bloger du lịch", "en": "Travel Blogger" },
+          "quote": {
+            "vi": "Hội An đẹp huyền ảo qua cách thiết kế tour của các bạn. Rất tinh tế và sâu sắc.",
+            "en": "Hoi An is magically beautiful through your tour design. Very delicate and profound."
+          }
+        },
+        {
+          "author": { "vi": "Gia đình Bác Hùng", "en": "Uncle Hung's Family" },
+          "role": { "vi": "Tour xuyên Việt", "en": "Cross-Vietnam Tour" },
+          "quote": {
+            "vi": "Lần đầu tiên cả nhà đi tour mà không thấy mệt. Cảm ơn đội ngũ Vivu tận tâm.",
+            "en": "For the first time, the whole family went on a tour without feeling tired. Thank you, Vivu's dedicated team."
+          }
+        }
+      ]
+    },
+    "Trending": {
+      "subtitle": "Đang được săn đón",
+      "title": "Xu hướng du lịch",
+      "view_all": "Xem tất cả tour →"
+    },
+    "Newsletter": {
+      "badge": "Đừng bỏ lỡ ưu đãi",
+      "title": "Đăng ký nhận tin từ Vivu",
+      "subtitle": "Nhận ngay mã giảm giá 10% cho chuyến đi đầu tiên của bạn.",
+      "placeholder": "Địa chỉ email của bạn...",
+      "button": "Đăng ký ngay",
+      "privacy": "Chúng tôi cam kết bảo mật thông tin và không gửi spam."
+    },
+    "Map": {
+      "badge": "Bản đồ tương tác",
+      "title": "Khám phá qua bản đồ",
+      "description": "Tìm kiếm hành trình mơ ước của bạn ngay trên bản đồ tương tác của chúng tôi. Mỗi điểm đến là một câu chuyện chờ bạn khám phá.",
+      "provinces": "Tỉnh, thành phố",
+      "provinces_count": "34",
+      "destinations": "Điểm đến",
+      "selected": "Đang chọn",
+      "selected_location": "Đà Nẵng, Việt Nam",
+      "view_tours": "Xem tour",
+      "point_hanoi": "Hà Nội",
+      "point_danang": "Đà Nẵng",
+      "point_hcm": "TP. Hồ Chí Minh",
+      "point_halong": "Vịnh Hạ Long"
+    },
+    "Social": {
+      "title_fallback": "Khoảnh khắc Vivu",
+      "view_more_instagram": "Xem thêm trên Instagram",
+      "follow_handle": "Theo dõi @vivu.travel"
+    },
+    "Curated": {
+      "badge": "Bộ sưu tập chọn lọc",
+      "editors_choice": "Lựa chọn biên tập",
+      "places_count": "{count} địa điểm",
+      "explore": "Khám phá bộ sưu tập",
+      "demo_collections": [
+        {
+          "id": "c1",
+          "title": {
+            "vi": "Thiên đường biển đảo",
+            "en": "Beach & Island Paradises"
+          },
+          "color": "from-blue-600/80",
+          "slugHints": ["dao", "bien", "phu-quoc"],
+          "defaultCount": 5
+        },
+        {
+          "id": "c2",
+          "title": { "vi": "Hành trình di sản", "en": "Heritage Journeys" },
+          "color": "from-amber-600/80",
+          "slugHints": ["di-san", "hue", "hoi-an"],
+          "defaultCount": 8
+        },
+        {
+          "id": "c3",
+          "title": { "vi": "Vẻ đẹp vùng cao", "en": "Highland Discovery" },
+          "color": "from-emerald-600/80",
+          "slugHints": ["sa-pa", "ninh-binh"],
+          "defaultCount": 6
+        },
+        {
+          "id": "c4",
+          "title": { "vi": "Ẩm thực & Văn hóa", "en": "Food & Culture" },
+          "color": "from-red-600/80",
+          "slugHints": [],
+          "defaultCount": 12,
+          "useHalfTourCount": true
+        }
+      ]
     }
+  },
+  "Metadata": {
+    "default_title_suffix": "Du lịch di sản Việt"
   },
   "Maintenance": {
     "title": "Hệ thống đang bảo trì",
@@ -182,15 +461,6 @@
   },
   "About": {
     "title": "Về Vivu"
-  },
-  "Blog": {
-    "title": "Cẩm nang du lịch"
-  },
-  "Pricing": {
-    "title": "Bảng giá dịch vụ"
-  },
-  "Docs": {
-    "title": "Tài liệu hướng dẫn"
   },
   "Legal": {
     "privacy": {
@@ -224,12 +494,55 @@
         "security": "3. Bảo mật dữ liệu",
         "cookies": "4. Cookies & Theo dõi",
         "sharing": "5. Chia sẻ bên thứ ba",
+        "sharing_partner_desc": "Đối tác khách sạn, hàng không để hoàn tất thủ tục đặt chỗ.",
+        "sharing_provider_title": "Nhà cung cấp dịch vụ",
+        "sharing_payment_title": "Xử lý thanh toán",
+        "sharing_payment_desc": "Cổng thanh toán an toàn để xử lý các giao dịch tài chính.",
+        "sharing_legal_title": "Yêu cầu pháp lý",
+        "sharing_legal_desc": "Khi có yêu cầu từ cơ quan chức năng có thẩm quyền theo pháp luật.",
         "rights": "6. Quyền của bạn",
         "contact": "7. Liên hệ chúng tôi"
       },
       "safecare": "Dữ liệu của bạn được mã hóa theo tiêu chuẩn quân đội AES-256.",
+      "safecare_brand": "Vivu SafeCare",
       "print": "In chính sách",
-      "download": "Tải bản PDF (.pdf)"
+      "download": "Tải bản PDF (.pdf)",
+      "hero_title_prefix": "Chính sách",
+      "hero_title_highlight": "Bảo mật",
+      "security_commitment_title": "Cam kết bảo mật dữ liệu",
+      "security_commitment_desc": "An toàn thông tin là trái tim của hệ thống Vivu. Chúng tôi áp dụng các biện pháp kỹ thuật tiên tiến nhất để bảo vệ dữ liệu khách hàng.",
+      "security_ssl_title": "Mã hóa SSL",
+      "security_ssl_desc": "Mọi đường truyền dữ liệu đều được bảo vệ bởi chứng chỉ SSL 256-bit.",
+      "security_access_title": "Kiểm soát truy cập",
+      "security_access_desc": "Chỉ nhân viên được ủy quyền mới có quyền truy cập thông tin cá nhân của bạn.",
+      "cookies_title": "Cookies & Công nghệ theo dõi",
+      "cookies_intro": "Chúng tôi sử dụng cookies để cá nhân hóa trải nghiệm của bạn và phân tích lưu lượng truy cập web.",
+      "cookie_essential_title": "Cookies thiết yếu",
+      "cookie_essential_desc": "Cần thiết để bạn di chuyển và sử dụng các tính năng bảo mật của website.",
+      "cookie_performance_title": "Cookies hiệu suất",
+      "cookie_performance_desc": "Thu thập thông tin về cách khách hàng sử dụng trang web để chúng tôi cải thiện dịch vụ.",
+      "cookie_functional_title": "Cookies chức năng",
+      "cookie_functional_desc": "Cho phép trang web ghi nhớ các lựa chọn của bạn (như ngôn ngữ hoặc vùng).",
+      "sharing_intro_title": "Chia sẻ thông tin với bên thứ ba",
+      "sharing_intro": "Vivu cam kết không bán dữ liệu của bạn. Chúng tôi chỉ chia sẻ thông tin trong các trường hợp cần thiết:",
+      "rights_title": "Quyền hạn của người dùng",
+      "rights_intro": "Bạn luôn giữ quyền kiểm soát hoàn toàn đối với dữ liệu của mình:",
+      "right_access_title": "Quyền truy cập",
+      "right_access_desc": "Bạn có thể yêu cầu xem lại tất cả thông tin chúng tôi đang lưu trữ.",
+      "right_edit_title": "Quyền chỉnh sửa",
+      "right_edit_desc": "Yêu cầu cập nhật thông tin nếu có sự sai lệch hoặc lỗi thời.",
+      "right_delete_title": "Quyền yêu cầu xóa",
+      "right_delete_desc": "Bạn có quyền yêu cầu chúng tôi xóa vĩnh viễn dữ liệu cá nhân trong các trường hợp cụ thể.",
+      "contact_title": "Liên hệ chúng tôi",
+      "contact_intro": "Nếu bạn có bất kỳ câu hỏi nào về chính sách này, hãy kết nối với đội ngũ bảo mật của chúng tôi:",
+      "contact_hq": "Trụ sở chính",
+      "contact_address": "Tầng 12, Tòa nhà Heritage, 123 Lê Lợi, Quận 1, TP. Hồ Chí Minh.",
+      "contact_email_label": "Email hỗ trợ",
+      "contact_hotline": "Đường dây nóng",
+      "contact_hotline_value": "1900 123 456 (Nhánh 4)",
+      "contact_online": "Kênh trực tuyến",
+      "contact_online_value": "vivu.com.vn/help-center",
+      "copyright_line": "Khám phá vẻ đẹp Việt Nam"
     },
     "terms": {
       "title": "Điều khoản Dịch vụ",
@@ -249,7 +562,69 @@
       "legal_help": "Bạn cần hỗ trợ?",
       "legal_contact": "Liên hệ pháp lý",
       "print": "In điều khoản",
-      "download": "Tải bản PDF"
+      "download": "Tải bản PDF",
+      "copyright_line": "Khám phá vẻ đẹp Việt Nam",
+      "intro_p1": "Chào mừng bạn đến với Vivu. Bằng cách truy cập vào trang web của chúng tôi hoặc sử dụng bất kỳ dịch vụ nào do chúng tôi cung cấp, bạn đồng ý tuân thủ và chịu sự ràng buộc của các Điều khoản Dịch vụ này.",
+      "intro_p2": "Vivu là một nền tảng du lịch trực tuyến cung cấp dịch vụ đặt tour, khách sạn và trải nghiệm văn hóa tại Việt Nam. Chúng tôi cam kết mang đến những giá trị di sản đích thực thông qua sự minh bạch và an toàn.",
+      "def_service_label": "\"Dịch vụ\"",
+      "def_service_desc": "Tất cả các sản phẩm du lịch bao gồm tour, phòng lưu trú và vé tham quan trên hệ thống Vivu.",
+      "def_member_label": "\"Thành viên\"",
+      "def_member_desc": "Cá nhân hoặc tổ chức đã đăng ký tài khoản thành công trên nền tảng của chúng tôi.",
+      "accounts_p1": "Để sử dụng một số tính năng nhất định, bạn phải đăng ký tài khoản. Bạn có trách nhiệm bảo mật thông tin đăng nhập và mọi hoạt động diễn ra dưới tài khoản của mình.",
+      "accounts_items": [
+        "Thông tin cung cấp phải chính xác và cập nhật liên tục.",
+        "Không được chuyển nhượng tài khoản cho bất kỳ bên thứ ba nào.",
+        "Phải thông báo ngay cho Vivu nếu phát hiện có sự truy cập trái phép."
+      ],
+      "bookings_pricing": "Giá cả được niêm yết công khai và đã bao gồm các loại thuế phí cơ bản trừ khi có ghi chú khác.",
+      "bookings_payment_title": "Lưu ý về an toàn thanh toán",
+      "bookings_payment_desc": "Vivu sử dụng hệ thống mã hóa bảo mật cấp cao. Mọi giao dịch của bạn được bảo vệ bởi Vivu SafeCare, đảm bảo không có bên thứ ba nào can thiệp được vào thông tin thẻ của bạn.",
+      "cancellation_intro": "Chính sách hoàn tiền phụ thuộc vào từng loại dịch vụ và thời điểm hủy bỏ.",
+      "cancel_col_time": "Thời gian hủy",
+      "cancel_col_refund": "Mức hoàn trả",
+      "cancel_row_7d": "Trước 7 ngày khởi hành",
+      "cancel_row_3_6d": "3 - 6 ngày trước khởi hành",
+      "cancel_row_48h": "Trong vòng 48 giờ",
+      "privacy_p1": "Vivu cam kết bảo vệ thông tin cá nhân của bạn theo tiêu chuẩn bảo mật cao nhất. Việc thu thập và sử dụng dữ liệu của bạn được thực hiện hoàn toàn minh bạch.",
+      "privacy_measures_title": "Các biện pháp bảo vệ chúng tôi áp dụng",
+      "privacy_measure_ssl_title": "Mã hóa SSL 256-bit",
+      "privacy_measure_ssl_desc": "Mọi kết nối giữa trình duyệt và máy chủ của chúng tôi đều được mã hóa hoàn toàn.",
+      "privacy_measure_access_title": "Kiểm soát truy cập",
+      "privacy_measure_access_desc": "Chỉ nhân viên được ủy quyền mới có thể truy cập thông tin cá nhân của người dùng.",
+      "privacy_measure_backup_title": "Sao lưu thường xuyên",
+      "privacy_measure_backup_desc": "Dữ liệu được sao lưu định kỳ để đảm bảo không bị mất mát trong mọi tình huống.",
+      "privacy_measure_audit_title": "Kiểm tra bảo mật",
+      "privacy_measure_audit_desc": "Hệ thống được kiểm tra bảo mật định kỳ bởi các chuyên gia độc lập.",
+      "privacy_link_prefix": "Để biết thêm chi tiết về cách chúng tôi thu thập và xử lý dữ liệu cá nhân, vui lòng tham khảo",
+      "privacy_link_label": "Chính sách bảo mật",
+      "privacy_link_suffix": "của Vivu.",
+      "ip_p1": "Tất cả nội dung trên nền tảng Vivu bao gồm văn bản, hình ảnh, logo, biểu tượng, video và phần mềm đều là tài sản trí tuệ độc quyền của Vivu hoặc các đối tác cấp phép.",
+      "ip_rules_title": "Quy định về sử dụng nội dung",
+      "ip_allowed": "CHO PHÉP",
+      "ip_forbidden": "CẤM",
+      "ip_rules": [
+        {
+          "allow": true,
+          "text": "Sử dụng cá nhân, phi thương mại với ghi nguồn rõ ràng."
+        },
+        {
+          "allow": true,
+          "text": "Chia sẻ liên kết đến các trang trên website Vivu."
+        },
+        {
+          "allow": false,
+          "text": "Sao chép, phân phối hoặc chỉnh sửa nội dung cho mục đích thương mại."
+        },
+        {
+          "allow": false,
+          "text": "Sử dụng logo, thương hiệu Vivu mà không có sự đồng ý bằng văn bản."
+        },
+        {
+          "allow": false,
+          "text": "Khai thác dữ liệu bằng các công cụ tự động (scraping, crawling)."
+        }
+      ],
+      "ip_p2": "Mọi vi phạm bản quyền sẽ bị xử lý theo quy định của pháp luật Việt Nam và các công ước quốc tế về sở hữu trí tuệ."
     }
   },
   "Footer": {
@@ -275,15 +650,119 @@
       "collaboration": "Liên hệ hợp tác"
     }
   },
+  "Tours": {
+    "title": "Hành trình Di sản",
+    "description": "Khám phá những trải nghiệm du lịch độc bản cùng Vivu Travel",
+    "price_from": "Giá từ",
+    "duration": "{days} ngày",
+    "view_detail": "Xem chi tiết",
+    "book_now": "Đặt ngay",
+    "no_tours": "Không tìm thấy tour nào phù hợp với yêu cầu của bạn.",
+    "search_placeholder": "Tìm tour, điểm đến...",
+    "search_destination": "Điểm đến",
+    "search_dates": "Thời gian",
+    "search_button": "Tìm kiếm",
+    "clear_filters": "Xóa bộ lọc",
+    "filtered_by_destination": "Tour tại {name}",
+    "from": "Khởi hành từ",
+    "departure_schedule": "Lịch khởi hành",
+    "select_date": "Chọn ngày đi",
+    "guest_count": "Số lượng khách",
+    "total": "Tổng cộng",
+    "select_date_hint": "* Vui lòng chọn ngày khởi hành để tiếp tục",
+    "price_includes_tax": "* Giá đã bao gồm thuế và phí dịch vụ",
+    "support_247": "Hỗ trợ 24/7",
+    "support_desc": "Bạn cần tư vấn thêm về tour này? Liên hệ ngay với đội ngũ chuyên gia của Vivu Travel.",
+    "tour_type_group": "Ghép đoàn",
+    "transport_bus": "Ô tô",
+    "transport_plane": "Máy bay",
+    "transport_ship": "Tàu thủy",
+    "transport_train": "Tàu hỏa",
+    "transport_luxury_bus": "Xe cao cấp",
+    "tour_type_private": "Tour riêng",
+    "tab_overview": "Tổng quan",
+    "tab_itinerary": "Lịch trình",
+    "tab_inclusions": "Bao gồm",
+    "tab_policy": "Chính sách",
+    "days": "{count} ngày",
+    "participants": "{count} khách",
+    "insurance_title": "Bảo hiểm du lịch",
+    "insurance_desc": "Mức bồi thường lên tới 100.000.000 VNĐ/vụ",
+    "guide_title": "Hướng dẫn viên",
+    "guide_desc": "Chuyên nghiệp, am hiểu kiến thức bản địa",
+    "itinerary_empty": "Lịch trình đang được cập nhật",
+    "includes": "Bao gồm",
+    "excludes": "Không bao gồm",
+    "terms_conditions": "Điều khoản & Quy định"
+  },
+  "RichTextEditor": {
+    "bold": "Đậm",
+    "italic": "Nghiêng",
+    "underline": "Gạch chân",
+    "bullet_list": "Danh sách",
+    "ordered_list": "Số thứ tự",
+    "insert_link": "Chèn link",
+    "insert_youtube": "Chèn video YouTube",
+    "youtube_prompt": "Dán link YouTube hoặc Shorts (youtube.com, youtu.be)",
+    "youtube_invalid": "Link không hợp lệ. Ví dụ: https://www.youtube.com/watch?v=... hoặc https://youtube.com/shorts/...",
+    "remove_link": "Gỡ link",
+    "undo": "Hoàn tác",
+    "redo": "Làm lại",
+    "placeholder": "Nhập nội dung...",
+    "link_prompt": "URL"
+  },
   "ImageUploader": {
     "error_max_files": "Chỉ cho phép tải lên tối đa {maxFiles} ảnh.",
+    "error_file_too_large_title": "File quá lớn",
+    "error_file_too_large_desc": "Vui lòng chọn ảnh dưới {maxSizeMB}MB",
     "error_config": "Lỗi cấu hình",
-    "error_config_desc": "Thiếu Cloudinary keys trong .env.local",
+    "error_config_desc": "Cần NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME và NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET trong .env.local",
     "error_upload": "Lỗi Upload",
     "error_upload_desc": "Đã có lỗi trong quá trình tải ảnh",
     "uploading": "Đang tải ảnh lên...",
     "click_to_upload": "Nhấp để chọn ảnh (Tối đa {maxFiles} ảnh)",
     "seo_note": "Định dạng: JPG, PNG, WEBP. Tối đa: 2MB/ảnh.",
     "delete_image": "Xóa ảnh"
+  },
+  "MediaUploader": {
+    "processing": "Đang xử lý...",
+    "click_upload": "Click để tải lên",
+    "file_too_large_title": "File quá lớn",
+    "file_too_large_desc": "Vui lòng chọn file dưới {maxSizeMB}MB",
+    "upload_success": "Tải lên thành công",
+    "upload_failed_title": "Lỗi tải lên",
+    "upload_failed_desc": "Không thể tải file lên server"
+  },
+  "DestinationsPage": {
+    "title": "Điểm đến",
+    "description": "Khám phá các địa danh nổi bật theo từng vùng miền",
+    "empty": "Chưa có điểm đến trong vùng này.",
+    "discover": "Khám phá"
+  },
+  "DestinationDetail": {
+    "breadcrumb_home": "Trang chủ",
+    "breadcrumb_destinations": "Điểm đến",
+    "no_description": "Nội dung đang được cập nhật. Quay lại sau để đọc câu chuyện về điểm đến này nhé!",
+    "story_title": "Câu chuyện {name}",
+    "gallery_title": "Hình ảnh",
+    "view_photo": "Xem ảnh",
+    "region_label": "Vùng miền",
+    "view_tours": "Xem tour tại đây",
+    "stat_tours": "Tour",
+    "stat_photos": "Ảnh",
+    "map_title": "Vị trí",
+    "open_maps": "Mở Google Maps",
+    "tours_badge": "Hành trình gợi ý",
+    "tours_title": "Tour tại {name}",
+    "tours_view_all": "Xem tất cả tour",
+    "tours_empty": "Chưa có tour nào gắn với điểm đến này."
+  },
+  "StaticPages": {
+    "promo_title": "Khuyến mãi",
+    "promo_description": "Ưu đãi tour và dịch vụ đang được cập nhật. Quay lại sau để không bỏ lỡ deal hấp dẫn.",
+    "inspiration_title": "Cảm hứng du lịch",
+    "inspiration_description": "Câu chuyện và gợi ý hành trình sẽ sớm có mặt tại đây.",
+    "view_tours": "Xem tour →",
+    "back_home": "← Trang chủ"
   }
 }

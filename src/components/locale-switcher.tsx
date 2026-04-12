@@ -1,52 +1,63 @@
 "use client";
 
-import { useLocale } from "next-intl";
-import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@heroui/dropdown";
+import { useLocale, useTranslations } from "next-intl";
+import {
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+} from "@heroui/dropdown";
 import { Button } from "@heroui/button";
 import { useRouter } from "next/navigation";
 
-export function LocaleSwitcher() {
+import { cn } from "@/lib/utils";
+
+export function LocaleSwitcher({ isTransparent }: { isTransparent?: boolean }) {
   const locale = useLocale();
   const router = useRouter();
+  const t = useTranslations("Common");
 
   const handleLocaleChange = (newLocale: React.Key) => {
-    // Set cookie NEXT_LOCALE với thời hạn 1 năm
     document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=31536000`;
-    // Reload để Next.js nhận diện locale mới từ cookie
     router.refresh();
   };
 
   const languages = [
-    { code: "vi", name: "Tiếng Việt", flag: "🇻🇳" },
-    { code: "en", name: "English", flag: "🇺🇸" },
+    { code: "vi", name: t("locale_vi"), flag: "🇻🇳" },
+    { code: "en", name: t("locale_en"), flag: "🇺🇸" },
   ];
 
   return (
     <Dropdown placement="bottom-end">
       <DropdownTrigger>
-        <Button 
-          id="locale-switcher-button"
+        <Button
           suppressHydrationWarning
-          variant="ghost" 
+          className={cn(
+            "font-bold min-w-8 px-0 h-9 rounded-full transition-colors cursor-pointer",
+            isTransparent
+              ? "text-white hover:bg-white/10"
+              : "hover:bg-slate-100/50 dark:hover:bg-slate-800/50",
+          )}
+          id="locale-switcher-button"
           size="sm"
-          className="font-bold min-w-10 px-0 h-9 rounded-lg border-default-200 hover:bg-default-100"
+          variant="light"
         >
           {locale.toUpperCase()}
         </Button>
       </DropdownTrigger>
-      <DropdownMenu 
+      <DropdownMenu
         aria-label="Language selection"
-        onAction={(key) => handleLocaleChange(key)}
+        className="min-w-[120px] [&_[role=menuitem]]:cursor-pointer"
         selectedKeys={[locale]}
         selectionMode="single"
         variant="flat"
-        className="min-w-[120px]"
+        onAction={(key) => handleLocaleChange(key)}
       >
         {languages.map((lang) => (
-          <DropdownItem 
+          <DropdownItem
             key={lang.code}
-            startContent={<span className="text-lg">{lang.flag}</span>}
             description={lang.code.toUpperCase()}
+            startContent={<span className="text-lg">{lang.flag}</span>}
           >
             {lang.name}
           </DropdownItem>

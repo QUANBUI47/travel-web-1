@@ -1,22 +1,68 @@
 import { MetadataRoute } from "next";
-// TODO: Lấy destinations, hotels, tours từ Prisma để sinh URL động
-// import { prisma } from "@/lib/prisma";
 
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://example.com";
+import { prisma } from "@/lib/prisma";
+import { ROUTES } from "@/constants";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://vivuvietnam.vn";
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const [destinations, tours] = await Promise.all([
+    prisma.destination.findMany({
+      select: { slug: true, updatedAt: true },
+      where: { slug: { not: "" } },
+    }),
+    prisma.tour.findMany({
+      select: { slug: true, updatedAt: true },
+      where: { slug: { not: "" } },
+    }),
+  ]);
+
   const staticRoutes: MetadataRoute.Sitemap = [
-    { url: baseUrl, lastModified: new Date(), changeFrequency: "daily", priority: 1 },
-    { url: `${baseUrl}/diem-den`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
-    { url: `${baseUrl}/khach-san`, lastModified: new Date(), changeFrequency: "daily", priority: 0.9 },
-    { url: `${baseUrl}/tour`, lastModified: new Date(), changeFrequency: "daily", priority: 0.9 },
-    { url: `${baseUrl}/lien-he`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
+    {
+      url: baseUrl,
+      lastModified: new Date(),
+      changeFrequency: "daily",
+      priority: 1,
+    },
+    {
+      url: `${baseUrl}${ROUTES.DESTINATIONS}`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}${ROUTES.HOTELS}`,
+      lastModified: new Date(),
+      changeFrequency: "daily",
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}${ROUTES.TOURS}`,
+      lastModified: new Date(),
+      changeFrequency: "daily",
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}${ROUTES.CONTACT}`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.5,
+    },
   ];
 
-  // Khi đã kết nối DB, bổ sung:
-  // const destinations = await prisma.destination.findMany({ select: { slug: true, updatedAt: true } });
-  // const destUrls = destinations.map(d => ({ url: `${baseUrl}/diem-den/${d.slug}`, lastModified: d.updatedAt, changeFrequency: 'weekly' as const, priority: 0.8 }));
-  // return [...staticRoutes, ...destUrls, ...];
+  const destinationRoutes: MetadataRoute.Sitemap = destinations.map((item) => ({
+    url: `${baseUrl}${ROUTES.DESTINATIONS}/${item.slug}`,
+    lastModified: item.updatedAt,
+    changeFrequency: "weekly",
+    priority: 0.8,
+  }));
 
-  return staticRoutes;
+  const tourRoutes: MetadataRoute.Sitemap = tours.map((item) => ({
+    url: `${baseUrl}${ROUTES.TOURS}/${item.slug}`,
+    lastModified: item.updatedAt,
+    changeFrequency: "weekly",
+    priority: 0.8,
+  }));
+
+  return [...staticRoutes, ...destinationRoutes, ...tourRoutes];
 }

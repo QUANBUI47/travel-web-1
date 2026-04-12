@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 
-export interface ApiResponseOptions<T = any> {
+export interface ApiResponseOptions<T = unknown> {
   success: boolean;
   message?: string;
   data?: T;
-  error?: any;
+  error?: unknown;
   status?: number;
 }
 
@@ -22,7 +22,7 @@ export function createApiResponse<T>({
       data: data || null,
       error: error || null,
     },
-    { status }
+    { status },
   );
 }
 
@@ -31,6 +31,6 @@ export function successResponse<T>(data?: T, message?: string, status = 200) {
   return createApiResponse({ success: true, data, message, status });
 }
 
-export function errorResponse(error?: any, message?: string, status = 400) {
+export function errorResponse(error?: unknown, message?: string, status = 400) {
   return createApiResponse({ success: false, error, message, status });
 }

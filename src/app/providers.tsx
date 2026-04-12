@@ -7,6 +7,8 @@ import { HeroUIProvider } from "@heroui/system";
 import { ToastProvider } from "@heroui/toast";
 import { useRouter } from "next/navigation";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 export interface ProvidersProps {
   children: React.ReactNode;
@@ -23,13 +25,32 @@ declare module "@react-types/shared" {
 
 export function Providers({ children, themeProps }: ProvidersProps) {
   const router = useRouter();
+  const [queryClient] = React.useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 60 * 1000,
+            gcTime: 5 * 60 * 1000,
+            retry: 1,
+            refetchOnWindowFocus: false,
+          },
+          mutations: {
+            retry: 0,
+          },
+        },
+      }),
+  );
 
   return (
-    <HeroUIProvider navigate={router.push}>
-      <NextThemesProvider {...themeProps}>
-        <ToastProvider placement="bottom-right" toastOffset={16} />
-        {children}
-      </NextThemesProvider>
-    </HeroUIProvider>
+    <QueryClientProvider client={queryClient}>
+      <HeroUIProvider navigate={router.push}>
+        <NextThemesProvider {...themeProps}>
+          <ToastProvider placement="bottom-right" toastOffset={16} />
+          {children}
+        </NextThemesProvider>
+      </HeroUIProvider>
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   );
 }

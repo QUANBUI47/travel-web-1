@@ -10,16 +10,16 @@ import {
 import { Avatar } from "@heroui/avatar";
 import { User2, LogOut, CalendarCheck } from "lucide-react";
 import { useTransition } from "react";
+import { useTranslations } from "next-intl";
 
-import { logout } from "@/app/(auth)/actions";
+import { logout } from "@/actions/auth.actions";
+import { ROUTES } from "@/constants";
 
 interface UserMenuProps {
   displayName: string | null;
   email: string | null;
   avatarUrl: string | null;
 }
-
-import { useTranslations } from "next-intl";
 
 export function UserMenu({ displayName, email, avatarUrl }: UserMenuProps) {
   const t = useTranslations("UserMenu");
@@ -32,7 +32,7 @@ export function UserMenu({ displayName, email, avatarUrl }: UserMenuProps) {
         .join("")
         .toUpperCase()
         .slice(0, 2)
-    : email?.[0]?.toUpperCase() ?? "U";
+    : (email?.[0]?.toUpperCase() ?? "U");
 
   function handleLogout() {
     startTransition(async () => {
@@ -55,22 +55,25 @@ export function UserMenu({ displayName, email, avatarUrl }: UserMenuProps) {
       </DropdownTrigger>
       <DropdownMenu
         aria-label={t("account")}
-        className="min-w-[200px]"
+        className="min-w-[200px] [&_[role=menuitem]]:cursor-pointer"
         variant="flat"
       >
-        <DropdownSection showDivider title={displayName ?? email ?? t("account")}>
+        <DropdownSection
+          showDivider
+          title={displayName ?? email ?? t("account")}
+        >
           <DropdownItem
             key="profile"
             description={email ?? ""}
+            href={ROUTES.USER.PROFILE}
             startContent={<User2 size={16} />}
-            href="/tai-khoan"
           >
             {t("profile")}
           </DropdownItem>
           <DropdownItem
             key="bookings"
+            href={ROUTES.USER.MY_BOOKINGS}
             startContent={<CalendarCheck size={16} />}
-            href="/don-dat"
           >
             {t("bookings")}
           </DropdownItem>

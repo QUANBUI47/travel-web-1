@@ -1,67 +1,84 @@
-import {
-  Navbar as HeroUINavbar,
-  NavbarContent,
-  NavbarMenu,
-  NavbarMenuToggle,
-} from "@heroui/navbar";
-import { NavbarItem } from "@heroui/navbar";
-import { ThemeSwitch } from "@/components/theme-switch";
-import { LocaleSwitcher } from "@/components/locale-switcher";
-import { siteConfig } from "@/config/site";
-import { DesktopNavLinks, MobileNavLinks } from "@/components/nav-links";
-import { AuthService } from "@/services/auth.service";
-import { getTranslations } from "next-intl/server";
-import { BrandLogo } from "./navbar/brand-logo";
+import type { NavItem } from "@/config/site";
+
+import { getTranslations, getLocale } from "next-intl/server";
+
 import { NavbarUserActions } from "./navbar/navbar-user-actions";
+import { NavbarClient } from "./navbar/navbar-client";
+
+import {
+  getCachedNavFeaturedDestinations,
+  getCachedNavFeaturedTours,
+  getCachedNavRegions,
+} from "@/lib/cache/nav-cache";
+import { destinationDetailPath } from "@/constants";
+import { AuthService } from "@/services/auth.service";
+import { AUTH_COOKIES } from "@/constants";
 
 export async function Navbar() {
   const t = await getTranslations("Navbar");
-  const { user: sessionUser, profile } = await AuthService.getCurrentSession();
-  
+  const locale = await getLocale();
+  const { user: sessionUser, profile } = await AuthService.getCurrentSession(
+    AUTH_COOKIES.PUBLIC,
+  );
+
+  // Fetch dynamic data for Navbar
+  const [regions, latestTours, featuredDestinations] = await Promise.all([
+    getCachedNavRegions(),
+    getCachedNavFeaturedTours(),
+    getCachedNavFeaturedDestinations(),
+  ]);
+
   // TÁCH BIỆT: Admin sẽ KHÔNG ĐƯỢC tính là đã đăng nhập ở khu vực Client Navbar
   const isClientUser = sessionUser && profile?.role !== "ADMIN";
   const user = isClientUser ? sessionUser : null;
 
+  // Construct dynamic nav items
+  const dynamicNavItems: NavItem[] = [
+    {
+      label: "destinations" as const,
+      href: "/diem-den",
+      children: [
+        ...regions.map((region) => ({
+          label:
+            locale === "vi" ? region.nameVi : region.nameEn || region.nameVi,
+          href: `/diem-den?region=${region.slug}`,
+          imageUrl:
+            region.imageUrl ||
+            "https://images.unsplash.com/photo-1599312151608-51f7871b67f3?q=80&w=2000",
+        })),
+        ...featuredDestinations.map((destination) => ({
+          label:
+            locale === "vi"
+              ? destination.nameVi
+              : destination.nameEn || destination.nameVi,
+          href: destinationDetailPath(destination.slug),
+          imageUrl: destination.imageUrl ?? undefined,
+        })),
+      ],
+    },
+    {
+      label: "tours" as const,
+      href: "/tours",
+      children: latestTours.map((tour) => {
+        const name = locale === "vi" ? tour.nameVi : tour.nameEn || tour.nameVi;
+        const truncatedName =
+          name.length > 35 ? name.substring(0, 35) + "..." : name;
+
+        return {
+          label: truncatedName,
+          href: `/tours/${tour.slug}`,
+          imageUrl: tour.imageUrls?.[0],
+        };
+      }),
+    },
+    { label: "promo" as const, href: "/khuyen-mai" },
+    { label: "inspiration" as const, href: "/cam-hung" },
+  ];
+
   return (
-    <HeroUINavbar
-      maxWidth='xl'
-      position='sticky'
-      height='5rem'
-      classNames={{
-        base: "border-b border-divider/40 backdrop-blur-xl bg-background/60",
-        wrapper: "px-6",
-      }}
-    >
-      {/* Brand + Nav Links */}
-      <NavbarContent className='basis-1/5 sm:basis-full' justify='start'>
-        <BrandLogo />
-        <DesktopNavLinks items={siteConfig.navItems} />
-      </NavbarContent>
-
-      {/* Right side */}
-      <NavbarContent
-        className='hidden sm:flex basis-1/5 sm:basis-full'
-        justify='end'
-      >
-        <NavbarItem className='flex items-center gap-2' suppressHydrationWarning>
-          <LocaleSwitcher />
-          <ThemeSwitch />
-        </NavbarItem>
-
-        <NavbarUserActions user={user} profile={profile} t={t} />
-      </NavbarContent>
-
-      {/* Mobile */}
-      <NavbarContent className='sm:hidden basis-1 pl-4' justify='end'>
-        <ThemeSwitch />
-        <NavbarUserActions user={user} profile={profile} t={t} />
-        <NavbarMenuToggle />
-      </NavbarContent>
-
-      {/* Mobile Menu */}
-      <NavbarMenu>
-        <MobileNavLinks items={siteConfig.navItems} />
-      </NavbarMenu>
-    </HeroUINavbar>
+    <NavbarClient
+      items={dynamicNavItems}
+      userActions={<NavbarUserActions profile={profile} t={t} user={user} />}
+    />
   );
 }

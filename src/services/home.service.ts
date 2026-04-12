@@ -1,5 +1,8 @@
+import { Prisma } from "@prisma/client";
+
 import { prisma } from "@/lib/prisma";
 import { HomeSetting } from "@/types";
+import { ActivityService } from "@/services/activity.service";
 
 export class HomeService {
   /**
@@ -10,9 +13,9 @@ export class HomeService {
       const homeSetting = await prisma.homeSetting.findUnique({
         where: { id: "default" },
       });
+
       return homeSetting?.content ? (homeSetting.content as HomeSetting) : {};
-    } catch (error) {
-      console.error("[HomeService] Lỗi khi lấy cài đặt Home:", error);
+    } catch {
       return {};
     }
   }
@@ -20,18 +23,27 @@ export class HomeService {
   /**
    * Cập nhật cài đặt trang chủ
    */
-  static async updateSettings(data: HomeSetting) {
+  static async updateSettings(data: HomeSetting, adminId?: string) {
     try {
+      const content = data as Prisma.InputJsonValue;
       const settings = await prisma.homeSetting.upsert({
         where: { id: "default" },
-        update: { content: data as any },
-        create: { id: "default", content: data as any },
+        update: { content },
+        create: { id: "default", content },
       });
+
+      if (adminId) {
+        await ActivityService.log({
+          userId: adminId,
+          action: "UPDATE_HOME_SETTING",
+          entity: "HomeSetting",
+          entityId: "default",
+        });
+      }
+
       return settings;
-    } catch (error) {
-      console.error("[HomeService] Lỗi khi lưu cài đặt Home:", error);
-      throw error;
+    } catch (_error) {
+      throw _error;
     }
   }
 }
-

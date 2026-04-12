@@ -1,5 +1,6 @@
+import { Prisma } from "@prisma/client";
+
 import { prisma } from "@/lib/prisma";
-import { SystemSettingsContent } from "@/lib/schemas";
 
 export class SystemService {
   /**
@@ -9,14 +10,13 @@ export class SystemService {
     try {
       const settings = await prisma.systemSetting.findMany();
       const consolidated: Record<string, unknown> = {};
-      
+
       settings.forEach((setting) => {
         consolidated[setting.key] = setting.value;
       });
-      
+
       return consolidated;
-    } catch (error) {
-      console.error("[SystemService] Lỗi khi lấy cài đặt hệ thống:", error);
+    } catch {
       return {};
     }
   }
@@ -27,8 +27,9 @@ export class SystemService {
   static async isMaintenanceMode(): Promise<boolean> {
     try {
       const setting = await prisma.systemSetting.findUnique({
-        where: { key: "maintenanceMode" }
+        where: { key: "maintenanceMode" },
       });
+
       return setting?.value === true;
     } catch {
       return false;
@@ -38,22 +39,25 @@ export class SystemService {
   /**
    * Cập nhật các key-value của hệ thống (Bulk update)
    */
-  static async updateSettings(group: string, settings: Record<string, unknown>) {
+  static async updateSettings(
+    group: string,
+    settings: Record<string, unknown>,
+  ) {
     try {
       // Sử dụng transaction để đảm bảo tính nhất quán
       await prisma.$transaction(
-        Object.entries(settings).map(([key, value]) => 
+        Object.entries(settings).map(([key, value]) =>
           prisma.systemSetting.upsert({
             where: { key },
-            update: { value: value as any, group },
-            create: { key, value: value as any, group },
-          })
-        )
+            update: { value: value as Prisma.InputJsonValue, group },
+            create: { key, value: value as Prisma.InputJsonValue, group },
+          }),
+        ),
       );
+
       return true;
-    } catch (error) {
-      console.error("[SystemService] Lỗi lưu biến hệ thống:", error);
-      throw error;
+    } catch (_error) {
+      throw _error;
     }
   }
 }
