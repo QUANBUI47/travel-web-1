@@ -1,6 +1,6 @@
 # Kiến trúc hệ thống (Architecture)
 
-Dự án Vivu Travel được xây dựng trên nền tảng **Next.js 14** sử dụng **App Router**, tuân thủ các nguyên tắc thiết kế hiện đại để đảm bảo tính mở mở rộng và dễ bảo trì.
+Dự án Vivu Travel được xây dựng trên nền tảng **Next.js 15** (App Router + Turbopack), tuân thủ các nguyên tắc thiết kế hiện đại để đảm bảo tính mở rộng và dễ bảo trì.
 
 ## 🏗️ Cấu trúc thư mục `src/`
 
@@ -12,7 +12,7 @@ Dự án Vivu Travel được xây dựng trên nền tảng **Next.js 14** sử
 - **`services/`**: Layer xử lý logic nghiệp vụ và tương tác với Database/External API. Các component và action nên gọi qua service thay vì gọi trực tiếp Prisma.
 - **`actions/`**: Chứa các Server Actions để xử lý Form submission và các thao tác mutation từ phía Client.
 - **`components/`**: Thư viện các UI component dùng chung, được xây dựng dựa trên HeroUI.
-- **`lib/`**: Chứa các cấu hình thư viện bên thứ ba (Prisma client, Supabase client).
+- **`lib/`**: Hạ tầng & shared utilities — bao gồm cấu hình thư viện bên thứ ba (Prisma client, Supabase client, Cloudinary), validations & Zod schemas, sanitize HTML, query keys cho TanStack Query, safe-action wrapper, i18n helpers, và auth guards.
 - **`constants/`**: Lưu trữ các hằng số, enum, route path dùng chung toàn hệ thống.
 - **`utils/`**: Các hàm tiện ích (helper functions).
 - **`types/`**: Định nghĩa các TypeScript interface và type.
@@ -21,12 +21,14 @@ Dự án Vivu Travel được xây dựng trên nền tảng **Next.js 14** sử
 ## 🛡️ Xác thực & Phân quyền (Auth)
 
 Dự án sử dụng **Supabase Auth** với cơ chế **SSR (Server-Side Rendering)**.
+
 - `middleware.ts` đóng vai trò quan trọng trong việc làm mới session và bảo vệ các route nhạy cảm (như `/admin/*`).
 - Có hai vai trò chính: `USER` (Khách hàng) và `ADMIN` (Quản trị viên).
 
 ## 🌐 Đa ngôn ngữ (i18n)
 
 Hệ thống sử dụng `next-intl` để hỗ trợ đa ngôn ngữ từ phía Server lẫn Client.
+
 - Các bản dịch được tập trung tại `src/messages/`.
 - `middleware` xử lý việc xác định ngôn ngữ từ URL hoặc cookie.
 

@@ -1,4 +1,5 @@
 import type {
+  Prisma,
   Tour as PrismaTour,
   TourDeparture as PrismaTourDeparture,
 } from "@prisma/client";
@@ -61,9 +62,13 @@ export class TourService {
     return tour ? this.mapTour(tour) : null;
   }
 
+  /**
+   * Public: lấy tour theo id. Trả null nếu destination inactive (cascade hide).
+   * Dùng cho UUID fallback ở `(main)/tours/[slug]/page.tsx`.
+   */
   static async getById(id: string): Promise<Tour | null> {
-    const tour = await prisma.tour.findUnique({
-      where: { id },
+    const tour = await prisma.tour.findFirst({
+      where: { id, destination: { isActive: true } },
       include: {
         destination: {
           include: { region: true },
@@ -74,9 +79,12 @@ export class TourService {
     return tour ? this.mapTour(tour) : null;
   }
 
+  /**
+   * Public: lấy tour theo slug. Trả null nếu destination inactive (cascade hide).
+   */
   static async getBySlug(slug: string): Promise<Tour | null> {
-    const tour = await prisma.tour.findUnique({
-      where: { slug },
+    const tour = await prisma.tour.findFirst({
+      where: { slug, destination: { isActive: true } },
       include: {
         destination: {
           include: { region: true },
@@ -181,7 +189,10 @@ export class TourService {
     const tours = await prisma.tour.findMany({
       where: {
         isActive: true,
-        ...(destinationSlug ? { destination: { slug: destinationSlug } } : {}),
+        destination: {
+          isActive: true,
+          ...(destinationSlug ? { slug: destinationSlug } : {}),
+        },
         ...(type
           ? {
               OR: [
@@ -222,23 +233,22 @@ export class TourService {
   }
 
   /**
-   * Get all tours with their destinations
+   * Public: get all tours (REST API công khai). Cascade hide khi
+   * destination inactive.
    */
   static async getAll() {
     const tours = await prisma.tour.findMany({
-      include: {
-        destination: true,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
+      where: { destination: { isActive: true } },
+      include: { destination: true },
+      orderBy: { createdAt: "desc" },
     });
 
     return tours.map((t) => this.mapTour(t));
   }
 
   /**
-   * Get paginated tours with search
+   * Public: paginated cho REST API công khai. Cascade hide khi
+   * destination inactive.
    */
   static async getPaginated(
     page: number = 1,
@@ -247,7 +257,57 @@ export class TourService {
   ) {
     const skip = (page - 1) * limit;
 
-    const where = search
+    const where: Prisma.TourWhereInput = {
+      destination: { isActive: true },
+      ...(search
+        ? {
+            OR: [
+              { nameVi: { contains: search, mode: "insensitive" as const } },
+              { nameEn: { contains: search, mode: "insensitive" as const } },
+              {
+                destination: {
+                  nameVi: { contains: search, mode: "insensitive" as const },
+                },
+              },
+            ],
+          }
+        : {}),
+    };
+
+    const [total, data] = await Promise.all([
+      prisma.tour.count({ where }),
+      prisma.tour.findMany({
+        where,
+        skip,
+        take: limit,
+        include: { destination: true },
+        orderBy: { createdAt: "desc" },
+      }),
+    ]);
+
+    return {
+      data: data.map((t) => this.mapTour(t)),
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  }
+
+  /**
+   * Admin: paginated cho trang quản trị. KHÔNG cascade hide — admin
+   * cần thấy tour thuộc destination inactive để sửa/khôi phục.
+   */
+  static async getPaginatedForAdmin(
+    page: number = 1,
+    limit: number = 10,
+    search?: string,
+  ) {
+    const skip = (page - 1) * limit;
+
+    const where: Prisma.TourWhereInput = search
       ? {
           OR: [
             { nameVi: { contains: search, mode: "insensitive" as const } },
@@ -267,12 +327,8 @@ export class TourService {
         where,
         skip,
         take: limit,
-        include: {
-          destination: true,
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
+        include: { destination: true },
+        orderBy: { createdAt: "desc" },
       }),
     ]);
 
@@ -325,17 +381,15 @@ export class TourService {
     });
   }
   /**
-   * Lấy danh sách tour nổi bật cho trang chủ
+   * Public: tour nổi bật cho trang chủ + navbar.
+   * Cascade hide khi destination inactive.
    */
   static async getFeatured(limit: number = 6): Promise<Tour[]> {
     const tours = await prisma.tour.findMany({
+      where: { destination: { isActive: true } },
       take: limit,
-      include: {
-        destination: true,
-      },
-      orderBy: {
-        createdAt: "desc", // Có thể thay bằng rating nếu có
-      },
+      include: { destination: true },
+      orderBy: { createdAt: "desc" }, // Có thể thay bằng rating nếu có
     });
 
     return tours.map((t) => this.mapTour(t));

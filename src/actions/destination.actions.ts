@@ -46,7 +46,7 @@ export async function getPaginatedDestinationsAction(
     const { listQuerySchema } = await getValidationSchemas();
     const { page: p, limit: l } = listQuerySchema.parse({ page, limit });
 
-    const result = await DestinationService.getPaginated(p, l);
+    const result = await DestinationService.getPaginatedForAdmin(p, l);
 
     return serialize({
       success: true,

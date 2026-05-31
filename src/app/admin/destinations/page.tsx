@@ -81,6 +81,7 @@ export default function DestinationsPage() {
     description: "",
     sortOrder: 0,
     isFeatured: false,
+    isActive: true,
     latitude: null,
     longitude: null,
   });
@@ -176,6 +177,7 @@ export default function DestinationsPage() {
       description: dest.description || "",
       sortOrder: dest.sortOrder || 0,
       isFeatured: dest.isFeatured ?? false,
+      isActive: dest.isActive ?? true,
       latitude: dest.latitude || null,
       longitude: dest.longitude || null,
     });
@@ -194,6 +196,7 @@ export default function DestinationsPage() {
       description: "",
       sortOrder: 0,
       isFeatured: false,
+      isActive: true,
       latitude: null,
       longitude: null,
     });
@@ -498,6 +501,23 @@ export default function DestinationsPage() {
                     isSelected={formData.isFeatured}
                     onValueChange={(isFeatured) =>
                       setFormData({ ...formData, isFeatured })
+                    }
+                  />
+                </div>
+
+                <div className="flex items-center justify-between rounded-2xl border border-slate-100 px-4 py-3">
+                  <div>
+                    <p className="text-xs font-black uppercase tracking-widest text-default-500">
+                      {t("field_active")}
+                    </p>
+                    <p className="text-[10px] text-slate-400 mt-0.5">
+                      {t("field_active_hint")}
+                    </p>
+                  </div>
+                  <Switch
+                    isSelected={formData.isActive}
+                    onValueChange={(isActive) =>
+                      setFormData({ ...formData, isActive })
                     }
                   />
                 </div>

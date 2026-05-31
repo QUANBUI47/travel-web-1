@@ -3,17 +3,21 @@ import { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
 import { ROUTES } from "@/constants";
 
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://vivuvietnam.vn";
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://example.com";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [destinations, tours] = await Promise.all([
     prisma.destination.findMany({
       select: { slug: true, updatedAt: true },
-      where: { slug: { not: "" } },
+      where: { slug: { not: "" }, isActive: true },
     }),
     prisma.tour.findMany({
       select: { slug: true, updatedAt: true },
-      where: { slug: { not: "" } },
+      where: {
+        slug: { not: "" },
+        isActive: true,
+        destination: { isActive: true },
+      },
     }),
   ]);
 

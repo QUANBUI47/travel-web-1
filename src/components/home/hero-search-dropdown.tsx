@@ -22,8 +22,13 @@ type HeroSearchDropdownProps = {
   onClose: () => void;
   panelRef?: React.RefObject<HTMLDivElement | null>;
   minWidth?: number;
-  align?: "anchor" | "search-bar";
+  /** Fixed width in px. When set, overrides anchor/searchBar width. */
+  panelWidth?: number;
+  /** Anchor strategy: 'anchor' = pin to field; 'search-bar' = stretch to bar; 'center' = center on field with fixed panelWidth. */
+  align?: "anchor" | "search-bar" | "center";
   searchBarRef?: React.RefObject<HTMLElement | null>;
+  /** Skip max-height clipping (for tall calendar/guests panels). */
+  tall?: boolean;
   className?: string;
   children: React.ReactNode;
 };
@@ -32,30 +37,48 @@ function computePosition(
   anchor: HTMLElement,
   panelHeight: number,
   minWidth: number,
-  align: "anchor" | "search-bar",
+  align: "anchor" | "search-bar" | "center",
   searchBar?: HTMLElement | null,
+  panelWidth?: number,
+  tall = false,
 ): PanelPosition {
   const anchorRect = anchor.getBoundingClientRect();
   const barRect = searchBar?.getBoundingClientRect();
-  const gap = 8;
+  const gap = 10;
   const viewportPad = 12;
 
   const spaceBelow = window.innerHeight - anchorRect.bottom - gap - viewportPad;
   const spaceAbove = anchorRect.top - gap - viewportPad;
   const openUp = spaceBelow < panelHeight && spaceAbove > spaceBelow;
+  const heightCap = tall ? 640 : 360;
   const maxHeight = Math.min(
-    360,
+    heightCap,
     Math.max(160, openUp ? spaceAbove : spaceBelow),
   );
 
-  const width = Math.max(
-    minWidth,
-    align === "search-bar" && barRect ? barRect.width : anchorRect.width,
+  const maxAllowedWidth = window.innerWidth - viewportPad * 2;
+  const desiredWidth =
+    panelWidth ??
+    Math.max(
+      minWidth,
+      align === "search-bar" && barRect ? barRect.width : anchorRect.width,
+    );
+  const width = Math.min(desiredWidth, maxAllowedWidth);
+
+  let rawLeft: number;
+
+  if (align === "search-bar" && barRect) {
+    rawLeft = barRect.left;
+  } else if (align === "center") {
+    rawLeft = anchorRect.left + anchorRect.width / 2 - width / 2;
+  } else {
+    rawLeft = anchorRect.left;
+  }
+
+  const left = Math.max(
+    viewportPad,
+    Math.min(rawLeft, window.innerWidth - width - viewportPad),
   );
-  const left =
-    align === "search-bar" && barRect
-      ? barRect.left
-      : Math.min(anchorRect.left, window.innerWidth - width - viewportPad);
 
   if (openUp) {
     return {
@@ -82,8 +105,10 @@ export function HeroSearchDropdown({
   onClose,
   panelRef,
   minWidth = 280,
+  panelWidth,
   align = "anchor",
   searchBarRef,
+  tall = false,
   className,
   children,
 }: HeroSearchDropdownProps) {
@@ -110,9 +135,17 @@ export function HeroSearchDropdown({
     const height = panel.getBoundingClientRect().height || 280;
 
     setPosition(
-      computePosition(anchor, height, minWidth, align, searchBarRef?.current),
+      computePosition(
+        anchor,
+        height,
+        minWidth,
+        align,
+        searchBarRef?.current,
+        panelWidth,
+        tall,
+      ),
     );
-  }, [anchorRef, minWidth, align, searchBarRef]);
+  }, [anchorRef, minWidth, align, searchBarRef, panelWidth, tall]);
 
   React.useLayoutEffect(() => {
     if (!open) {
@@ -192,10 +225,12 @@ export function HeroSearchDropdown({
     <div
       ref={setPanelRef}
       className={cn(
-        "rounded-[1.25rem] border border-slate-200/90 dark:border-slate-600/80",
-        "bg-white/98 dark:bg-slate-900/98 backdrop-blur-md",
-        "shadow-[0_16px_48px_-12px_rgba(15,23,42,0.28)] ring-1 ring-slate-900/5 dark:ring-white/10",
-        "overflow-hidden flex flex-col",
+        "rounded-[1.5rem] border border-slate-200/90 dark:border-slate-700/80",
+        "bg-white dark:bg-slate-900",
+        "shadow-[0_24px_60px_-16px_rgba(15,23,42,0.32)] ring-1 ring-slate-900/5 dark:ring-white/5",
+        tall
+          ? "overflow-hidden flex flex-col"
+          : "overflow-hidden flex flex-col",
         "animate-in fade-in duration-200 ease-out",
         position?.placement === "bottom" && "slide-in-from-top-1",
         position?.placement === "top" && "slide-in-from-bottom-1",

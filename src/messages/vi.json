@@ -31,6 +31,17 @@
 
     "VIVU_ADMIN_ERROR_UPLOAD_CLOUDINARY": "Không thể tải file lên Cloudinary",
     "CLOUDINARY_NOT_CONFIGURED": "Thiếu CLOUDINARY_API_KEY / CLOUDINARY_API_SECRET trong .env.local (không dùng NEXT_PUBLIC_). Hoặc dùng upload preset unsigned.",
+
+    "VIVU_BOOKING_TOUR_NOT_FOUND": "Tour không tồn tại hoặc đã bị gỡ",
+    "VIVU_BOOKING_TOUR_INACTIVE": "Tour này hiện không nhận đặt chỗ",
+    "VIVU_BOOKING_DEPARTURE_NOT_FOUND": "Khởi hành đã chọn không tồn tại",
+    "VIVU_BOOKING_DEPARTURE_TOUR_MISMATCH": "Khởi hành không thuộc tour này",
+    "VIVU_BOOKING_DEPARTURE_CLOSED": "Khởi hành này đã đóng đặt chỗ",
+    "VIVU_BOOKING_NOT_ENOUGH_SLOTS": "Không đủ chỗ trống cho khởi hành này",
+    "VIVU_BOOKING_PRICE_MISSING": "Tour chưa được cấu hình giá đặt",
+    "VIVU_BOOKING_NOT_FOUND": "Đơn đặt không tồn tại",
+    "VIVU_BOOKING_NOT_TOUR_TYPE": "Đơn đặt này không phải tour",
+    "VIVU_BOOKING_NOT_CANCELLABLE": "Đơn đặt không thể hủy ở trạng thái hiện tại",
     "AUTH_LOGIN_SUCCESS": "Đăng nhập thành công",
     "AUTH_LOGIN_MISSING": "Vui lòng nhập đầy đủ email và mật khẩu",
     "AUTH_LOGIN_INVALID": "Email hoặc mật khẩu không chính xác",

@@ -83,6 +83,7 @@ export function buildValidationSchemas(t: ValidationTranslator) {
     description: z.string().optional().nullable(),
     sortOrder: z.number().int().default(0),
     isFeatured: z.boolean().optional().default(false),
+    isActive: z.boolean().optional().default(true),
     latitude: z.number().optional().nullable(),
     longitude: z.number().optional().nullable(),
   });

@@ -39,7 +39,7 @@ export async function getPaginatedToursAction(
       search,
     });
 
-    const result = await TourService.getPaginated(p, l, q);
+    const result = await TourService.getPaginatedForAdmin(p, l, q);
 
     return serialize({ success: true, ...result }) as PaginatedToursResponse;
   } catch (error) {

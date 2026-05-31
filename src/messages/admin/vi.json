@@ -166,6 +166,8 @@
     "field_gallery_hint": "Ảnh đầu tiên dùng làm ảnh bìa trên trang chi tiết.",
     "field_featured": "Nổi bật",
     "field_featured_hint": "Ưu tiên hiển thị trên trang chủ (sắp có).",
+    "field_active": "Đang hoạt động",
+    "field_active_hint": "Tắt để ẩn điểm đến này và các tour/khách sạn thuộc nó khỏi website.",
     "field_latitude": "Vĩ độ",
     "field_longitude": "Kinh độ",
     "field_description": "Mô tả chi tiết",
@@ -394,7 +396,7 @@
     "page_desc": "Cấu hình meta title, description và Open Graph cho từng trang.",
     "add_page": "Thêm trang SEO",
     "list_title": "Danh sách trang SEO",
-    "list_hint": "Dữ liệu lấy từ bảng seo_pages (Prisma). Mỗi bản ghi gồm: slug, meta_title, meta_description, og_image, no_index.",
+    "list_hint": "Dữ liệu lấy từ bảng seo_pages (Prisma). Mỗi bản ghi trỏ về duy nhất một entity (tour / điểm đến / khách sạn) hoặc một URL tĩnh — đảm bảo bằng FK exclusive-arc, nên SEO không bị orphan khi entity đổi slug.",
     "empty": "Chưa có bản ghi. Chạy migration và thêm dữ liệu qua form \"Thêm trang SEO\" hoặc seed."
   },
   "ToursDetail": {

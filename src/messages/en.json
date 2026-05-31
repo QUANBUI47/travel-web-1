@@ -31,6 +31,17 @@
 
     "VIVU_ADMIN_ERROR_UPLOAD_CLOUDINARY": "Unable to upload file to Cloudinary",
     "CLOUDINARY_NOT_CONFIGURED": "Missing CLOUDINARY_API_KEY / CLOUDINARY_API_SECRET in .env.local (do not use NEXT_PUBLIC_). Or use an unsigned upload preset.",
+
+    "VIVU_BOOKING_TOUR_NOT_FOUND": "Tour does not exist or has been removed",
+    "VIVU_BOOKING_TOUR_INACTIVE": "This tour is no longer available for booking",
+    "VIVU_BOOKING_DEPARTURE_NOT_FOUND": "The selected departure does not exist",
+    "VIVU_BOOKING_DEPARTURE_TOUR_MISMATCH": "Departure does not belong to this tour",
+    "VIVU_BOOKING_DEPARTURE_CLOSED": "This departure is no longer accepting bookings",
+    "VIVU_BOOKING_NOT_ENOUGH_SLOTS": "Not enough available slots for this departure",
+    "VIVU_BOOKING_PRICE_MISSING": "Booking price is not configured for this tour",
+    "VIVU_BOOKING_NOT_FOUND": "Booking does not exist",
+    "VIVU_BOOKING_NOT_TOUR_TYPE": "This booking is not a tour booking",
+    "VIVU_BOOKING_NOT_CANCELLABLE": "This booking can no longer be cancelled",
     "AUTH_LOGIN_SUCCESS": "Login successful",
     "AUTH_LOGIN_MISSING": "Please enter both email and password",
     "AUTH_LOGIN_INVALID": "Invalid email or password",

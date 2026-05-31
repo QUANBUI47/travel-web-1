@@ -2,14 +2,16 @@
 
 import type { HeroContent } from "@/types/builder";
 import type { Destination } from "@/types";
+import type { RangeValue } from "@react-types/shared";
+import type { DateValue } from "@internationalized/date";
 
 import React from "react";
-import { Search, MapPin, Calendar, ChevronDown, X } from "lucide-react";
-import { Button } from "@heroui/button";
+import { Search, MapPin, Calendar, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
 import { HeroSearchDropdown } from "@/components/home/hero-search-dropdown";
+import { HeroSearchDatePanel } from "@/components/home/hero-search-date-panel";
 import { buildTourSearchUrl } from "@/lib/tour/search-params";
 import { getDBLocalizedValue, getLocalizedValue } from "@/lib/utils/i18n";
 import { cn } from "@/lib/utils";
@@ -42,27 +44,36 @@ function resolveSuggestionSlug(
   return match?.slug;
 }
 
-function formatDateLabel(from: string, to: string, locale: string): string {
-  const fmt = (iso: string) => {
-    const [y, m, d] = iso.split("-").map(Number);
+function dateValueToIso(value: DateValue | null | undefined): string {
+  if (!value) return "";
+  const m = String(value.month).padStart(2, "0");
+  const d = String(value.day).padStart(2, "0");
 
-    return new Date(y, m - 1, d).toLocaleDateString(
-      locale === "vi" ? "vi-VN" : "en-US",
-      { day: "2-digit", month: "2-digit", year: "numeric" },
-    );
-  };
-
-  if (from && to) return `${fmt(from)} – ${fmt(to)}`;
-  if (from) return fmt(from);
-
-  return "";
+  return `${value.year}-${m}-${d}`;
 }
 
-const todayIso = () => {
-  const d = new Date();
+function formatDateRangeLabel(
+  range: RangeValue<DateValue> | null,
+  locale: string,
+): string {
+  if (!range) return "";
+  const lang = locale === "vi" ? "vi-VN" : "en-US";
+  const opts: Intl.DateTimeFormatOptions = {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+  };
+  const start = range.start
+    .toDate("UTC")
+    .toLocaleDateString(lang, opts)
+    .replace(",", "");
+  const end = range.end
+    .toDate("UTC")
+    .toLocaleDateString(lang, opts)
+    .replace(",", "");
 
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-};
+  return `${start} – ${end}`;
+}
 
 export function HeroSearchWidget({
   destinations,
@@ -81,11 +92,13 @@ export function HeroSearchWidget({
   const [destinationSlug, setDestinationSlug] = React.useState<string | null>(
     null,
   );
-  const [fromDate, setFromDate] = React.useState("");
-  const [toDate, setToDate] = React.useState("");
+  const [dateRange, setDateRange] =
+    React.useState<RangeValue<DateValue> | null>(null);
   const [activePanel, setActivePanel] = React.useState<ActivePanel>(null);
   const [destQuery, setDestQuery] = React.useState("");
   const [highlightIndex, setHighlightIndex] = React.useState(0);
+  /** Increments each time the date panel opens, used to re-seed its draft. */
+  const [datePanelOpenKey, setDatePanelOpenKey] = React.useState(0);
 
   const destinationItems = React.useMemo(
     () =>
@@ -116,10 +129,9 @@ export function HeroSearchWidget({
   );
 
   const locationDisplay = selectedDestination?.label;
-  const dateDisplay = formatDateLabel(fromDate, toDate, locale);
+  const dateDisplay = formatDateRangeLabel(dateRange, locale);
   const hasLocation = Boolean(selectedDestination);
-  const hasDates = Boolean(fromDate || toDate);
-  const minDate = todayIso();
+  const hasDates = Boolean(dateRange);
 
   const closePanels = () => setActivePanel(null);
 
@@ -131,6 +143,7 @@ export function HeroSearchWidget({
 
   const openDate = () => {
     setActivePanel("date");
+    setDatePanelOpenKey((k) => k + 1);
   };
 
   const selectDestination = (slug: string, label: string) => {
@@ -141,12 +154,12 @@ export function HeroSearchWidget({
   };
 
   const navigate = React.useCallback(
-    (slug: string | null, from: string, to: string) => {
+    (slug: string | null, range: RangeValue<DateValue> | null) => {
       const params: Parameters<typeof buildTourSearchUrl>[0] = {};
 
       if (slug) params.destination = slug;
-      if (from) params.from = from;
-      if (to) params.to = to;
+      if (range?.start) params.from = dateValueToIso(range.start);
+      if (range?.end) params.to = dateValueToIso(range.end);
 
       router.push(buildTourSearchUrl(params));
     },
@@ -156,26 +169,19 @@ export function HeroSearchWidget({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     closePanels();
-    navigate(destinationSlug, fromDate, toDate);
+    navigate(destinationSlug, dateRange);
   };
 
   const clearAll = () => {
     setDestinationSlug(null);
     setDestQuery("");
-    setFromDate("");
-    setToDate("");
+    setDateRange(null);
     closePanels();
   };
 
   React.useEffect(() => {
     setHighlightIndex(0);
   }, [destQuery, activePanel]);
-
-  React.useEffect(() => {
-    if (fromDate && toDate && toDate < fromDate) {
-      setToDate(fromDate);
-    }
-  }, [fromDate, toDate]);
 
   const handleDestKeyDown = (e: React.KeyboardEvent) => {
     if (!filteredDestinations.length) return;
@@ -215,22 +221,86 @@ export function HeroSearchWidget({
     }));
   }, [content?.searchSuggestions, destinations, locale]);
 
-  const fieldClass =
-    "w-full lg:flex-1 flex items-center gap-3 px-4 sm:px-5 py-2.5 lg:py-3 text-left rounded-2xl lg:rounded-none transition-colors cursor-pointer select-none";
-
-  const iconClass =
-    "flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-white";
-
-  const labelClass =
-    "text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-0.5";
-
-  const valueClass = (active: boolean) =>
-    cn(
-      "text-sm lg:text-[15px] font-bold leading-snug truncate",
-      active
-        ? "text-slate-900 dark:text-white"
-        : "text-slate-500 dark:text-slate-400",
-    );
+  const renderField = ({
+    active,
+    icon,
+    label,
+    value,
+    placeholder,
+    filled,
+    onClick,
+    onClear,
+  }: {
+    active: boolean;
+    icon: React.ReactNode;
+    label: string;
+    value?: string;
+    placeholder: string;
+    filled: boolean;
+    onClick: () => void;
+    onClear?: () => void;
+  }) => (
+    <button
+      aria-expanded={active}
+      className={cn(
+        "group relative flex h-full w-full items-center gap-3 text-left transition-all cursor-pointer",
+        "rounded-2xl lg:rounded-full px-4 py-3 lg:px-5",
+        "border bg-white dark:bg-slate-800/70",
+        active
+          ? "border-primary ring-2 ring-primary/20 dark:ring-primary/30 shadow-md shadow-primary/10"
+          : "border-slate-200 dark:border-slate-700/80 hover:border-slate-300 dark:hover:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800",
+      )}
+      type="button"
+      onClick={onClick}
+    >
+      <span
+        className={cn(
+          "flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-colors",
+          active
+            ? "bg-primary text-white"
+            : "bg-primary/10 text-primary group-hover:bg-primary/15",
+        )}
+      >
+        {icon}
+      </span>
+      <span className="flex min-w-0 flex-1 flex-col text-left">
+        <span className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400 dark:text-slate-500">
+          {label}
+        </span>
+        <span
+          className={cn(
+            "truncate text-sm font-bold leading-tight",
+            filled
+              ? "text-slate-900 dark:text-white"
+              : "text-slate-500 dark:text-slate-400",
+          )}
+        >
+          {value || placeholder}
+        </span>
+      </span>
+      {filled && onClear ? (
+        <span
+          aria-label="Clear"
+          className="shrink-0 rounded-full p-1 text-slate-400 transition-colors hover:bg-slate-200/80 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-white"
+          role="button"
+          tabIndex={0}
+          onClick={(e) => {
+            e.stopPropagation();
+            onClear();
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              e.stopPropagation();
+              onClear();
+            }
+          }}
+        >
+          <X size={14} strokeWidth={2.5} />
+        </span>
+      ) : null}
+    </button>
+  );
 
   return (
     <form
@@ -239,91 +309,47 @@ export function HeroSearchWidget({
     >
       <div
         ref={searchBarRef}
-        className="relative z-30 w-full max-w-4xl bg-white/95 dark:bg-slate-900/90 backdrop-blur-xl p-1.5 sm:p-2 rounded-[1.75rem] lg:rounded-full shadow-[0_24px_50px_-16px_rgba(0,0,0,0.4)] flex flex-col lg:flex-row lg:items-center border border-white/90 dark:border-white/10 mx-auto gap-1 lg:gap-0"
+        className={cn(
+          "relative z-30 w-full max-w-5xl mx-auto",
+          "bg-white/95 dark:bg-slate-900/90 backdrop-blur-xl",
+          "rounded-[1.75rem] lg:rounded-full",
+          "shadow-[0_28px_60px_-18px_rgba(2,8,23,0.45)]",
+          "ring-1 ring-white/40 dark:ring-white/10",
+          "p-2 sm:p-2.5",
+          "flex flex-col lg:flex-row lg:items-stretch gap-2",
+        )}
       >
-        <div ref={destAnchorRef} className="relative flex-1 min-w-0">
-          <button
-            aria-expanded={activePanel === "destination"}
-            aria-haspopup="listbox"
-            className={cn(
-              fieldClass,
-              "group lg:rounded-l-full lg:pr-3",
-              "border-b lg:border-b-0 lg:border-r border-slate-200/60 dark:border-white/10",
-              "hover:bg-slate-50 dark:hover:bg-white/5",
-              activePanel === "destination" && "bg-slate-50 dark:bg-white/5",
-            )}
-            type="button"
-            onClick={() => {
-              if (activePanel === "destination") closePanels();
-              else openDestination();
-            }}
-          >
-            <div className={iconClass}>
-              <MapPin size={18} strokeWidth={2.5} />
-            </div>
-            <div className="flex-1 min-w-0 text-left">
-              <p className={labelClass}>
-                {getLocalizedValue(content?.searchLocationLabel, locale) ||
-                  t("search.location_label")}
-              </p>
-              <p
-                className={cn(
-                  valueClass(hasLocation),
-                  "flex items-center gap-1",
-                )}
-              >
-                <span className="truncate">
-                  {locationDisplay ||
-                    getLocalizedValue(
-                      content?.searchLocationPlaceholder,
-                      locale,
-                    ) ||
-                    t("search.location_help")}
-                </span>
-                <ChevronDown
-                  className={cn(
-                    "shrink-0 opacity-40 transition-transform duration-200",
-                    activePanel === "destination" && "rotate-180",
-                  )}
-                  size={14}
-                />
-              </p>
-            </div>
-            {hasLocation && (
-              <span
-                className="shrink-0 p-1 rounded-full cursor-pointer hover:bg-slate-200/80 dark:hover:bg-white/10 text-slate-400 transition-colors"
-                role="button"
-                tabIndex={0}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setDestinationSlug(null);
-                  setDestQuery("");
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setDestinationSlug(null);
-                    setDestQuery("");
-                  }
-                }}
-              >
-                <X size={14} />
-              </span>
-            )}
-          </button>
+        <div ref={destAnchorRef} className="relative w-full lg:flex-1">
+          {renderField({
+            active: activePanel === "destination",
+            icon: <MapPin size={18} strokeWidth={2.5} />,
+            label:
+              getLocalizedValue(content?.searchLocationLabel, locale) ||
+              t("search.location_label"),
+            value: locationDisplay,
+            placeholder:
+              getLocalizedValue(content?.searchLocationPlaceholder, locale) ||
+              t("search.location_help"),
+            filled: hasLocation,
+            onClick: () =>
+              activePanel === "destination" ? closePanels() : openDestination(),
+            onClear: () => {
+              setDestinationSlug(null);
+              setDestQuery("");
+            },
+          })}
 
           <HeroSearchDropdown
             align="anchor"
             anchorRef={destAnchorRef}
-            minWidth={280}
+            minWidth={320}
             open={activePanel === "destination"}
             onClose={closePanels}
           >
             <div className="p-2 border-b border-slate-100 dark:border-slate-800 shrink-0">
               <input
                 ref={destSearchRef}
-                className="w-full px-3 py-2 text-sm rounded-lg bg-slate-50 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-primary/25 cursor-text"
+                className="w-full px-3 py-2 text-sm rounded-lg bg-slate-50 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-primary/25 cursor-text text-slate-900 dark:text-white"
                 placeholder={t("search.location_placeholder")}
                 type="search"
                 value={destQuery}
@@ -365,11 +391,11 @@ export function HeroSearchWidget({
                       onMouseEnter={() => setHighlightIndex(index)}
                     >
                       {item.label}
-                      {item.region && (
+                      {item.region ? (
                         <span className="block text-[10px] font-medium text-slate-400 mt-0.5">
                           {item.region}
                         </span>
-                      )}
+                      ) : null}
                     </button>
                   </li>
                 ))
@@ -378,144 +404,64 @@ export function HeroSearchWidget({
           </HeroSearchDropdown>
         </div>
 
-        <div ref={dateAnchorRef} className="relative flex-1 min-w-0">
-          <button
-            aria-expanded={activePanel === "date"}
-            className={cn(
-              fieldClass,
-              "group lg:px-5",
-              "border-b lg:border-b-0 lg:border-r border-slate-200/60 dark:border-white/10",
-              "hover:bg-slate-50 dark:hover:bg-white/5",
-              activePanel === "date" && "bg-slate-50 dark:bg-white/5",
-            )}
-            type="button"
-            onClick={() => {
-              if (activePanel === "date") closePanels();
-              else openDate();
-            }}
-          >
-            <div className={iconClass}>
-              <Calendar size={18} strokeWidth={2.5} />
-            </div>
-            <div className="flex-1 min-w-0 text-left">
-              <p className={labelClass}>
-                {getLocalizedValue(content?.searchDateLabel, locale) ||
-                  t("search.time_label")}
-              </p>
-              <p
-                className={cn(valueClass(hasDates), "flex items-center gap-1")}
-              >
-                <span className="truncate">
-                  {dateDisplay ||
-                    getLocalizedValue(content?.searchDatePlaceholder, locale) ||
-                    t("search.time_placeholder")}
-                </span>
-                <ChevronDown
-                  className={cn(
-                    "shrink-0 opacity-40 transition-transform duration-200",
-                    activePanel === "date" && "rotate-180",
-                  )}
-                  size={14}
-                />
-              </p>
-            </div>
-            {hasDates && (
-              <span
-                className="shrink-0 p-1 rounded-full cursor-pointer hover:bg-slate-200/80 dark:hover:bg-white/10 text-slate-400 transition-colors"
-                role="button"
-                tabIndex={0}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setFromDate("");
-                  setToDate("");
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setFromDate("");
-                    setToDate("");
-                  }
-                }}
-              >
-                <X size={14} />
-              </span>
-            )}
-          </button>
+        <div ref={dateAnchorRef} className="relative w-full lg:flex-1">
+          {renderField({
+            active: activePanel === "date",
+            icon: <Calendar size={18} strokeWidth={2.5} />,
+            label:
+              getLocalizedValue(content?.searchDateLabel, locale) ||
+              t("search.time_label"),
+            value: dateDisplay,
+            placeholder:
+              getLocalizedValue(content?.searchDatePlaceholder, locale) ||
+              t("search.time_placeholder"),
+            filled: hasDates,
+            onClick: () =>
+              activePanel === "date" ? closePanels() : openDate(),
+            onClear: () => setDateRange(null),
+          })}
 
           <HeroSearchDropdown
-            align="anchor"
+            tall
+            align="center"
             anchorRef={dateAnchorRef}
-            minWidth={260}
+            minWidth={320}
             open={activePanel === "date"}
+            panelWidth={680}
             onClose={closePanels}
           >
-            <div className="p-3 space-y-3 shrink-0">
-              <div className="grid grid-cols-2 gap-3">
-                <label className="flex flex-col gap-1 cursor-pointer">
-                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">
-                    {locale === "vi" ? "Từ ngày" : "From"}
-                  </span>
-                  <input
-                    className="w-full px-3 py-2 text-sm rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 outline-none focus:ring-2 focus:ring-primary/25 cursor-pointer"
-                    min={minDate}
-                    type="date"
-                    value={fromDate}
-                    onChange={(e) => setFromDate(e.target.value)}
-                  />
-                </label>
-                <label className="flex flex-col gap-1 cursor-pointer">
-                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">
-                    {locale === "vi" ? "Đến ngày" : "To"}
-                  </span>
-                  <input
-                    className="w-full px-3 py-2 text-sm rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 outline-none focus:ring-2 focus:ring-primary/25 cursor-pointer"
-                    min={fromDate || minDate}
-                    type="date"
-                    value={toDate}
-                    onChange={(e) => setToDate(e.target.value)}
-                  />
-                </label>
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  className="flex-1 font-bold text-xs cursor-pointer"
-                  size="sm"
-                  variant="flat"
-                  onPress={() => {
-                    setFromDate("");
-                    setToDate("");
-                  }}
-                >
-                  {locale === "vi" ? "Xóa" : "Clear"}
-                </Button>
-                <Button
-                  className="flex-1 font-bold text-xs cursor-pointer"
-                  color="primary"
-                  size="sm"
-                  onPress={closePanels}
-                >
-                  {locale === "vi" ? "Xong" : "Done"}
-                </Button>
-              </div>
-            </div>
+            <HeroSearchDatePanel
+              ariaLabel={t("search.time_label")}
+              locale={locale}
+              openKey={datePanelOpenKey}
+              value={dateRange}
+              onApply={(range) => setDateRange(range)}
+              onClose={closePanels}
+            />
           </HeroSearchDropdown>
         </div>
 
-        <Button
-          className="m-1 sm:m-1.5 font-black h-11 sm:h-12 px-8 sm:px-10 rounded-full text-xs sm:text-sm tracking-[0.2em] shadow-lg shadow-primary/30 w-[calc(100%-8px)] sm:w-auto lg:w-auto mx-auto lg:mx-0 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white hover:brightness-110 active:scale-[0.98] transition-all cursor-pointer"
+        <button
+          className={cn(
+            "shrink-0 w-full lg:w-auto cursor-pointer",
+            "rounded-2xl lg:rounded-full",
+            "bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800",
+            "text-white font-black text-sm tracking-[0.15em] uppercase",
+            "h-12 lg:h-auto lg:min-h-[52px] px-7 lg:px-8",
+            "shadow-lg shadow-primary/30",
+            "hover:brightness-110 active:scale-[0.98]",
+            "transition-all flex items-center justify-center gap-2",
+          )}
           type="submit"
         >
-          <span className="flex items-center gap-2">
-            <Search size={18} strokeWidth={2.5} />
-            {t("search.button")}
-          </span>
-        </Button>
+          <Search size={18} strokeWidth={2.75} />
+          <span>{t("search.button")}</span>
+        </button>
       </div>
 
       {(hasLocation || hasDates) && (
         <button
-          className="mt-2 text-[10px] font-bold text-white/50 hover:text-white/80 underline-offset-2 hover:underline transition-colors cursor-pointer"
+          className="mt-3 text-[10px] font-bold text-white/60 hover:text-white underline-offset-2 hover:underline transition-colors cursor-pointer drop-shadow"
           type="button"
           onClick={clearAll}
         >
@@ -523,15 +469,15 @@ export function HeroSearchWidget({
         </button>
       )}
 
-      {suggestionTags.length > 0 && activePanel === null && (
-        <div className="relative z-10 flex flex-wrap items-center justify-center gap-1.5 mt-3 max-w-4xl">
-          <span className="text-white/40 text-[10px] font-bold uppercase tracking-widest mr-1">
+      {suggestionTags.length > 0 && activePanel === null ? (
+        <div className="relative z-10 flex flex-wrap items-center justify-center gap-1.5 mt-4 max-w-4xl">
+          <span className="text-white/50 text-[10px] font-bold uppercase tracking-widest mr-1 drop-shadow">
             {t("suggestions_label")}
           </span>
           {suggestionTags.map((tag) => (
             <button
               key={tag.slug}
-              className="bg-white/10 hover:bg-white/25 hover:border-white/30 backdrop-blur-md border border-white/15 text-white/80 hover:text-white px-2.5 py-1 rounded-full text-[10px] font-bold transition-all cursor-pointer active:scale-95"
+              className="bg-white/10 hover:bg-white/25 hover:border-white/30 backdrop-blur-md border border-white/15 text-white/90 hover:text-white px-3 py-1 rounded-full text-[10px] font-bold transition-all cursor-pointer active:scale-95"
               type="button"
               onClick={() => selectDestination(tag.slug, tag.label)}
             >
@@ -539,7 +485,7 @@ export function HeroSearchWidget({
             </button>
           ))}
         </div>
-      )}
+      ) : null}
     </form>
   );
 }

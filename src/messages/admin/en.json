@@ -162,6 +162,8 @@
     "field_gallery_hint": "The first image is used as the cover on the detail page.",
     "field_featured": "Featured",
     "field_featured_hint": "Prioritize on homepage (coming soon).",
+    "field_active": "Active",
+    "field_active_hint": "Disable to hide this destination and its tours/hotels from the public site.",
     "field_latitude": "Latitude",
     "field_longitude": "Longitude",
     "field_description": "Full description",
@@ -390,7 +392,7 @@
     "page_desc": "Configure meta title, description and Open Graph per page.",
     "add_page": "Add SEO page",
     "list_title": "SEO pages",
-    "list_hint": "Data from seo_pages (Prisma). Each record includes: slug, meta_title, meta_description, og_image, no_index.",
+    "list_hint": "Data from seo_pages (Prisma). Each record targets exactly one entity (tour / destination / hotel) or a static URL — guaranteed by an exclusive-arc FK design, so SEO never orphans when an entity slug changes.",
     "empty": "No records yet. Run migration and add data via \"Add SEO page\" or seed."
   },
   "ToursDetail": {

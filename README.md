@@ -4,7 +4,7 @@ Vivu Travel là một nền tảng du lịch hiện đại dành cho thị trư�
 
 ## 🚀 Công nghệ sử dụng
 
-- **Frontend**: [Next.js 14](https://nextjs.org/) (App Router), [HeroUI v2](https://heroui.com/) (formerly NextUI), [Tailwind CSS](https://tailwindcss.com/).
+- **Frontend**: [Next.js 15](https://nextjs.org/) (App Router, Turbopack), [React 18](https://react.dev/), [HeroUI v2](https://heroui.com/) (formerly NextUI), [Tailwind CSS 4](https://tailwindcss.com/).
 - **Backend & Database**: [Prisma](https://www.prisma.io/) ORM, [PostgreSQL](https://www.postgresql.org/) (hosted on Supabase).
 - **Authentication**: [Supabase Auth](https://supabase.com/auth).
 - **Quản lý ảnh**: [Cloudinary](https://cloudinary.com/).

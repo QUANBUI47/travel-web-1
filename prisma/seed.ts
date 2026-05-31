@@ -240,21 +240,18 @@ async function main() {
     // 2. Regions
     const regions = [
       {
-        code: "mb",
         slug: "mien-bac",
         nameVi: "Miền Bắc",
         nameEn: "North",
         sortOrder: 1,
       },
       {
-        code: "mt",
         slug: "mien-trung",
         nameVi: "Miền Trung",
         nameEn: "Central",
         sortOrder: 2,
       },
       {
-        code: "mn",
         slug: "mien-nam",
         nameVi: "Miền Nam",
         nameEn: "South",

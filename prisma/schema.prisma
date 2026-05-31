@@ -9,15 +9,15 @@ datasource db {
 }
 
 model Profile {
-  id          String    @id
-  role        Role      @default(USER)
-  displayName String?   @map("display_name")
-  avatarUrl   String?   @map("avatar_url")
-  phone       String?
-  createdAt   DateTime      @default(now()) @map("created_at")
-  updatedAt   DateTime      @updatedAt @map("updated_at")
-  bookings    Booking[]
-  reviews     Review[]
+  id           String        @id
+  role         Role          @default(USER)
+  displayName  String?       @map("display_name")
+  avatarUrl    String?       @map("avatar_url")
+  phone        String?
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+  bookings     Booking[]
+  reviews      Review[]
   activityLogs ActivityLog[]
 
   @@map("profiles")
@@ -28,17 +28,16 @@ model ActivityLog {
   userId    String?  @map("user_id")
   action    String // e.g. "CREATE_TOUR", "UPDATE_SETTING"
   entity    String? // e.g. "Tour", "HomeSetting"
-  entityId  String? @map("entity_id")
+  entityId  String?  @map("entity_id")
   details   Json?
   createdAt DateTime @default(now()) @map("created_at")
-  profile   Profile? @relation(fields: [userId], references: [id])
+  profile   Profile? @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@map("activity_logs")
 }
 
 model Region {
   id           String        @id @default(uuid())
-  code         String        @unique @default("auto") // Mã vùng (e.g. mb, mt, mn)
   slug         String        @unique
   nameVi       String        @map("name_vi")
   nameEn       String?       @map("name_en")
@@ -64,13 +63,17 @@ model Destination {
   latitude    Float?
   longitude   Float?
   isFeatured  Boolean  @default(false) @map("is_featured")
+  isActive    Boolean  @default(true) @map("is_active")
   sortOrder   Int      @default(0) @map("sort_order")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
   region      Region   @relation(fields: [regionId], references: [id], onDelete: Cascade)
   hotels      Hotel[]
   tours       Tour[]
+  seoPage     SeoPage?
 
+  @@index([isActive])
+  @@index([regionId, isActive])
   @@map("destinations")
 }
 
@@ -94,6 +97,7 @@ model Hotel {
   destination   Destination @relation(fields: [destinationId], references: [id], onDelete: Cascade)
   reviews       Review[]
   rooms         Room[]
+  seoPage       SeoPage?
 
   @@map("hotels")
 }
@@ -117,35 +121,36 @@ model Room {
 }
 
 model Tour {
-  id            String          @id @default(uuid())
-  destinationId String?         @map("destination_id")
-  slug          String          @unique
-  nameVi        String          @map("name_vi")
-  nameEn        String?         @map("name_en")
-  description   String?
-  durationDays  Int             @map("duration_days")
-  durationText  String?         @map("duration_text") // Vd: "3 ngày 2 đêm"
-  departurePoint String?        @map("departure_point") // Vd: "Hà Nội"
-  transport      String?        // Vd: "Máy bay", "Ô tô"
-  tourType       String?        @map("tour_type") // Vd: "Tour ghép", "Tour riêng"
-  priceFrom     Decimal?        @map("price_from") @db.Decimal(14, 0)
-  oldPrice      Decimal?        @map("old_price") @db.Decimal(14, 0) // Giá cũ để hiển thị giảm giá
-  
-  inclusions    Json?           // Những gì bao gồm trong tour
-  exclusions    Json?           // Những gì không bao gồm
-  policy        Json?           // Chính sách hoàn hủy, trẻ em
-  tags          String[]        @default([]) // Các nhãn (Vd: "Giá tốt", "Hot")
-  
-  imageUrls     String[]        @default([]) @map("image_urls")
-  isActive      Boolean         @default(true) @map("is_active")
-  createdAt     DateTime        @default(now()) @map("created_at")
-  updatedAt     DateTime        @updatedAt @map("updated_at")
-  
-  reviews       Review[]
-  tourBookings  TourBooking[]
-  itineraries   TourItinerary[]
-  departures    TourDeparture[]
-  destination   Destination?    @relation(fields: [destinationId], references: [id])
+  id             String   @id @default(uuid())
+  destinationId  String?  @map("destination_id")
+  slug           String   @unique
+  nameVi         String   @map("name_vi")
+  nameEn         String?  @map("name_en")
+  description    String?
+  durationDays   Int      @map("duration_days")
+  durationText   String?  @map("duration_text") // Vd: "3 ngày 2 đêm"
+  departurePoint String?  @map("departure_point") // Vd: "Hà Nội"
+  transport      String? // Vd: "Máy bay", "Ô tô"
+  tourType       String?  @map("tour_type") // Vd: "Tour ghép", "Tour riêng"
+  priceFrom      Decimal? @map("price_from") @db.Decimal(14, 0)
+  oldPrice       Decimal? @map("old_price") @db.Decimal(14, 0) // Giá cũ để hiển thị giảm giá
+
+  inclusions Json? // Những gì bao gồm trong tour
+  exclusions Json? // Những gì không bao gồm
+  policy     Json? // Chính sách hoàn hủy, trẻ em
+  tags       String[] @default([]) // Các nhãn (Vd: "Giá tốt", "Hot")
+
+  imageUrls String[] @default([]) @map("image_urls")
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  reviews      Review[]
+  tourBookings TourBooking[]
+  itineraries  TourItinerary[]
+  departures   TourDeparture[]
+  destination  Destination?    @relation(fields: [destinationId], references: [id])
+  seoPage      SeoPage?
 
   @@index([destinationId])
   @@index([isActive])
@@ -153,20 +158,20 @@ model Tour {
 }
 
 model TourDeparture {
-  id            String        @id @default(uuid())
-  tourId        String        @map("tour_id")
-  startDate     DateTime      @map("start_date") @db.Date
-  endDate       DateTime?     @map("end_date") @db.Date
-  priceOverride Decimal?      @map("price_override") @db.Decimal(14, 0)
-  maxParticipants Int?        @map("max_participants")
-  bookedCount   Int           @default(0) @map("booked_count")
-  status        DepartureStatus @default(AVAILABLE)
-  notes         String?
-  createdAt     DateTime      @default(now()) @map("created_at")
-  updatedAt     DateTime      @updatedAt @map("updated_at")
-  
-  tour          Tour          @relation(fields: [tourId], references: [id], onDelete: Cascade)
-  tourBookings  TourBooking[]
+  id              String          @id @default(uuid())
+  tourId          String          @map("tour_id")
+  startDate       DateTime        @map("start_date") @db.Date
+  endDate         DateTime?       @map("end_date") @db.Date
+  priceOverride   Decimal?        @map("price_override") @db.Decimal(14, 0)
+  maxParticipants Int?            @map("max_participants")
+  bookedCount     Int             @default(0) @map("booked_count")
+  status          DepartureStatus @default(AVAILABLE)
+  notes           String?
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+
+  tour         Tour          @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  tourBookings TourBooking[]
 
   @@index([tourId, startDate])
   @@map("tour_departures")
@@ -224,14 +229,14 @@ model HotelBooking {
 }
 
 model TourBooking {
-  id           String  @id @default(uuid())
-  bookingId    String  @unique @map("booking_id")
-  tourId       String  @map("tour_id")
-  departureId  String? @map("departure_id")
+  id           String         @id @default(uuid())
+  bookingId    String         @unique @map("booking_id")
+  tourId       String         @map("tour_id")
+  departureId  String?        @map("departure_id")
   participants Int
-  unitPrice    Decimal @map("unit_price") @db.Decimal(14, 0)
-  booking      Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
-  tour         Tour    @relation(fields: [tourId], references: [id])
+  unitPrice    Decimal        @map("unit_price") @db.Decimal(14, 0)
+  booking      Booking        @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  tour         Tour           @relation(fields: [tourId], references: [id])
   departure    TourDeparture? @relation(fields: [departureId], references: [id])
 
   @@map("tour_bookings")
@@ -256,17 +261,44 @@ model Review {
   @@map("reviews")
 }
 
+/// SEO override per entity hoặc per static URL (polymorphic exclusive arc).
+///
+/// Mỗi record trỏ về DUY NHẤT một target:
+///   - TOUR        → tourId        != NULL, các cột khác NULL
+///   - DESTINATION → destinationId != NULL, các cột khác NULL
+///   - HOTEL       → hotelId       != NULL, các cột khác NULL
+///   - STATIC      → customPath    != NULL (ví dụ "/lien-he"), các cột khác NULL
+///
+/// Tính exclusive được enforce bởi CHECK constraint `seo_pages_exclusive_target`
+/// (xem migration `20260526xxxxxx_seo_polymorphic`). FK CASCADE on delete đảm
+/// bảo SeoPage tự dọn khi entity bị xóa → không bao giờ orphan.
+///
+/// Lý do bỏ `slug String @unique`: slug có thể đổi khi admin chỉnh URL → SeoPage
+/// bị orphan. Thay bằng FK theo entity id (bất biến) → đổi slug bao nhiêu lần
+/// metadata vẫn theo đúng entity.
 model SeoPage {
-  id              String   @id @default(uuid())
-  slug            String   @unique
-  metaTitle       String   @map("meta_title")
-  metaDescription String?  @map("meta_description")
-  ogImage         String?  @map("og_image")
-  canonicalUrl    String?  @map("canonical_url")
-  noIndex         Boolean  @default(false) @map("no_index")
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt @map("updated_at")
+  id              String        @id @default(uuid())
+  targetType      SeoTargetType @map("target_type")
 
+  // Exclusive arc — exactly one of these is non-NULL
+  tourId          String?       @unique @map("tour_id")
+  destinationId   String?       @unique @map("destination_id")
+  hotelId         String?       @unique @map("hotel_id")
+  customPath      String?       @unique @map("custom_path")
+
+  metaTitle       String        @map("meta_title")
+  metaDescription String?       @map("meta_description")
+  ogImage         String?       @map("og_image")
+  canonicalUrl    String?       @map("canonical_url")
+  noIndex         Boolean       @default(false) @map("no_index")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+
+  tour            Tour?         @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  destination     Destination?  @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+  hotel           Hotel?        @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+
+  @@index([targetType])
   @@map("seo_pages")
 }
 
@@ -347,4 +379,11 @@ enum DepartureStatus {
   AVAILABLE
   FULL
   CANCELLED
+}
+
+enum SeoTargetType {
+  TOUR
+  DESTINATION
+  HOTEL
+  STATIC
 }
