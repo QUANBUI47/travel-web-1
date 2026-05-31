@@ -8,8 +8,14 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+// ============================================================
+// CORE — Identity & audit
+// ============================================================
+
+/// Profile.id đồng bộ với Supabase auth.users.id (UUID).
+/// Không dùng @default(uuid()) — id luôn nhận từ Supabase Auth.
 model Profile {
-  id           String        @id
+  id           String        @id @db.Uuid
   role         Role          @default(USER)
   displayName  String?       @map("display_name")
   avatarUrl    String?       @map("avatar_url")
@@ -19,16 +25,17 @@ model Profile {
   bookings     Booking[]
   reviews      Review[]
   activityLogs ActivityLog[]
+  inquiriesAssigned InquiryRequest[] @relation("InquiryAssignee")
 
   @@map("profiles")
 }
 
 model ActivityLog {
-  id        String   @id @default(uuid())
-  userId    String?  @map("user_id")
-  action    String // e.g. "CREATE_TOUR", "UPDATE_SETTING"
-  entity    String? // e.g. "Tour", "HomeSetting"
-  entityId  String?  @map("entity_id")
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String?  @map("user_id") @db.Uuid
+  action    String
+  entity    String?
+  entityId  String?  @map("entity_id") @db.Uuid
   details   Json?
   createdAt DateTime @default(now()) @map("created_at")
   profile   Profile? @relation(fields: [userId], references: [id], onDelete: SetNull)
@@ -36,8 +43,12 @@ model ActivityLog {
   @@map("activity_logs")
 }
 
+// ============================================================
+// CONTENT — Region / Destination / Hotel / Room
+// ============================================================
+
 model Region {
-  id           String        @id @default(uuid())
+  id           String        @id @default(uuid()) @db.Uuid
   slug         String        @unique
   nameVi       String        @map("name_vi")
   nameEn       String?       @map("name_en")
@@ -52,8 +63,8 @@ model Region {
 }
 
 model Destination {
-  id          String   @id @default(uuid())
-  regionId    String   @map("region_id")
+  id          String   @id @default(uuid()) @db.Uuid
+  regionId    String   @map("region_id") @db.Uuid
   slug        String   @unique
   nameVi      String   @map("name_vi")
   nameEn      String?  @map("name_en")
@@ -77,9 +88,11 @@ model Destination {
   @@map("destinations")
 }
 
+/// ADR-001: Hotel là tham chiếu nội dung (content reference) cho tour,
+/// không phải sản phẩm đặt riêng. Vẫn giữ `priceFrom` để hiển thị tham khảo.
 model Hotel {
-  id            String      @id @default(uuid())
-  destinationId String      @map("destination_id")
+  id            String      @id @default(uuid()) @db.Uuid
+  destinationId String      @map("destination_id") @db.Uuid
   slug          String      @unique
   nameVi        String      @map("name_vi")
   nameEn        String?     @map("name_en")
@@ -98,47 +111,86 @@ model Hotel {
   reviews       Review[]
   rooms         Room[]
   seoPage       SeoPage?
+  allotments    HotelAllotment[]
+  tourItineraries TourItinerary[]
 
   @@map("hotels")
 }
 
 model Room {
-  id            String         @id @default(uuid())
-  hotelId       String         @map("hotel_id")
-  nameVi        String         @map("name_vi")
-  nameEn        String?        @map("name_en")
+  id            String   @id @default(uuid()) @db.Uuid
+  hotelId       String   @map("hotel_id") @db.Uuid
+  nameVi        String   @map("name_vi")
+  nameEn        String?  @map("name_en")
+  roomType      RoomType @default(STANDARD) @map("room_type")
   description   String?
-  maxGuests     Int            @map("max_guests")
-  pricePerNight Decimal        @map("price_per_night") @db.Decimal(14, 0)
-  imageUrls     String[]       @default([]) @map("image_urls")
-  isActive      Boolean        @default(true) @map("is_active")
-  createdAt     DateTime       @default(now()) @map("created_at")
-  updatedAt     DateTime       @updatedAt @map("updated_at")
-  hotelBookings HotelBooking[]
-  hotel         Hotel          @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  maxGuests     Int      @map("max_guests")
+  pricePerNight Decimal  @map("price_per_night") @db.Decimal(14, 0)
+  imageUrls     String[] @default([]) @map("image_urls")
+  isActive      Boolean  @default(true) @map("is_active")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  hotel         Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
 
   @@map("rooms")
 }
 
-model Tour {
-  id             String   @id @default(uuid())
-  destinationId  String?  @map("destination_id")
-  slug           String   @unique
-  nameVi         String   @map("name_vi")
-  nameEn         String?  @map("name_en")
-  description    String?
-  durationDays   Int      @map("duration_days")
-  durationText   String?  @map("duration_text") // Vd: "3 ngày 2 đêm"
-  departurePoint String?  @map("departure_point") // Vd: "Hà Nội"
-  transport      String? // Vd: "Máy bay", "Ô tô"
-  tourType       String?  @map("tour_type") // Vd: "Tour ghép", "Tour riêng"
-  priceFrom      Decimal? @map("price_from") @db.Decimal(14, 0)
-  oldPrice       Decimal? @map("old_price") @db.Decimal(14, 0) // Giá cũ để hiển thị giảm giá
+/// ADR-004: Quản lý số phòng được bán mỗi tháng (admin nhập tay).
+/// `periodMonth` phải là ngày đầu tháng (enforced bởi CHECK constraint
+/// `hotel_allotments_period_month_first_day`).
+model HotelAllotment {
+  id            String   @id @default(uuid()) @db.Uuid
+  hotelId       String   @map("hotel_id") @db.Uuid
+  periodMonth   DateTime @map("period_month") @db.Date
+  allotment     Int
+  bookedRooms   Int      @default(0) @map("booked_rooms")
+  notes         String?
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  hotel         Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
 
-  inclusions Json? // Những gì bao gồm trong tour
-  exclusions Json? // Những gì không bao gồm
-  policy     Json? // Chính sách hoàn hủy, trẻ em
-  tags       String[] @default([]) // Các nhãn (Vd: "Giá tốt", "Hot")
+  @@unique([hotelId, periodMonth])
+  @@index([periodMonth])
+  @@map("hotel_allotments")
+}
+
+// ============================================================
+// TOUR — Pricing Pattern C (ADR-002)
+// ============================================================
+
+/// ADR-002: Bảng giá theo đầu khách (Pattern C).
+///   - priceAdult: giá người lớn (BẮT BUỘC, > 0)
+///   - priceChild: giá trẻ em (≥ 0)
+///   - priceInfant: giá em bé (≥ 0, thường = 0)
+///   - singleSupplementPrice: phụ thu phòng đơn (nullable nếu tour không cho)
+/// ADR-006: Tour có 3 loại — SERIES (đặt online), PRIVATE/CORPORATE (qua InquiryRequest).
+/// ADR-007: `estimatedCost` để dành cho admin reporting L1/L2 tương lai.
+model Tour {
+  id                    String   @id @default(uuid()) @db.Uuid
+  destinationId         String?  @map("destination_id") @db.Uuid
+  slug                  String   @unique
+  nameVi                String   @map("name_vi")
+  nameEn                String?  @map("name_en")
+  description           String?
+  durationDays          Int      @map("duration_days")
+  departurePoint        String?  @map("departure_point")
+  transport             String?
+  tourType              TourType @default(SERIES) @map("tour_type")
+
+  // Pricing Pattern C
+  priceAdult            Decimal  @default(0) @map("price_adult") @db.Decimal(14, 0)
+  priceChild            Decimal  @default(0) @map("price_child") @db.Decimal(14, 0)
+  priceInfant           Decimal  @default(0) @map("price_infant") @db.Decimal(14, 0)
+  singleSupplementPrice Decimal? @map("single_supplement_price") @db.Decimal(14, 0)
+  oldPrice              Decimal? @map("old_price") @db.Decimal(14, 0)
+
+  // Reporting (ADR-007)
+  estimatedCost         Decimal? @map("estimated_cost") @db.Decimal(14, 0)
+
+  inclusions Json?
+  exclusions Json?
+  policy     Json?
+  tags       String[] @default([])
 
   imageUrls String[] @default([]) @map("image_urls")
   isActive  Boolean  @default(true) @map("is_active")
@@ -149,26 +201,56 @@ model Tour {
   tourBookings TourBooking[]
   itineraries  TourItinerary[]
   departures   TourDeparture[]
+  options      TourOption[]
   destination  Destination?    @relation(fields: [destinationId], references: [id])
   seoPage      SeoPage?
 
   @@index([destinationId])
   @@index([isActive])
+  @@index([tourType])
   @@map("tours")
 }
 
+/// ADR-002: Gói dịch vụ nâng cấp cho tour (vd: Tiêu chuẩn, Cao cấp, VIP).
+/// Phụ thu cộng thêm vào giá người lớn / trẻ em.
+model TourOption {
+  id              String  @id @default(uuid()) @db.Uuid
+  tourId          String  @map("tour_id") @db.Uuid
+  nameVi          String  @map("name_vi")
+  nameEn          String? @map("name_en")
+  description     String?
+  surchargeAdult  Decimal @default(0) @map("surcharge_adult") @db.Decimal(14, 0)
+  surchargeChild  Decimal @default(0) @map("surcharge_child") @db.Decimal(14, 0)
+  sortOrder       Int     @default(0) @map("sort_order")
+  isActive        Boolean @default(true) @map("is_active")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  tour            Tour          @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  tourBookings    TourBooking[]
+
+  @@index([tourId, sortOrder])
+  @@map("tour_options")
+}
+
+/// Lịch khởi hành Series Tour (ADR-006).
+/// `bookedCount` được tăng/giảm qua pessimistic lock — KHÔNG bao giờ vượt `maxParticipants`
+/// (enforced bởi CHECK constraint `tour_departures_no_overbooking`).
 model TourDeparture {
-  id              String          @id @default(uuid())
-  tourId          String          @map("tour_id")
-  startDate       DateTime        @map("start_date") @db.Date
-  endDate         DateTime?       @map("end_date") @db.Date
-  priceOverride   Decimal?        @map("price_override") @db.Decimal(14, 0)
-  maxParticipants Int?            @map("max_participants")
-  bookedCount     Int             @default(0) @map("booked_count")
-  status          DepartureStatus @default(AVAILABLE)
-  notes           String?
-  createdAt       DateTime        @default(now()) @map("created_at")
-  updatedAt       DateTime        @updatedAt @map("updated_at")
+  id                   String          @id @default(uuid()) @db.Uuid
+  tourId               String          @map("tour_id") @db.Uuid
+  startDate            DateTime        @map("start_date") @db.Date
+  endDate              DateTime?       @map("end_date") @db.Date
+  priceOverride        Decimal?        @map("price_override") @db.Decimal(14, 0)
+  maxParticipants      Int?            @map("max_participants")
+  minParticipants      Int?            @map("min_participants")
+  bookedCount          Int             @default(0) @map("booked_count")
+  cancellationDeadline DateTime?       @map("cancellation_deadline")
+  actualCostPerPax     Decimal?        @map("actual_cost_per_pax") @db.Decimal(14, 0)
+  status               DepartureStatus @default(AVAILABLE)
+  notes                String?
+  createdAt            DateTime        @default(now()) @map("created_at")
+  updatedAt            DateTime        @updatedAt @map("updated_at")
 
   tour         Tour          @relation(fields: [tourId], references: [id], onDelete: Cascade)
   tourBookings TourBooking[]
@@ -178,36 +260,44 @@ model TourDeparture {
 }
 
 model TourItinerary {
-  id          String  @id @default(uuid())
-  tourId      String  @map("tour_id")
+  id          String  @id @default(uuid()) @db.Uuid
+  tourId      String  @map("tour_id") @db.Uuid
+  hotelId     String? @map("hotel_id") @db.Uuid
   dayNumber   Int     @map("day_number")
   title       String
   description String?
   sortOrder   Int     @default(0) @map("sort_order")
   tour        Tour    @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  hotel       Hotel?  @relation(fields: [hotelId], references: [id], onDelete: SetNull)
 
   @@map("tour_itineraries")
 }
 
+// ============================================================
+// BOOKING — Chỉ Tour (ADR-001: bỏ HotelBooking)
+// ============================================================
+
+/// Đơn đặt chỗ. Sau ADR-001:
+///   - DROP `bookingType` — chỉ còn tour, không có hotel booking
+///   - DROP `checkIn`, `checkOut`, `tourStartDate` — info nằm trong `TourBooking.departure`
+///   - ADD `paymentDeadline` — hạn thanh toán, sau giờ này job định kỳ tự huỷ
+/// ADR (Profile cascade): onDelete cho `userId` đổi từ Cascade → Restrict
+/// để không lỡ xoá Profile làm mất lịch sử booking.
 model Booking {
-  id            String        @id @default(uuid())
-  userId        String        @map("user_id")
-  bookingType   BookingType   @map("booking_type")
-  status        BookingStatus @default(PENDING)
-  totalAmount   Decimal       @map("total_amount") @db.Decimal(14, 0)
-  guestName     String        @map("guest_name")
-  guestEmail    String        @map("guest_email")
-  guestPhone    String        @map("guest_phone")
-  notes         String?
-  checkIn       DateTime?     @map("check_in") @db.Date
-  checkOut      DateTime?     @map("check_out") @db.Date
-  tourStartDate DateTime?     @map("tour_start_date") @db.Date
-  createdAt     DateTime      @default(now()) @map("created_at")
-  updatedAt     DateTime      @updatedAt @map("updated_at")
-  profile       Profile       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  hotelBooking  HotelBooking?
-  payments      Payment[]
-  tourBooking   TourBooking?
+  id              String        @id @default(uuid()) @db.Uuid
+  userId          String        @map("user_id") @db.Uuid
+  status          BookingStatus @default(PENDING)
+  totalAmount     Decimal       @map("total_amount") @db.Decimal(14, 0)
+  guestName       String        @map("guest_name")
+  guestEmail      String        @map("guest_email")
+  guestPhone      String        @map("guest_phone")
+  notes           String?
+  paymentDeadline DateTime?     @map("payment_deadline")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+  profile         Profile       @relation(fields: [userId], references: [id], onDelete: Restrict)
+  payments        Payment[]
+  tourBooking     TourBooking?
 
   @@index([userId])
   @@index([status])
@@ -215,39 +305,43 @@ model Booking {
   @@map("bookings")
 }
 
-model HotelBooking {
-  id            String  @id @default(uuid())
-  bookingId     String  @unique @map("booking_id")
-  roomId        String  @map("room_id")
-  nights        Int
-  guests        Int
-  pricePerNight Decimal @map("price_per_night") @db.Decimal(14, 0)
-  booking       Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
-  room          Room    @relation(fields: [roomId], references: [id])
-
-  @@map("hotel_bookings")
-}
-
+/// ADR-002 Pattern C — chi tiết đặt tour:
+///   - `adults`, `children`, `infants`: số lượng khách từng loại
+///   - `optionId`: gói dịch vụ chọn (NULL nếu chọn mặc định)
+///   - `priceBreakdown`: chi tiết tính tiền dạng JSON (xem Zod schema)
+///   - `isSingleSupplement`: có yêu cầu phụ thu phòng đơn không
 model TourBooking {
-  id           String         @id @default(uuid())
-  bookingId    String         @unique @map("booking_id")
-  tourId       String         @map("tour_id")
-  departureId  String?        @map("departure_id")
-  participants Int
-  unitPrice    Decimal        @map("unit_price") @db.Decimal(14, 0)
-  booking      Booking        @relation(fields: [bookingId], references: [id], onDelete: Cascade)
-  tour         Tour           @relation(fields: [tourId], references: [id])
-  departure    TourDeparture? @relation(fields: [departureId], references: [id])
+  id                  String         @id @default(uuid()) @db.Uuid
+  bookingId           String         @unique @map("booking_id") @db.Uuid
+  tourId              String         @map("tour_id") @db.Uuid
+  departureId         String?        @map("departure_id") @db.Uuid
+  optionId            String?        @map("option_id") @db.Uuid
+  adults              Int            @default(1)
+  children            Int            @default(0)
+  infants             Int            @default(0)
+  isSingleSupplement  Boolean        @default(false) @map("is_single_supplement")
+  priceBreakdown      Json           @map("price_breakdown")
+  booking             Booking        @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  tour                Tour           @relation(fields: [tourId], references: [id])
+  departure           TourDeparture? @relation(fields: [departureId], references: [id])
+  option              TourOption?    @relation(fields: [optionId], references: [id])
 
   @@map("tour_bookings")
 }
 
+// ============================================================
+// REVIEW — Polymorphic (ADR-005): hotel hoặc tour, exclusive arc
+// ============================================================
+
+/// ADR-005: Review trỏ về duy nhất 1 trong 2 — hotel HOẶC tour.
+/// Tính exclusive enforce bằng CHECK `review_target_exclusive`.
+/// ADR (Profile cascade): onDelete cho `userId` đổi sang Restrict.
 model Review {
-  id             String         @id @default(uuid())
-  userId         String         @map("user_id")
+  id             String         @id @default(uuid()) @db.Uuid
+  userId         String         @map("user_id") @db.Uuid
   reviewableType ReviewableType @map("reviewable_type")
-  hotelId        String?        @map("hotel_id")
-  tourId         String?        @map("tour_id")
+  hotelId        String?        @map("hotel_id") @db.Uuid
+  tourId         String?        @map("tour_id") @db.Uuid
   rating         Int
   title          String?
   content        String?
@@ -256,34 +350,25 @@ model Review {
   updatedAt      DateTime       @updatedAt @map("updated_at")
   hotel          Hotel?         @relation(fields: [hotelId], references: [id], onDelete: Cascade)
   tour           Tour?          @relation(fields: [tourId], references: [id], onDelete: Cascade)
-  profile        Profile        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  profile        Profile        @relation(fields: [userId], references: [id], onDelete: Restrict)
 
   @@map("reviews")
 }
 
-/// SEO override per entity hoặc per static URL (polymorphic exclusive arc).
-///
-/// Mỗi record trỏ về DUY NHẤT một target:
-///   - TOUR        → tourId        != NULL, các cột khác NULL
-///   - DESTINATION → destinationId != NULL, các cột khác NULL
-///   - HOTEL       → hotelId       != NULL, các cột khác NULL
-///   - STATIC      → customPath    != NULL (ví dụ "/lien-he"), các cột khác NULL
-///
-/// Tính exclusive được enforce bởi CHECK constraint `seo_pages_exclusive_target`
-/// (xem migration `20260526xxxxxx_seo_polymorphic`). FK CASCADE on delete đảm
-/// bảo SeoPage tự dọn khi entity bị xóa → không bao giờ orphan.
-///
-/// Lý do bỏ `slug String @unique`: slug có thể đổi khi admin chỉnh URL → SeoPage
-/// bị orphan. Thay bằng FK theo entity id (bất biến) → đổi slug bao nhiêu lần
-/// metadata vẫn theo đúng entity.
+// ============================================================
+// SEO — Polymorphic (ADR-005)
+// ============================================================
+
+/// SEO override per entity hoặc per static URL (exclusive arc).
+/// Mỗi record trỏ về DUY NHẤT một target — tính exclusive đã được
+/// enforce bởi CHECK `seo_pages_exclusive_target` (migration 20260526xxxxxx).
 model SeoPage {
-  id              String        @id @default(uuid())
+  id              String        @id @default(uuid()) @db.Uuid
   targetType      SeoTargetType @map("target_type")
 
-  // Exclusive arc — exactly one of these is non-NULL
-  tourId          String?       @unique @map("tour_id")
-  destinationId   String?       @unique @map("destination_id")
-  hotelId         String?       @unique @map("hotel_id")
+  tourId          String?       @unique @map("tour_id") @db.Uuid
+  destinationId   String?       @unique @map("destination_id") @db.Uuid
+  hotelId         String?       @unique @map("hotel_id") @db.Uuid
   customPath      String?       @unique @map("custom_path")
 
   metaTitle       String        @map("meta_title")
@@ -302,9 +387,13 @@ model SeoPage {
   @@map("seo_pages")
 }
 
+// ============================================================
+// PAYMENT
+// ============================================================
+
 model Payment {
-  id         String        @id @default(uuid())
-  bookingId  String        @map("booking_id")
+  id         String        @id @default(uuid()) @db.Uuid
+  bookingId  String        @map("booking_id") @db.Uuid
   amount     Decimal       @db.Decimal(14, 0)
   method     String
   status     PaymentStatus @default(PENDING)
@@ -315,6 +404,40 @@ model Payment {
   @@map("payments")
 }
 
+// ============================================================
+// INQUIRY — Lead capture cho Private/Corporate tour (ADR-006)
+// ============================================================
+
+/// ADR-006: Vivu chỉ bán Series Tour online qua TourDeparture.
+/// Private / Corporate tour đi qua form lead — admin tự báo giá + tư vấn.
+model InquiryRequest {
+  id            String            @id @default(uuid()) @db.Uuid
+  fullName      String            @map("full_name")
+  email         String
+  phone         String
+  tourType      InquiryTourType   @map("tour_type")
+  groupSize     Int?              @map("group_size")
+  preferredDate DateTime?         @map("preferred_date") @db.Date
+  destinationId String?           @map("destination_id") @db.Uuid
+  tourId        String?           @map("tour_id") @db.Uuid
+  message       String?
+  status        InquiryStatus     @default(NEW)
+  assignedToId  String?           @map("assigned_to_id") @db.Uuid
+  internalNotes String?           @map("internal_notes")
+  createdAt     DateTime          @default(now()) @map("created_at")
+  updatedAt     DateTime          @updatedAt @map("updated_at")
+  assignedTo    Profile?          @relation("InquiryAssignee", fields: [assignedToId], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@index([createdAt])
+  @@map("inquiry_requests")
+}
+
+// ============================================================
+// SYSTEM — Settings / Home builder / Legal
+// ============================================================
+
+/// Singleton — chỉ có 1 row id = "default".
 model HomeSetting {
   id        String   @id @default("default")
   content   Json
@@ -324,7 +447,7 @@ model HomeSetting {
 }
 
 model SystemSetting {
-  id        String   @id @default(uuid())
+  id        String   @id @default(uuid()) @db.Uuid
   group     String
   key       String   @unique
   value     Json
@@ -335,7 +458,7 @@ model SystemSetting {
 }
 
 model LegalContent {
-  id        String   @id @default(uuid())
+  id        String   @id @default(uuid()) @db.Uuid
   slug      String   @unique
   title     String
   content   Json
@@ -345,14 +468,13 @@ model LegalContent {
   @@map("legal_contents")
 }
 
+// ============================================================
+// ENUMS
+// ============================================================
+
 enum Role {
   USER
   ADMIN
-}
-
-enum BookingType {
-  HOTEL
-  TOUR
 }
 
 enum BookingStatus {
@@ -386,4 +508,34 @@ enum SeoTargetType {
   DESTINATION
   HOTEL
   STATIC
+}
+
+enum TourType {
+  SERIES
+  PRIVATE
+  CORPORATE
+}
+
+enum RoomType {
+  STANDARD
+  SUPERIOR
+  DELUXE
+  SUITE
+  FAMILY
+  OTHER
+}
+
+enum InquiryStatus {
+  NEW
+  CONTACTED
+  QUOTED
+  CONVERTED
+  REJECTED
+}
+
+enum InquiryTourType {
+  PRIVATE
+  CORPORATE
+  GROUP
+  OTHER
 }
