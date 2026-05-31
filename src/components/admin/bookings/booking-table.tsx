@@ -78,11 +78,11 @@ export function BookingTable({ bookings }: BookingTableProps) {
             <TableCell>
               <Chip
                 className="font-bold text-[10px]"
-                color={booking.bookingType === "TOUR" ? "secondary" : "primary"}
+                color="secondary"
                 size="sm"
                 variant="flat"
               >
-                {booking.bookingType}
+                {booking.tourBooking?.tour?.nameVi ?? "TOUR"}
               </Chip>
             </TableCell>
             <TableCell className="text-center">

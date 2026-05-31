@@ -26,16 +26,46 @@ export type TourItinerary = {
   sortOrder: number;
 };
 
+/**
+ * Tour type cho UI/API.
+ *
+ * Đã sang Pricing Pattern C (ADR-002) từ Sprint 4: priceAdult / priceChild /
+ * priceInfant / singleSupplementPrice. Decimal được chuyển thành number sẵn
+ * để dễ serialize qua RSC.
+ *
+ * `priceFrom` được giữ làm alias `= priceAdult` để các component hiển thị cũ
+ * (tour-card, booking-widget, trending-section, …) tiếp tục chạy mà chưa cần
+ * refactor. Sẽ remove ở Sprint 5+ khi multi-pax UI sẵn sàng.
+ *
+ * `durationText` đã bị drop khỏi schema — chỉ tồn tại optional ở type level
+ * cho phép gradual cleanup. Component nên fallback `t("days", { count: durationDays })`.
+ */
 export type Tour = Omit<
   PrismaTour,
-  "priceFrom" | "oldPrice" | "tags" | "inclusions" | "exclusions" | "policy"
+  | "priceAdult"
+  | "priceChild"
+  | "priceInfant"
+  | "singleSupplementPrice"
+  | "estimatedCost"
+  | "oldPrice"
+  | "tags"
+  | "inclusions"
+  | "exclusions"
+  | "policy"
 > & {
+  priceAdult: number;
+  priceChild: number;
+  priceInfant: number;
+  singleSupplementPrice: number | null;
+  estimatedCost: number | null;
+  /** @deprecated alias of priceAdult — Pattern C migration backward-compat. */
   priceFrom: number;
   oldPrice: number | null;
   tags: string[];
   inclusions: string;
   exclusions: string;
   policy: string;
+  /** @deprecated cột đã drop ở Sprint 4. Dùng `t("days", { count: durationDays })`. */
   durationText?: string | null;
   transport?: string | null;
   tourType?: string | null;
@@ -58,7 +88,10 @@ export type TourDeparture = {
   endDate?: Date | string | null;
   priceOverride: number | null;
   maxParticipants: number | null;
+  minParticipants: number | null;
   bookedCount: number;
+  cancellationDeadline: Date | string | null;
+  actualCostPerPax: number | null;
   status: DepartureStatus;
   notes?: string | null;
   createdAt: Date | string;

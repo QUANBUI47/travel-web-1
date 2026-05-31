@@ -89,7 +89,6 @@ export default async function AdminDashboardPage() {
       include: {
         profile: true,
         tourBooking: { include: { tour: true } },
-        hotelBooking: { include: { room: { include: { hotel: true } } } },
       },
     }),
     prisma.activityLog.findMany({
@@ -166,19 +165,9 @@ export default async function AdminDashboardPage() {
                 </thead>
                 <tbody className="divide-y divide-default-100">
                   {recentBookings.map((booking) => {
-                    let service = t("other_service");
-
-                    if (
-                      booking.bookingType === "TOUR" &&
-                      booking.tourBooking?.tour
-                    ) {
-                      service = booking.tourBooking.tour.nameVi;
-                    } else if (
-                      booking.bookingType === "HOTEL" &&
-                      booking.hotelBooking?.room?.hotel
-                    ) {
-                      service = booking.hotelBooking.room.hotel.nameVi;
-                    }
+                    // Sprint 4 (ADR-001): chỉ còn Tour booking.
+                    const service =
+                      booking.tourBooking?.tour?.nameVi ?? t("other_service");
 
                     const statusMap: Record<
                       string,

@@ -5,6 +5,10 @@ import { z } from "zod";
 import { COMMON_REGEX } from "./common";
 
 export function buildValidationSchemas(t: ValidationTranslator) {
+  // ADR-002 / Sprint 4: Pricing Pattern C. priceAdult bắt buộc và > 0; child/
+  // infant ≥ 0 (default 0). Giữ thêm singleSupplementPrice + estimatedCost
+  // optional cho reporting tương lai (ADR-007). tourType hiện vẫn nhận string
+  // tự do (UI admin chưa cập nhật enum) — sẽ siết ở Sprint 5.
   const TourSchema = z.object({
     nameVi: z.string().min(5, t("tour_name_vi_min")).max(200),
     nameEn: z.string().max(200).optional().nullable(),
@@ -18,11 +22,18 @@ export function buildValidationSchemas(t: ValidationTranslator) {
     ),
     description: z.string().min(20, t("description_min")).optional().nullable(),
     durationDays: z.coerce.number().int().min(1, t("duration_min")),
-    durationText: z.string().optional().nullable(),
     departurePoint: z.string().optional().nullable(),
     transport: z.string().optional().nullable(),
     tourType: z.string().optional().nullable(),
-    priceFrom: z.coerce
+    priceAdult: z.coerce.number().min(0, t("price_non_negative")).default(0),
+    priceChild: z.coerce.number().min(0, t("price_non_negative")).default(0),
+    priceInfant: z.coerce.number().min(0, t("price_non_negative")).default(0),
+    singleSupplementPrice: z.coerce
+      .number()
+      .min(0, t("price_non_negative"))
+      .optional()
+      .nullable(),
+    estimatedCost: z.coerce
       .number()
       .min(0, t("price_non_negative"))
       .optional()
@@ -55,6 +66,9 @@ export function buildValidationSchemas(t: ValidationTranslator) {
     endDate: z.coerce.date().nullable().optional(),
     priceOverride: z.coerce.number().min(0).nullable().optional(),
     maxParticipants: z.coerce.number().int().positive().nullable().optional(),
+    minParticipants: z.coerce.number().int().min(0).nullable().optional(),
+    cancellationDeadline: z.coerce.date().nullable().optional(),
+    actualCostPerPax: z.coerce.number().min(0).nullable().optional(),
     notes: z.string().max(2000).nullable().optional(),
   });
 

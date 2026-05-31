@@ -130,11 +130,15 @@ export default function AdminToursPage() {
     destinationId: "",
     description: "",
     durationDays: 1,
-    durationText: "",
     departurePoint: "",
     transport: DEFAULT_TRANSPORT,
     tourType: DEFAULT_TOUR_TYPE,
-    priceFrom: 0,
+    // Pricing Pattern C (ADR-002).
+    priceAdult: 0,
+    priceChild: 0,
+    priceInfant: 0,
+    singleSupplementPrice: null,
+    estimatedCost: null,
     oldPrice: 0,
     imageUrls: [],
     tags: [],
@@ -236,11 +240,14 @@ export default function AdminToursPage() {
       destinationId: tour.destinationId || "",
       description: tour.description || "",
       durationDays: tour.durationDays,
-      durationText: tour.durationText || "",
       departurePoint: tour.departurePoint || "",
       transport: tour.transport || DEFAULT_TRANSPORT,
       tourType: tour.tourType || DEFAULT_TOUR_TYPE,
-      priceFrom: Number(tour.priceFrom),
+      priceAdult: Number(tour.priceAdult),
+      priceChild: Number(tour.priceChild ?? 0),
+      priceInfant: Number(tour.priceInfant ?? 0),
+      singleSupplementPrice: tour.singleSupplementPrice ?? null,
+      estimatedCost: tour.estimatedCost ?? null,
       oldPrice: Number(tour.oldPrice || 0),
       imageUrls: tour.imageUrls || [],
       tags: tour.tags || [],
@@ -262,11 +269,14 @@ export default function AdminToursPage() {
       destinationId: "",
       description: "",
       durationDays: 1,
-      durationText: "",
       departurePoint: "",
       transport: DEFAULT_TRANSPORT,
       tourType: DEFAULT_TOUR_TYPE,
-      priceFrom: 0,
+      priceAdult: 0,
+      priceChild: 0,
+      priceInfant: 0,
+      singleSupplementPrice: null,
+      estimatedCost: null,
       oldPrice: 0,
       imageUrls: [],
       tags: [],
@@ -434,7 +444,7 @@ export default function AdminToursPage() {
                         </span>
                       ) : null}
                       <span className="font-bold text-primary">
-                        {Number(tour.priceFrom).toLocaleString("vi-VN")}
+                        {Number(tour.priceAdult).toLocaleString("vi-VN")}
                       </span>
                     </div>
                   </TableCell>
@@ -588,16 +598,6 @@ export default function AdminToursPage() {
                         })
                       }
                     />
-
-                    <Input
-                      label={t("field_duration_text")}
-                      labelPlacement="outside"
-                      value={formData.durationText || ""}
-                      variant="bordered"
-                      onValueChange={(v) =>
-                        setFormData({ ...formData, durationText: v })
-                      }
-                    />
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -665,22 +665,67 @@ export default function AdminToursPage() {
                   <div className="text-[10px] font-black text-primary uppercase tracking-[0.3em] bg-primary/5 w-fit px-3 py-1 rounded-full">
                     {t("field_price")}
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {/* Pricing Pattern C (ADR-002). */}
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                     <Input
                       color="primary"
-                      label={t("field_price")}
+                      label={t("price_adult")}
                       labelPlacement="outside"
                       type="number"
-                      value={formData.priceFrom?.toString()}
+                      value={formData.priceAdult?.toString() ?? "0"}
                       variant="bordered"
                       onValueChange={(v) =>
                         setFormData({
                           ...formData,
-                          priceFrom: parseInt(v) || 0,
+                          priceAdult: parseInt(v) || 0,
                         })
                       }
                     />
 
+                    <Input
+                      label={t("price_child")}
+                      labelPlacement="outside"
+                      type="number"
+                      value={formData.priceChild?.toString() ?? "0"}
+                      variant="bordered"
+                      onValueChange={(v) =>
+                        setFormData({
+                          ...formData,
+                          priceChild: parseInt(v) || 0,
+                        })
+                      }
+                    />
+
+                    <Input
+                      label={t("price_infant")}
+                      labelPlacement="outside"
+                      type="number"
+                      value={formData.priceInfant?.toString() ?? "0"}
+                      variant="bordered"
+                      onValueChange={(v) =>
+                        setFormData({
+                          ...formData,
+                          priceInfant: parseInt(v) || 0,
+                        })
+                      }
+                    />
+
+                    <Input
+                      label={t("single_supplement")}
+                      labelPlacement="outside"
+                      type="number"
+                      value={formData.singleSupplementPrice?.toString() ?? "0"}
+                      variant="bordered"
+                      onValueChange={(v) =>
+                        setFormData({
+                          ...formData,
+                          singleSupplementPrice: parseInt(v) || null,
+                        })
+                      }
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <Input
                       label={t("field_old_price")}
                       labelPlacement="outside"

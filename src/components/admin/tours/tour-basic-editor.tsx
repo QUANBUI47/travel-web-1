@@ -32,9 +32,12 @@ export function TourBasicEditor({ tour }: TourBasicEditorProps) {
   const [formData, setFormData] = useState({
     description: tour.description ?? "",
     isActive: tour.isActive,
-    priceFrom: tour.priceFrom,
+    // Pricing Pattern C (ADR-002). priceFrom legacy đã map sang priceAdult.
+    priceAdult: tour.priceAdult,
+    priceChild: tour.priceChild ?? 0,
+    priceInfant: tour.priceInfant ?? 0,
+    singleSupplementPrice: tour.singleSupplementPrice ?? 0,
     oldPrice: tour.oldPrice || 0,
-    durationText: tour.durationText || "",
     departurePoint: tour.departurePoint || "",
     transport: tour.transport || DEFAULT_TRANSPORT,
     tourType: tour.tourType || DEFAULT_TOUR_TYPE,
@@ -59,9 +62,11 @@ export function TourBasicEditor({ tour }: TourBasicEditorProps) {
       const res = await updateTourAction(tour.id, {
         description: formData.description || null,
         isActive: formData.isActive,
-        priceFrom: formData.priceFrom,
+        priceAdult: formData.priceAdult,
+        priceChild: formData.priceChild,
+        priceInfant: formData.priceInfant,
+        singleSupplementPrice: formData.singleSupplementPrice || null,
         oldPrice: formData.oldPrice,
-        durationText: formData.durationText,
         departurePoint: formData.departurePoint,
         transport: formData.transport,
         tourType: formData.tourType,
@@ -110,7 +115,7 @@ export function TourBasicEditor({ tour }: TourBasicEditorProps) {
         </Button>
       </CardHeader>
       <CardBody className="px-8 pb-8 space-y-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
           <div className="flex justify-between items-center p-3 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800">
             <div className="flex flex-col gap-0.5">
               <p className="text-[10px] font-black uppercase tracking-widest">
@@ -127,14 +132,6 @@ export function TourBasicEditor({ tour }: TourBasicEditorProps) {
               }
             />
           </div>
-          <Input
-            label={t("duration_text_label")}
-            labelPlacement="outside"
-            placeholder={t("duration_text_placeholder")}
-            value={formData.durationText}
-            variant="bordered"
-            onValueChange={(v) => setFormData({ ...formData, durationText: v })}
-          />
           <Input
             label={t("departure_point_label")}
             labelPlacement="outside"
@@ -166,18 +163,58 @@ export function TourBasicEditor({ tour }: TourBasicEditorProps) {
           </Select>
         </div>
 
+        {/* Pricing Pattern C (ADR-002) — giá theo đầu khách. priceAdult bắt
+            buộc, priceChild/Infant = 0 nếu không thu phí. */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <Input
             color="primary"
-            label={t("price_current")}
+            description={t("price_adult_desc")}
+            label={t("price_adult")}
             labelPlacement="outside"
             type="number"
-            value={formData.priceFrom.toString()}
+            value={formData.priceAdult.toString()}
             variant="bordered"
             onValueChange={(v) =>
-              setFormData({ ...formData, priceFrom: parseInt(v) || 0 })
+              setFormData({ ...formData, priceAdult: parseInt(v) || 0 })
             }
           />
+          <Input
+            label={t("price_child")}
+            labelPlacement="outside"
+            type="number"
+            value={formData.priceChild.toString()}
+            variant="bordered"
+            onValueChange={(v) =>
+              setFormData({ ...formData, priceChild: parseInt(v) || 0 })
+            }
+          />
+          <Input
+            label={t("price_infant")}
+            labelPlacement="outside"
+            type="number"
+            value={formData.priceInfant.toString()}
+            variant="bordered"
+            onValueChange={(v) =>
+              setFormData({ ...formData, priceInfant: parseInt(v) || 0 })
+            }
+          />
+          <Input
+            description={t("single_supplement_desc")}
+            label={t("single_supplement")}
+            labelPlacement="outside"
+            type="number"
+            value={formData.singleSupplementPrice.toString()}
+            variant="bordered"
+            onValueChange={(v) =>
+              setFormData({
+                ...formData,
+                singleSupplementPrice: parseInt(v) || 0,
+              })
+            }
+          />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Input
             label={t("price_old")}
             labelPlacement="outside"

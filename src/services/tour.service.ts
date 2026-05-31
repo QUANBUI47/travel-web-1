@@ -21,13 +21,26 @@ type TourDbRecord = PrismaTour & {
 
 export class TourService {
   /**
-   * Chuyển đổi dữ liệu từ Prisma (Decimal) sang Plain Object (Number)
+   * Chuyển đổi dữ liệu Prisma (Decimal) sang Plain Object (Number) để serialize
+   * qua RSC. Áp dụng Pricing Pattern C (ADR-002) từ Sprint 4.
    */
   private static mapTour(tour: TourDbRecord): Tour {
+    const priceAdult = tour.priceAdult ? Number(tour.priceAdult) : 0;
+    const priceChild = tour.priceChild ? Number(tour.priceChild) : 0;
+    const priceInfant = tour.priceInfant ? Number(tour.priceInfant) : 0;
+
     return {
       ...tour,
       destination: tour.destination ?? undefined,
-      priceFrom: tour.priceFrom ? Number(tour.priceFrom) : 0,
+      priceAdult,
+      priceChild,
+      priceInfant,
+      singleSupplementPrice: tour.singleSupplementPrice
+        ? Number(tour.singleSupplementPrice)
+        : null,
+      estimatedCost: tour.estimatedCost ? Number(tour.estimatedCost) : null,
+      // Backward-compat alias cho UI cũ — đồng nhất với priceAdult.
+      priceFrom: priceAdult,
       oldPrice: tour.oldPrice ? Number(tour.oldPrice) : null,
       imageUrls: tour.imageUrls || [],
       tags: tour.tags || [],
@@ -38,6 +51,9 @@ export class TourService {
         (d): TourDeparture => ({
           ...d,
           priceOverride: d.priceOverride ? Number(d.priceOverride) : null,
+          actualCostPerPax: d.actualCostPerPax
+            ? Number(d.actualCostPerPax)
+            : null,
         }),
       ),
     };
@@ -193,10 +209,23 @@ export class TourService {
           isActive: true,
           ...(destinationSlug ? { slug: destinationSlug } : {}),
         },
+        // tourType giờ là enum (SERIES / PRIVATE / CORPORATE — ADR-006).
+        // Filter chấp nhận chính xác enum value, tags fallback giữ tự do.
         ...(type
           ? {
               OR: [
-                { tourType: { contains: type, mode: "insensitive" as const } },
+                ...(["SERIES", "PRIVATE", "CORPORATE"].includes(
+                  type.toUpperCase(),
+                )
+                  ? [
+                      {
+                        tourType: type.toUpperCase() as
+                          | "SERIES"
+                          | "PRIVATE"
+                          | "CORPORATE",
+                      },
+                    ]
+                  : []),
                 { tags: { has: type } },
               ],
             }
@@ -344,11 +373,36 @@ export class TourService {
   }
 
   /**
+   * Normalize TourInput → Prisma payload. Prisma sinh ra type không chấp nhận
+   * `destinationId: null` (vì có relation cùng tên) — convert sang `undefined`
+   * khi user xoá liên kết. Cho phép Pricing Pattern C optional fields.
+   */
+  private static toPrismaInput(
+    data: Partial<TourInput>,
+  ): Prisma.TourUncheckedCreateInput | Prisma.TourUncheckedUpdateInput {
+    const { destinationId, singleSupplementPrice, estimatedCost, ...rest } =
+      data;
+
+    return {
+      ...rest,
+      ...(destinationId !== undefined
+        ? { destinationId: destinationId ?? undefined }
+        : {}),
+      ...(singleSupplementPrice !== undefined
+        ? { singleSupplementPrice: singleSupplementPrice ?? null }
+        : {}),
+      ...(estimatedCost !== undefined
+        ? { estimatedCost: estimatedCost ?? null }
+        : {}),
+    } as Prisma.TourUncheckedCreateInput;
+  }
+
+  /**
    * Create a new tour
    */
   static async create(data: TourInput) {
     const tour = await prisma.tour.create({
-      data,
+      data: this.toPrismaInput(data) as Prisma.TourUncheckedCreateInput,
       include: {
         destination: true,
       },
@@ -363,7 +417,7 @@ export class TourService {
   static async update(id: string, data: Partial<TourInput>) {
     const tour = await prisma.tour.update({
       where: { id },
-      data,
+      data: this.toPrismaInput(data),
       include: {
         destination: true,
       },
