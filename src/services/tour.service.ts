@@ -236,15 +236,16 @@ export class TourService {
 
   /**
    * Danh sách tour công khai — lọc theo điểm đến, từ khóa, ngày khởi hành.
+   * Tham số `destination` nhận `slug` (khớp URL `?destination=ha-noi`).
    */
   static async searchListings(filters: {
-    destinationSlug?: string;
+    destination?: string;
     q?: string;
     from?: string;
     to?: string;
     type?: string;
   }) {
-    const { destinationSlug, q, from, to, type } = filters;
+    const { destination, q, from, to, type } = filters;
 
     const departureDateFilter =
       from || to
@@ -264,7 +265,7 @@ export class TourService {
         isActive: true,
         destination: {
           isActive: true,
-          ...(destinationSlug ? { slug: destinationSlug } : {}),
+          ...(destination ? { slug: destination } : {}),
         },
         // tourType giờ là enum (SERIES / PRIVATE / CORPORATE — ADR-006).
         // Filter chấp nhận chính xác enum value, tags fallback giữ tự do.
