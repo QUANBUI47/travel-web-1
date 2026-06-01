@@ -105,7 +105,7 @@ export function TourCard({ tour, locale }: TourCardProps) {
           )}
         </div>
 
-        <h3 className="text-xl sm:text-2xl font-black font-['Plus_Jakarta_Sans'] leading-tight text-slate-900 dark:text-white group-hover:text-primary transition-colors line-clamp-2">
+        <h3 className="text-xl sm:text-2xl font-black leading-tight text-slate-900 dark:text-white group-hover:text-primary transition-colors line-clamp-2">
           {name}
         </h3>
 
@@ -132,7 +132,7 @@ export function TourCard({ tour, locale }: TourCardProps) {
               {oldPrice}
             </span>
           )}
-          <span className="text-xl sm:text-2xl font-black text-primary font-['Plus_Jakarta_Sans']">
+          <span className="text-xl sm:text-2xl font-black text-primary">
             {price}
           </span>
         </div>

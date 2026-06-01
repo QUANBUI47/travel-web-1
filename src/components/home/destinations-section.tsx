@@ -53,7 +53,7 @@ export function DestinationsSection({
             <span className="text-primary font-black uppercase tracking-[0.2em] md:tracking-[0.3em] text-[0.625rem] md:text-xs block mb-1 whitespace-nowrap">
               {t("Destinations.badge")}
             </span>
-            <h2 className='text-3xl md:text-5xl font-black font-["Plus_Jakarta_Sans"] tracking-tight leading-[1.3] md:leading-[1.1] uppercase text-slate-900 dark:text-white'>
+            <h2 className="text-3xl md:text-5xl font-black tracking-tight leading-[1.3] md:leading-[1.1] uppercase text-slate-900 dark:text-white">
               {title}
             </h2>
           </div>
@@ -91,7 +91,7 @@ export function DestinationsSection({
                   src={dest.imageUrl || IMAGES.PLACEHOLDERS.DESTINATION}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent flex flex-col justify-end p-6">
-                  <h3 className="text-xl font-black text-white font-['Plus_Jakarta_Sans'] leading-tight">
+                  <h3 className="text-xl font-black text-white leading-tight">
                     {getDBLocalizedValue(dest, "name", locale)}
                   </h3>
                   <p className="text-white/60 text-xs font-bold mt-1">
@@ -138,7 +138,7 @@ export function DestinationsSection({
                   src={dest.imageUrl || IMAGES.PLACEHOLDERS.DESTINATION}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex flex-col justify-end p-6">
-                  <h3 className="text-lg font-black text-white font-['Plus_Jakarta_Sans'] leading-tight">
+                  <h3 className="text-lg font-black text-white leading-tight">
                     {getDBLocalizedValue(dest, "name", locale)}
                   </h3>
                 </div>
@@ -173,7 +173,7 @@ export function DestinationsSection({
                   <span className="bg-[#fcc219] text-slate-900 w-fit px-4 py-1.5 rounded-full text-[0.625rem] md:text-xs font-black uppercase mb-4 shadow-lg">
                     {t("Destinations.category_heritage")}
                   </span>
-                  <h3 className="text-3xl md:text-4xl font-black text-white font-['Plus_Jakarta_Sans'] leading-none">
+                  <h3 className="text-3xl md:text-4xl font-black text-white leading-none">
                     {getDBLocalizedValue(finalDestinations[0], "name", locale)}
                   </h3>
                 </div>
@@ -200,7 +200,7 @@ export function DestinationsSection({
                   }
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex flex-col justify-end p-10">
-                  <h3 className="text-2xl font-black text-white font-['Plus_Jakarta_Sans']">
+                  <h3 className="text-2xl font-black text-white">
                     {getDBLocalizedValue(finalDestinations[1], "name", locale)}
                   </h3>
                 </div>

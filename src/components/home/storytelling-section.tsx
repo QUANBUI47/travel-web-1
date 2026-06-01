@@ -39,7 +39,7 @@ export function StorytellingSection({
           </div>
         </div>
 
-        <h2 className="text-3xl md:text-5xl font-black font-['Plus_Jakarta_Sans'] tracking-tight mb-12 leading-tight dark:text-white">
+        <h2 className="text-3xl md:text-5xl font-black tracking-tight mb-12 leading-tight dark:text-white">
           {title}
         </h2>
 

@@ -37,7 +37,7 @@ export default async function DestinationsPage({ searchParams }: PageProps) {
           <span className="text-primary font-black uppercase tracking-[0.4em] text-[10px] sm:text-xs block">
             {t("title")}
           </span>
-          <h1 className='text-4xl sm:text-6xl font-black font-["Plus_Jakarta_Sans"] tracking-tighter leading-[1.1] uppercase text-slate-900 dark:text-white'>
+          <h1 className="text-4xl sm:text-6xl font-black tracking-tighter leading-[1.1] uppercase text-slate-900 dark:text-white">
             {t("description")}
           </h1>
           <div className="h-1.5 w-24 bg-primary rounded-full mt-2" />

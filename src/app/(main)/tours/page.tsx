@@ -52,7 +52,7 @@ export default async function ToursPage({ searchParams }: PageProps) {
           <span className="text-primary font-black uppercase tracking-[0.4em] text-[10px] sm:text-xs block">
             {t("title")}
           </span>
-          <h1 className='text-4xl sm:text-6xl lg:text-7xl font-black font-["Plus_Jakarta_Sans"] tracking-tighter leading-[1.1] uppercase text-slate-900 dark:text-white'>
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tighter leading-[1.1] uppercase text-slate-900 dark:text-white">
             {t("description")}
           </h1>
           {activeDestination && (

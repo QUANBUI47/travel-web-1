@@ -9,8 +9,12 @@
 
 /* Design system — Du lịch Việt Nam (doc/DESIGN_SYSTEM.md) */
 @theme {
-  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-heading: var(--font-heading), ui-sans-serif, system-ui, sans-serif;
+  /* Manrope — sans-serif duy nhất, hỗ trợ tiếng Việt đầy đủ.
+     Body + heading dùng cùng family, phân cấp qua weight + tracking. */
+  --font-sans:
+    var(--font-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-heading: var(--font-sans);
   --font-mono: "ui-mono", monospace;
 
   --tracking-tight: -0.02em;
@@ -103,16 +107,18 @@ body {
   color: var(--foreground);
   line-height: var(--leading-relaxed);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "ss01", "cv11"; /* Manrope: tighter alt forms */
 }
 
+/* Chỉ heading thực + display class siết tracking. KHÔNG còn override font-bold
+   chung vì cả site dùng 1 family (Manrope) — bold không cần đổi font. */
 h1,
 h2,
 h3,
 h4,
-.font-bold,
-.font-extrabold,
-.font-black {
-  font-family: var(--font-heading);
+.font-display {
   letter-spacing: var(--tracking-tight);
 }
 
