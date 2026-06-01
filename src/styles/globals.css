@@ -109,7 +109,6 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  font-feature-settings: "ss01", "cv11"; /* Manrope: tighter alt forms */
 }
 
 /* Chỉ heading thực + display class siết tracking. KHÔNG còn override font-bold
