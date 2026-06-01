@@ -9,8 +9,10 @@
 
 /* Design system — Du lịch Việt Nam (doc/DESIGN_SYSTEM.md) */
 @theme {
-  /* Manrope — sans-serif duy nhất, hỗ trợ tiếng Việt đầy đủ.
-     Body + heading dùng cùng family, phân cấp qua weight + tracking. */
+  /* Be Vietnam Pro — sans-serif duy nhất, optimize cho tiếng Việt.
+     Body + heading dùng cùng family. Heading phân cấp bằng SIZE lớn +
+     weight 500-600 (KHÔNG dùng 800-900 vì Be Vietnam Pro là body font —
+     weight cực cao sẽ "đóng kín" ở size lớn). */
   --font-sans:
     var(--font-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI",
     Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -111,14 +113,14 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* Chỉ heading thực + display class siết tracking. KHÔNG còn override font-bold
-   chung vì cả site dùng 1 family (Manrope) — bold không cần đổi font. */
+/* Heading: Be Vietnam Pro cùng family với body. Tracking nhẹ — tránh
+   siết quá vì display size đã dày sẵn, càng siết càng "đóng kín". */
 h1,
 h2,
 h3,
 h4,
 .font-display {
-  letter-spacing: var(--tracking-tight);
+  letter-spacing: -0.01em;
 }
 
 /* Custom Scrollbar */

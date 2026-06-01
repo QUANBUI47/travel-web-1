@@ -1,19 +1,19 @@
 import { Be_Vietnam_Pro } from "next/font/google";
 
 /**
- * Be Vietnam Pro — sans-serif do designer Việt (Lam Bao) thiết kế, optimize
- * 100% cho diacritics tiếng Việt (Đ/đ/ă/ơ/ư + dấu thanh đặt đúng vị trí).
- * 9 weights — body dùng 400-500, heading 700-900.
+ * Be Vietnam Pro — sans-serif do designer Việt (Lam Bao) thiết kế,
+ * optimize 100% cho diacritics tiếng Việt. 1 family duy nhất cho cả
+ * body + heading — phân cấp bằng SIZE + WEIGHT thay vì đổi font.
  *
- * Brand Việt nổi tiếng đang dùng (Tiki, Momo, ZaloPay) → user Việt cảm
- * thấy quen mắt nhưng vẫn modern.
+ * Hero/h1: size lớn (text-7xl+) với weight nhẹ (500-600) → impact qua
+ * size, không qua stroke dày. Tránh weight 800-900 ở display vì
+ * Be Vietnam Pro thiết kế cho body, weight cực cao sẽ "đóng kín".
  */
 export const fontSans = Be_Vietnam_Pro({
   subsets: ["latin", "vietnamese"],
-  weight: ["300", "400", "500", "600", "700", "800", "900"],
+  weight: ["300", "400", "500", "600", "700", "800"],
   variable: "--font-sans",
   display: "swap",
 });
 
-// Alias để giữ class `font-heading` cũ. 1 family duy nhất, phân cấp qua weight.
 export const fontHeading = fontSans;

@@ -60,7 +60,7 @@ export function HeroSection({
             <span className="bg-primary/10 text-primary px-5 py-2 rounded-full text-xs font-black uppercase mb-8 inline-block w-fit">
               {t("badge")}
             </span>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black leading-[1.1] text-slate-900 dark:text-white tracking-tight mb-6">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-semibold leading-[1.05] text-slate-900 dark:text-white mb-6">
               {getLocalizedValue(content?.heroTitle, locale) ||
                 t("title_fallback")}
             </h1>
@@ -128,7 +128,7 @@ export function HeroSection({
               <span className="bg-white/10 backdrop-blur-md border border-white/20 text-white px-5 py-2 rounded-full text-xs font-black uppercase inline-block">
                 {t("badge")}
               </span>
-              <h1 className="text-6xl md:text-8xl lg:text-9xl font-black leading-[0.9] text-white tracking-tighter max-w-5xl">
+              <h1 className="text-7xl md:text-9xl lg:text-[10rem] font-semibold leading-[0.95] text-white max-w-5xl">
                 {getLocalizedValue(content?.heroTitle, locale) ||
                   t("title_fallback")}
               </h1>
@@ -178,7 +178,7 @@ export function HeroSection({
           <span className="bg-white/10 backdrop-blur-md border border-white/20 text-white px-6 py-2.5 rounded-full text-xs font-black uppercase mb-10 inline-block shadow-lg">
             {t("badge")}
           </span>
-          <h1 className="text-5xl md:text-7xl lg:text-[6rem] font-black leading-[1.05] text-white tracking-tight mb-6 drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)] text-balance max-w-5xl">
+          <h1 className="text-6xl md:text-8xl lg:text-[8.5rem] font-semibold leading-[1] text-white mb-6 drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)] text-balance max-w-6xl">
             {getLocalizedValue(content?.heroTitle, locale) ||
               t("title_fallback")}
           </h1>
