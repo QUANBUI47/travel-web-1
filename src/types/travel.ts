@@ -4,9 +4,11 @@ import {
   Destination as PrismaDestination,
   Region as PrismaRegion,
   Tour as PrismaTour,
+  TourType,
 } from "@prisma/client";
 
 export type Region = PrismaRegion;
+export { TourType };
 
 export type Destination = PrismaDestination & {
   region?: Region;
@@ -20,25 +22,31 @@ export type UpdateDestinationInput = Partial<CreateDestinationInput>;
 export type TourItinerary = {
   id: string;
   tourId: string;
+  hotelId: string | null;
   dayNumber: number;
   title: string;
   description: string | null;
   sortOrder: number;
 };
 
+export type TourOption = {
+  id: string;
+  tourId: string;
+  nameVi: string;
+  nameEn: string | null;
+  description: string | null;
+  surchargeAdult: number;
+  surchargeChild: number;
+  sortOrder: number;
+  isActive: boolean;
+};
+
 /**
  * Tour type cho UI/API.
  *
- * Đã sang Pricing Pattern C (ADR-002) từ Sprint 4: priceAdult / priceChild /
- * priceInfant / singleSupplementPrice. Decimal được chuyển thành number sẵn
- * để dễ serialize qua RSC.
- *
- * `priceFrom` được giữ làm alias `= priceAdult` để các component hiển thị cũ
- * (tour-card, booking-widget, trending-section, …) tiếp tục chạy mà chưa cần
- * refactor. Sẽ remove ở Sprint 5+ khi multi-pax UI sẵn sàng.
- *
- * `durationText` đã bị drop khỏi schema — chỉ tồn tại optional ở type level
- * cho phép gradual cleanup. Component nên fallback `t("days", { count: durationDays })`.
+ * Pricing Pattern C (ADR-002): priceAdult/priceChild/priceInfant +
+ * singleSupplementPrice. Decimal được chuyển thành number sẵn để serialize
+ * qua React Server Components.
  */
 export type Tour = Omit<
   PrismaTour,
@@ -58,21 +66,18 @@ export type Tour = Omit<
   priceInfant: number;
   singleSupplementPrice: number | null;
   estimatedCost: number | null;
-  /** @deprecated alias of priceAdult — Pattern C migration backward-compat. */
-  priceFrom: number;
   oldPrice: number | null;
   tags: string[];
   inclusions: string;
   exclusions: string;
   policy: string;
-  /** @deprecated cột đã drop ở Sprint 4. Dùng `t("days", { count: durationDays })`. */
-  durationText?: string | null;
   transport?: string | null;
-  tourType?: string | null;
+  tourType?: TourType | null;
   departurePoint?: string | null;
   destination?: Destination;
   itineraries?: TourItinerary[];
   departures?: TourDeparture[];
+  options?: TourOption[];
 };
 
 export type DestinationWithTours = Destination & {

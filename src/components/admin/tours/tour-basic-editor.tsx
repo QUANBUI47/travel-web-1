@@ -17,7 +17,7 @@ import { invalidateTourDetail } from "@/lib/query/invalidate";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
 
 const DEFAULT_TRANSPORT = "Ô tô";
-const DEFAULT_TOUR_TYPE = "Ghép đoàn";
+const DEFAULT_TOUR_TYPE = "SERIES";
 
 type TourBasicEditorProps = {
   tour: Tour;

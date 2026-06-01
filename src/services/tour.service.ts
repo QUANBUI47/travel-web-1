@@ -2,6 +2,7 @@ import type {
   Prisma,
   Tour as PrismaTour,
   TourDeparture as PrismaTourDeparture,
+  TourOption as PrismaTourOption,
 } from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
@@ -10,6 +11,7 @@ import {
   Tour,
   TourDeparture,
   TourItinerary,
+  TourOption,
   Destination,
 } from "@/types";
 
@@ -17,6 +19,7 @@ type TourDbRecord = PrismaTour & {
   destination?: Destination | null;
   itineraries?: TourItinerary[];
   departures?: PrismaTourDeparture[];
+  options?: PrismaTourOption[];
 };
 
 export class TourService {
@@ -39,8 +42,6 @@ export class TourService {
         ? Number(tour.singleSupplementPrice)
         : null,
       estimatedCost: tour.estimatedCost ? Number(tour.estimatedCost) : null,
-      // Backward-compat alias cho UI cũ — đồng nhất với priceAdult.
-      priceFrom: priceAdult,
       oldPrice: tour.oldPrice ? Number(tour.oldPrice) : null,
       imageUrls: tour.imageUrls || [],
       tags: tour.tags || [],
@@ -54,6 +55,19 @@ export class TourService {
           actualCostPerPax: d.actualCostPerPax
             ? Number(d.actualCostPerPax)
             : null,
+        }),
+      ),
+      options: (tour.options || []).map(
+        (o): TourOption => ({
+          id: o.id,
+          tourId: o.tourId,
+          nameVi: o.nameVi,
+          nameEn: o.nameEn,
+          description: o.description,
+          surchargeAdult: Number(o.surchargeAdult ?? 0),
+          surchargeChild: Number(o.surchargeChild ?? 0),
+          sortOrder: o.sortOrder,
+          isActive: o.isActive,
         }),
       ),
     };
@@ -72,10 +86,51 @@ export class TourService {
         departures: {
           orderBy: { startDate: "asc" },
         },
+        options: {
+          orderBy: { sortOrder: "asc" },
+        },
       },
     });
 
     return tour ? this.mapTour(tour) : null;
+  }
+
+  /**
+   * Thay thế nguyên danh sách `TourOption` của tour. Hoàn toàn xoá rồi tạo
+   * mới (Editor admin gửi snapshot toàn bộ — đơn giản hơn diff). Cẩn thận:
+   * nếu sau này TourOption đã có TourBooking ref, ON DELETE Restrict sẽ chặn
+   * — sửa thành upsert + soft delete khi case đó xảy ra.
+   */
+  static async replaceOptions(
+    tourId: string,
+    options: Array<{
+      nameVi: string;
+      nameEn?: string | null;
+      description?: string | null;
+      surchargeAdult: number;
+      surchargeChild: number;
+      sortOrder?: number;
+      isActive?: boolean;
+    }>,
+  ) {
+    return await prisma.$transaction(async (tx) => {
+      await tx.tourOption.deleteMany({ where: { tourId } });
+
+      if (options.length > 0) {
+        await tx.tourOption.createMany({
+          data: options.map((o, idx) => ({
+            tourId,
+            nameVi: o.nameVi,
+            nameEn: o.nameEn ?? null,
+            description: o.description ?? null,
+            surchargeAdult: o.surchargeAdult,
+            surchargeChild: o.surchargeChild,
+            sortOrder: o.sortOrder ?? idx,
+            isActive: o.isActive ?? true,
+          })),
+        });
+      }
+    });
   }
 
   /**
@@ -117,6 +172,7 @@ export class TourService {
       dayNumber: number;
       title: string;
       description?: string | null;
+      hotelId?: string | null;
     }>,
   ) {
     const normalized = itineraries.map((it) => ({
@@ -124,6 +180,7 @@ export class TourService {
       dayNumber: it.dayNumber,
       title: it.title,
       description: it.description || null,
+      hotelId: it.hotelId || null,
       sortOrder: it.dayNumber,
     }));
 

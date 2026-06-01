@@ -33,13 +33,12 @@ export function TourCard({ tour, locale }: TourCardProps) {
       maximumFractionDigits: 0,
     }).format(Number(val ?? 0));
 
-  const price = formatPrice(tour.priceFrom);
+  const price = formatPrice(tour.priceAdult);
   const oldPrice = tour.oldPrice ? formatPrice(tour.oldPrice) : null;
 
-  // Tính % giảm giá
   const discountPercent =
-    tour.oldPrice && tour.priceFrom
-      ? Math.round((1 - Number(tour.priceFrom) / Number(tour.oldPrice)) * 100)
+    tour.oldPrice && tour.priceAdult
+      ? Math.round((1 - Number(tour.priceAdult) / Number(tour.oldPrice)) * 100)
       : 0;
 
   return (
@@ -60,7 +59,7 @@ export function TourCard({ tour, locale }: TourCardProps) {
             size="sm"
             variant="flat"
           >
-            {tour.durationText || t("duration", { days: tour.durationDays })}
+            {t("duration", { days: tour.durationDays })}
           </Chip>
         </div>
 
@@ -113,9 +112,7 @@ export function TourCard({ tour, locale }: TourCardProps) {
         <div className="flex items-center gap-4 text-slate-400 dark:text-slate-500 text-[10px] font-bold uppercase tracking-wider">
           <div className="flex items-center gap-1.5">
             <Clock size={12} />
-            <span>
-              {tour.durationText || t("duration", { days: tour.durationDays })}
-            </span>
+            <span>{t("duration", { days: tour.durationDays })}</span>
           </div>
           <div className="flex items-center gap-1.5">
             {tour.transport?.toLowerCase().includes("bay") ? (

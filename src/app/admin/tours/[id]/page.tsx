@@ -9,6 +9,7 @@ import { TourService } from "@/services/tour.service";
 import { TourItinerariesEditor } from "@/components/admin/tours/tour-itineraries-editor";
 import { TourBasicEditor } from "@/components/admin/tours/tour-basic-editor";
 import { TourDeparturesEditor } from "@/components/admin/tours/tour-departures-editor";
+import { TourOptionsEditor } from "@/components/admin/tours/tour-options-editor";
 
 export default async function AdminTourDetailPage({
   params,
@@ -68,6 +69,7 @@ export default async function AdminTourDetailPage({
           dayNumber: it.dayNumber,
           title: it.title,
           description: it.description,
+          hotelId: it.hotelId,
         }))}
         tour={{
           id: tour.id,
@@ -75,6 +77,8 @@ export default async function AdminTourDetailPage({
           nameVi: tour.nameVi,
         }}
       />
+
+      <TourOptionsEditor tour={tour} />
 
       <TourDeparturesEditor tour={tour} />
     </div>

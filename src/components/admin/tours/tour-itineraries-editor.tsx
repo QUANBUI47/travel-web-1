@@ -20,6 +20,7 @@ type ItineraryInitial = {
   dayNumber: number;
   title: string;
   description?: string | null;
+  hotelId?: string | null;
 };
 
 type TourItinerariesEditorProps = {
@@ -47,13 +48,14 @@ export function TourItinerariesEditor({
       key: it.id || `${it.dayNumber}_${idx}`,
       title: it.title ?? "",
       description: it.description ?? "",
+      hotelId: it.hotelId ?? "",
     }));
   }, [initialItineraries]);
 
   const [items, setItems] = useState(
     initial.length > 0
       ? initial
-      : [{ key: "day_1", title: "", description: "" }],
+      : [{ key: "day_1", title: "", description: "", hotelId: "" }],
   );
   const [isSaving, setIsSaving] = useState(false);
 
@@ -64,6 +66,7 @@ export function TourItinerariesEditor({
         key: `day_${prev.length + 1}_${Date.now()}`,
         title: "",
         description: "",
+        hotelId: "",
       },
     ]);
   };
@@ -79,6 +82,7 @@ export function TourItinerariesEditor({
         dayNumber: idx + 1,
         title: it.title,
         description: it.description ? it.description : null,
+        hotelId: it.hotelId ? it.hotelId : null,
       }));
 
       const res = await updateTourItinerariesAction(tour.id, payload);
@@ -163,7 +167,7 @@ export function TourItinerariesEditor({
                 </Button>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <Input
                   isRequired
                   label={t("day_title")}
@@ -180,6 +184,19 @@ export function TourItinerariesEditor({
                   }}
                 />
                 <Input isReadOnly label={t("day_order")} value={`${idx + 1}`} />
+                <Input
+                  description={t("day_hotel_desc")}
+                  label={t("day_hotel_id")}
+                  placeholder={t("day_hotel_placeholder")}
+                  value={it.hotelId}
+                  onValueChange={(val) => {
+                    setItems((prev) =>
+                      prev.map((p, i) =>
+                        i === idx ? { ...p, hotelId: val } : p,
+                      ),
+                    );
+                  }}
+                />
               </div>
 
               <Textarea

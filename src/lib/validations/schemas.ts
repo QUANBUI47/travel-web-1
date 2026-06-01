@@ -7,8 +7,28 @@ import { COMMON_REGEX } from "./common";
 export function buildValidationSchemas(t: ValidationTranslator) {
   // ADR-002 / Sprint 4: Pricing Pattern C. priceAdult bắt buộc và > 0; child/
   // infant ≥ 0 (default 0). Giữ thêm singleSupplementPrice + estimatedCost
-  // optional cho reporting tương lai (ADR-007). tourType hiện vẫn nhận string
-  // tự do (UI admin chưa cập nhật enum) — sẽ siết ở Sprint 5.
+  // optional cho reporting tương lai (ADR-007). tourType là enum
+  // SERIES/PRIVATE/CORPORATE (ADR-006).
+  const tourTypeSchema = z.enum(["SERIES", "PRIVATE", "CORPORATE"]);
+
+  const TourOptionInputSchema = z.object({
+    nameVi: z.string().min(2, t("tour_name_vi_min")).max(120),
+    nameEn: z.string().max(120).optional().nullable(),
+    description: z.string().max(2000).optional().nullable(),
+    surchargeAdult: z.coerce
+      .number()
+      .min(0, t("price_non_negative"))
+      .default(0),
+    surchargeChild: z.coerce
+      .number()
+      .min(0, t("price_non_negative"))
+      .default(0),
+    sortOrder: z.coerce.number().int().min(0).optional(),
+    isActive: z.boolean().optional(),
+  });
+
+  const TourOptionsInputSchema = z.array(TourOptionInputSchema);
+
   const TourSchema = z.object({
     nameVi: z.string().min(5, t("tour_name_vi_min")).max(200),
     nameEn: z.string().max(200).optional().nullable(),
@@ -24,7 +44,7 @@ export function buildValidationSchemas(t: ValidationTranslator) {
     durationDays: z.coerce.number().int().min(1, t("duration_min")),
     departurePoint: z.string().optional().nullable(),
     transport: z.string().optional().nullable(),
-    tourType: z.string().optional().nullable(),
+    tourType: tourTypeSchema.optional().nullable(),
     priceAdult: z.coerce.number().min(0, t("price_non_negative")).default(0),
     priceChild: z.coerce.number().min(0, t("price_non_negative")).default(0),
     priceInfant: z.coerce.number().min(0, t("price_non_negative")).default(0),
@@ -55,6 +75,7 @@ export function buildValidationSchemas(t: ValidationTranslator) {
     dayNumber: z.number().int().min(1),
     title: z.string().min(5, t("itinerary_title_min")),
     description: z.string().optional().nullable(),
+    hotelId: z.string().uuid(t("uuid_invalid")).nullable().optional(),
   });
 
   const TourItinerariesInputSchema = z
@@ -118,6 +139,8 @@ export function buildValidationSchemas(t: ValidationTranslator) {
     TourItinerariesInputSchema,
     TourDepartureInputSchema,
     TourDeparturesInputSchema,
+    TourOptionInputSchema,
+    TourOptionsInputSchema,
     DestinationSchema,
     idSchema,
     tourIdSchema,
@@ -131,4 +154,5 @@ export type TourInput = z.infer<SchemaBundle["TourSchema"]>;
 export type TourDepartureInput = z.infer<
   SchemaBundle["TourDepartureInputSchema"]
 >;
+export type TourOptionInput = z.infer<SchemaBundle["TourOptionInputSchema"]>;
 export type DestinationInput = z.infer<SchemaBundle["DestinationSchema"]>;

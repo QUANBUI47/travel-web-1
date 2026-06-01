@@ -57,7 +57,7 @@ import { invalidateTours } from "@/lib/query/invalidate";
 import { slugify } from "@/lib/utils/slugify";
 
 const DEFAULT_TRANSPORT = "Ô tô";
-const DEFAULT_TOUR_TYPE = "Ghép đoàn";
+const DEFAULT_TOUR_TYPE = "SERIES";
 
 export default function AdminToursPage() {
   const [isMounted, setIsMounted] = useState(false);
@@ -646,15 +646,21 @@ export default function AdminToursPage() {
                       onSelectionChange={(keys) =>
                         setFormData({
                           ...formData,
-                          tourType: Array.from(keys)[0] as string,
+                          tourType: Array.from(keys)[0] as
+                            | "SERIES"
+                            | "PRIVATE"
+                            | "CORPORATE",
                         })
                       }
                     >
-                      <SelectItem key={DEFAULT_TOUR_TYPE}>
-                        {t("tour_type_group")}
+                      <SelectItem key="SERIES">
+                        {t("tour_type_series")}
                       </SelectItem>
-                      <SelectItem key="Tour riêng">
+                      <SelectItem key="PRIVATE">
                         {t("tour_type_private")}
+                      </SelectItem>
+                      <SelectItem key="CORPORATE">
+                        {t("tour_type_corporate")}
                       </SelectItem>
                     </Select>
                   </div>

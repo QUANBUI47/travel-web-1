@@ -135,8 +135,7 @@ export default async function TourDetailPage({ params }: Props) {
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="text-primary" size={18} />
-                {fullTour.durationText ||
-                  t("days", { count: fullTour.durationDays })}
+                {t("days", { count: fullTour.durationDays })}
               </div>
               <div className="flex items-center gap-2">
                 <Calendar className="text-primary" size={18} />
