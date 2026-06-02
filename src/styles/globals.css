@@ -9,8 +9,14 @@
 
 /* Design system — Du lịch Việt Nam (doc/DESIGN_SYSTEM.md) */
 @theme {
-  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-heading: var(--font-heading), ui-sans-serif, system-ui, sans-serif;
+  /* Be Vietnam Pro — sans-serif duy nhất, optimize cho tiếng Việt.
+     Body + heading dùng cùng family. Heading phân cấp bằng SIZE lớn +
+     weight 500-600 (KHÔNG dùng 800-900 vì Be Vietnam Pro là body font —
+     weight cực cao sẽ "đóng kín" ở size lớn). */
+  --font-sans:
+    var(--font-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-heading: var(--font-sans);
   --font-mono: "ui-mono", monospace;
 
   --tracking-tight: -0.02em;
@@ -103,17 +109,18 @@ body {
   color: var(--foreground);
   line-height: var(--leading-relaxed);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
+/* Heading: Be Vietnam Pro cùng family với body. Tracking nhẹ — tránh
+   siết quá vì display size đã dày sẵn, càng siết càng "đóng kín". */
 h1,
 h2,
 h3,
 h4,
-.font-bold,
-.font-extrabold,
-.font-black {
-  font-family: var(--font-heading);
-  letter-spacing: var(--tracking-tight);
+.font-display {
+  letter-spacing: -0.01em;
 }
 
 /* Custom Scrollbar */

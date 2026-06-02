@@ -112,7 +112,7 @@ export function TrendingSection({
                       {tTours("price_from")}
                     </p>
                     <p className="text-2xl font-black text-primary">
-                      ₫{Number(tour.priceFrom).toLocaleString("vi-VN")}
+                      ₫{Number(tour.priceAdult).toLocaleString("vi-VN")}
                     </p>
                   </div>
                   <Link

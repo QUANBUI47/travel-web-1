@@ -29,15 +29,45 @@ export class BookingError extends Error {
 /*  Input types                                                               */
 /* -------------------------------------------------------------------------- */
 
+/**
+ * Input cho `createTourBooking` (Sprint 4 — Pricing Pattern C, ADR-002).
+ *
+ * Khách phải có ít nhất 1 adult. children / infants mặc định 0. `optionId`
+ * tham chiếu `TourOption` (gói nâng cấp, vd: VIP). `isSingleSupplement` chỉ
+ * có hiệu lực khi adults = 1 và tour có `singleSupplementPrice`.
+ */
 export interface CreateTourBookingInput {
   userId: string;
   tourId: string;
   departureId: string;
-  participants: number;
+  adults: number;
+  children?: number;
+  infants?: number;
+  optionId?: string | null;
+  isSingleSupplement?: boolean;
   guestName: string;
   guestEmail: string;
   guestPhone: string;
   notes?: string | null;
+}
+
+/**
+ * JSON đặt vào `TourBooking.priceBreakdown` (ADR-002). Giúp re-derive tổng
+ * tiền lúc render hóa đơn mà không cần fetch giá tour tại thời điểm sau.
+ */
+export interface PriceBreakdown {
+  adults: { count: number; unitPrice: number; subtotal: number };
+  children: { count: number; unitPrice: number; subtotal: number };
+  infants: { count: number; unitPrice: number; subtotal: number };
+  option: {
+    id: string;
+    nameVi: string;
+    surchargeAdult: number;
+    surchargeChild: number;
+    subtotal: number;
+  } | null;
+  singleSupplement: number | null;
+  total: number;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -104,9 +134,7 @@ export class BookingService {
       totalAmount: Number(booking.totalAmount),
       createdAt: booking.createdAt.toISOString(),
       updatedAt: booking.updatedAt.toISOString(),
-      checkIn: booking.checkIn?.toISOString() || null,
-      checkOut: booking.checkOut?.toISOString() || null,
-      tourStartDate: booking.tourStartDate?.toISOString() || null,
+      paymentDeadline: booking.paymentDeadline?.toISOString() ?? null,
     };
   }
 
@@ -135,9 +163,6 @@ export class BookingService {
         tourBooking: {
           include: { tour: true },
         },
-        hotelBooking: {
-          include: { room: { include: { hotel: true } } },
-        },
         payments: true,
       },
     });
@@ -148,7 +173,7 @@ export class BookingService {
   /* ────────────────  Mutations  ──────────────── */
 
   /**
-   * Tạo booking cho tour theo departure cụ thể.
+   * Tạo booking cho tour theo departure cụ thể (Pricing Pattern C, ADR-002).
    *
    * Concurrency strategy: **Pessimistic locking**.
    * `SELECT … FOR UPDATE` khóa row `tour_departures` ngay từ đầu transaction.
@@ -156,16 +181,34 @@ export class BookingService {
    * đợi commit/rollback → loại bỏ Lost Update.
    *
    * Lớp bảo vệ song song ở DB:
-   *  - CHECK `tour_departures_no_overbooking_check`
-   *    (booked_count <= max_participants)
-   *  - CHECK `tour_bookings_participants_positive_check` (participants > 0)
-   *  - CHECK `bookings_type_dates_check` (polymorphism)
+   *  - CHECK `tour_departures_no_overbooking` (booked_count ≤ max_participants)
+   *  - CHECK `tour_bookings_pax_non_negative` (adults ≥ 1, children/infants ≥ 0)
+   *
+   * Lưu ý: `bookedCount` ở `tour_departures` tính TOÀN BỘ pax (adults +
+   * children + infants) — coi mỗi khách = 1 slot, kể cả em bé. Có thể đổi
+   * policy sau (vd: infant không tính slot) nhưng giữ đơn giản trước.
    *
    * @throws {BookingError} Khi violate business rule (tour/departure không
-   *   tồn tại, hết slot, departure đã đóng…). Lỗi DB constraint sẽ bubble
-   *   lên dạng `PrismaClientKnownRequestError`.
+   *   tồn tại, hết slot, departure đã đóng…).
    */
   static async createTourBooking(input: CreateTourBookingInput) {
+    const adults = input.adults;
+    const children = input.children ?? 0;
+    const infants = input.infants ?? 0;
+    const totalPax = adults + children + infants;
+
+    if (adults < 1) {
+      throw new BookingError("VIVU_BOOKING_AT_LEAST_ONE_ADULT");
+    }
+    if (children < 0 || infants < 0) {
+      throw new BookingError("VIVU_BOOKING_PAX_NEGATIVE");
+    }
+    if (input.isSingleSupplement && adults !== 1) {
+      throw new BookingError(
+        "VIVU_BOOKING_SINGLE_SUPPLEMENT_REQUIRES_ONE_ADULT",
+      );
+    }
+
     return prisma.$transaction(
       async (tx) => {
         // 1. Lock departure — các transaction khác phải đợi tại đây.
@@ -184,14 +227,22 @@ export class BookingService {
             ? Infinity
             : departure.max_participants - departure.booked_count;
 
-        if (input.participants > remaining) {
+        if (totalPax > remaining) {
           throw new BookingError("VIVU_BOOKING_NOT_ENOUGH_SLOTS");
         }
 
-        // 2. Load tour để derive unit price + xác nhận đang active.
+        // 2. Load tour + option để derive đơn giá Pattern C.
         const tour = await tx.tour.findUnique({
           where: { id: input.tourId },
-          select: { id: true, isActive: true, priceFrom: true },
+          select: {
+            id: true,
+            isActive: true,
+            priceAdult: true,
+            priceChild: true,
+            priceInfant: true,
+            singleSupplementPrice: true,
+            nameVi: true,
+          },
         });
 
         if (!tour) {
@@ -201,34 +252,109 @@ export class BookingService {
           throw new BookingError("VIVU_BOOKING_TOUR_INACTIVE");
         }
 
-        // Departure có giá riêng thì ưu tiên, không thì lấy giá tour.
-        const unitPriceDecimal = departure.price_override ?? tour.priceFrom;
+        const option = input.optionId
+          ? await tx.tourOption.findUnique({
+              where: { id: input.optionId },
+              select: {
+                id: true,
+                tourId: true,
+                isActive: true,
+                nameVi: true,
+                surchargeAdult: true,
+                surchargeChild: true,
+              },
+            })
+          : null;
 
-        if (unitPriceDecimal === null) {
-          throw new BookingError("VIVU_BOOKING_PRICE_MISSING");
+        if (input.optionId) {
+          if (!option || !option.isActive) {
+            throw new BookingError("VIVU_BOOKING_OPTION_INVALID");
+          }
+          if (option.tourId !== input.tourId) {
+            throw new BookingError("VIVU_BOOKING_OPTION_TOUR_MISMATCH");
+          }
         }
 
-        // Decimal × int — vẫn ra Decimal, không mất precision tiền tệ.
-        const totalAmount = unitPriceDecimal.mul(input.participants);
+        // Departure override luôn áp cho priceAdult (giá người lớn cơ bản).
+        // Children / infant vẫn dùng giá tour-level vì hiếm khi tour override theo lứa tuổi.
+        const effectiveAdult = departure.price_override ?? tour.priceAdult;
+        const adultSubtotal = effectiveAdult.mul(adults);
+        const childSubtotal = tour.priceChild.mul(children);
+        const infantSubtotal = tour.priceInfant.mul(infants);
 
-        // 3. Tạo Booking + nested TourBooking.
+        const optionAdultSurcharge = option
+          ? option.surchargeAdult.mul(adults)
+          : null;
+        const optionChildSurcharge = option
+          ? option.surchargeChild.mul(children)
+          : null;
+        const optionSubtotal =
+          optionAdultSurcharge && optionChildSurcharge
+            ? optionAdultSurcharge.add(optionChildSurcharge)
+            : null;
+
+        const singleSupplement =
+          input.isSingleSupplement && tour.singleSupplementPrice
+            ? tour.singleSupplementPrice
+            : null;
+
+        let totalAmount = adultSubtotal.add(childSubtotal).add(infantSubtotal);
+
+        if (optionSubtotal) totalAmount = totalAmount.add(optionSubtotal);
+        if (singleSupplement) totalAmount = totalAmount.add(singleSupplement);
+
+        // 3. priceBreakdown JSON để tái hiện hoá đơn về sau.
+        const priceBreakdown: PriceBreakdown = {
+          adults: {
+            count: adults,
+            unitPrice: Number(effectiveAdult),
+            subtotal: Number(adultSubtotal),
+          },
+          children: {
+            count: children,
+            unitPrice: Number(tour.priceChild),
+            subtotal: Number(childSubtotal),
+          },
+          infants: {
+            count: infants,
+            unitPrice: Number(tour.priceInfant),
+            subtotal: Number(infantSubtotal),
+          },
+          option:
+            option && optionSubtotal
+              ? {
+                  id: option.id,
+                  nameVi: option.nameVi,
+                  surchargeAdult: Number(option.surchargeAdult),
+                  surchargeChild: Number(option.surchargeChild),
+                  subtotal: Number(optionSubtotal),
+                }
+              : null,
+          singleSupplement: singleSupplement ? Number(singleSupplement) : null,
+          total: Number(totalAmount),
+        };
+
+        // 4. Tạo Booking + nested TourBooking (Pattern C fields).
         const booking = await tx.booking.create({
           data: {
             userId: input.userId,
-            bookingType: "TOUR",
             status: "PENDING",
             totalAmount,
             guestName: input.guestName,
             guestEmail: input.guestEmail,
             guestPhone: input.guestPhone,
             notes: input.notes ?? null,
-            tourStartDate: departure.start_date,
             tourBooking: {
               create: {
                 tourId: input.tourId,
                 departureId: input.departureId,
-                participants: input.participants,
-                unitPrice: unitPriceDecimal,
+                adults,
+                children,
+                infants,
+                optionId: input.optionId ?? null,
+                isSingleSupplement: input.isSingleSupplement ?? false,
+                priceBreakdown:
+                  priceBreakdown as unknown as Prisma.InputJsonValue,
               },
             },
           },
@@ -238,8 +364,8 @@ export class BookingService {
           },
         });
 
-        // 4. Tăng bookedCount. Nếu đủ max → đóng departure để không ai đặt nữa.
-        const newBookedCount = departure.booked_count + input.participants;
+        // 5. Tăng bookedCount theo total pax. Nếu chạm max → đóng departure.
+        const newBookedCount = departure.booked_count + totalPax;
         const shouldClose =
           departure.max_participants !== null &&
           newBookedCount >= departure.max_participants;
@@ -247,7 +373,7 @@ export class BookingService {
         await tx.tourDeparture.update({
           where: { id: input.departureId },
           data: {
-            bookedCount: { increment: input.participants },
+            bookedCount: { increment: totalPax },
             ...(shouldClose ? { status: "FULL" } : {}),
           },
         });
@@ -280,7 +406,7 @@ export class BookingService {
         if (!booking) {
           throw new BookingError("VIVU_BOOKING_NOT_FOUND");
         }
-        if (booking.bookingType !== "TOUR" || !booking.tourBooking) {
+        if (!booking.tourBooking) {
           throw new BookingError("VIVU_BOOKING_NOT_TOUR_TYPE");
         }
 
@@ -295,16 +421,19 @@ export class BookingService {
         }
 
         const departureId = booking.tourBooking.departureId;
+        const totalPax =
+          booking.tourBooking.adults +
+          booking.tourBooking.children +
+          booking.tourBooking.infants;
 
         if (departureId) {
           const departure = await lockDeparture(tx, departureId);
-          const newBookedCount =
-            departure.booked_count - booking.tourBooking.participants;
+          const newBookedCount = departure.booked_count - totalPax;
 
           await tx.tourDeparture.update({
             where: { id: departureId },
             data: {
-              bookedCount: { decrement: booking.tourBooking.participants },
+              bookedCount: { decrement: totalPax },
               // Mở lại departure nếu trước đó FULL và giờ còn slot.
               ...(departure.status === "FULL" && newBookedCount >= 0
                 ? { status: "AVAILABLE" }

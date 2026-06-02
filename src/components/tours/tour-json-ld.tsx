@@ -16,7 +16,13 @@ export function TourJsonLd({
   locale,
 }: TourJsonLdProps) {
   const image = tour.imageUrls?.[0];
-  const price = tour.priceFrom;
+  const price = tour.priceAdult;
+
+  const TOURIST_TYPE_LABEL: Record<string, string> = {
+    SERIES: "Series tour",
+    PRIVATE: "Private tour",
+    CORPORATE: "Corporate tour",
+  };
 
   const schema = {
     "@context": "https://schema.org",
@@ -25,7 +31,7 @@ export function TourJsonLd({
     description: description || undefined,
     url,
     image: image ? [image] : undefined,
-    touristType: tour.tourType || undefined,
+    touristType: tour.tourType ? TOURIST_TYPE_LABEL[tour.tourType] : undefined,
     itinerary: tour.itineraries?.length
       ? {
           "@type": "ItemList",

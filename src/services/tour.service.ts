@@ -2,6 +2,7 @@ import type {
   Prisma,
   Tour as PrismaTour,
   TourDeparture as PrismaTourDeparture,
+  TourOption as PrismaTourOption,
 } from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
@@ -10,6 +11,7 @@ import {
   Tour,
   TourDeparture,
   TourItinerary,
+  TourOption,
   Destination,
 } from "@/types";
 
@@ -17,17 +19,29 @@ type TourDbRecord = PrismaTour & {
   destination?: Destination | null;
   itineraries?: TourItinerary[];
   departures?: PrismaTourDeparture[];
+  options?: PrismaTourOption[];
 };
 
 export class TourService {
   /**
-   * Chuyển đổi dữ liệu từ Prisma (Decimal) sang Plain Object (Number)
+   * Chuyển đổi dữ liệu Prisma (Decimal) sang Plain Object (Number) để serialize
+   * qua RSC. Áp dụng Pricing Pattern C (ADR-002) từ Sprint 4.
    */
   private static mapTour(tour: TourDbRecord): Tour {
+    const priceAdult = tour.priceAdult ? Number(tour.priceAdult) : 0;
+    const priceChild = tour.priceChild ? Number(tour.priceChild) : 0;
+    const priceInfant = tour.priceInfant ? Number(tour.priceInfant) : 0;
+
     return {
       ...tour,
       destination: tour.destination ?? undefined,
-      priceFrom: tour.priceFrom ? Number(tour.priceFrom) : 0,
+      priceAdult,
+      priceChild,
+      priceInfant,
+      singleSupplementPrice: tour.singleSupplementPrice
+        ? Number(tour.singleSupplementPrice)
+        : null,
+      estimatedCost: tour.estimatedCost ? Number(tour.estimatedCost) : null,
       oldPrice: tour.oldPrice ? Number(tour.oldPrice) : null,
       imageUrls: tour.imageUrls || [],
       tags: tour.tags || [],
@@ -38,6 +52,22 @@ export class TourService {
         (d): TourDeparture => ({
           ...d,
           priceOverride: d.priceOverride ? Number(d.priceOverride) : null,
+          actualCostPerPax: d.actualCostPerPax
+            ? Number(d.actualCostPerPax)
+            : null,
+        }),
+      ),
+      options: (tour.options || []).map(
+        (o): TourOption => ({
+          id: o.id,
+          tourId: o.tourId,
+          nameVi: o.nameVi,
+          nameEn: o.nameEn,
+          description: o.description,
+          surchargeAdult: Number(o.surchargeAdult ?? 0),
+          surchargeChild: Number(o.surchargeChild ?? 0),
+          sortOrder: o.sortOrder,
+          isActive: o.isActive,
         }),
       ),
     };
@@ -56,10 +86,51 @@ export class TourService {
         departures: {
           orderBy: { startDate: "asc" },
         },
+        options: {
+          orderBy: { sortOrder: "asc" },
+        },
       },
     });
 
     return tour ? this.mapTour(tour) : null;
+  }
+
+  /**
+   * Thay thế nguyên danh sách `TourOption` của tour. Hoàn toàn xoá rồi tạo
+   * mới (Editor admin gửi snapshot toàn bộ — đơn giản hơn diff). Cẩn thận:
+   * nếu sau này TourOption đã có TourBooking ref, ON DELETE Restrict sẽ chặn
+   * — sửa thành upsert + soft delete khi case đó xảy ra.
+   */
+  static async replaceOptions(
+    tourId: string,
+    options: Array<{
+      nameVi: string;
+      nameEn?: string | null;
+      description?: string | null;
+      surchargeAdult: number;
+      surchargeChild: number;
+      sortOrder?: number;
+      isActive?: boolean;
+    }>,
+  ) {
+    return await prisma.$transaction(async (tx) => {
+      await tx.tourOption.deleteMany({ where: { tourId } });
+
+      if (options.length > 0) {
+        await tx.tourOption.createMany({
+          data: options.map((o, idx) => ({
+            tourId,
+            nameVi: o.nameVi,
+            nameEn: o.nameEn ?? null,
+            description: o.description ?? null,
+            surchargeAdult: o.surchargeAdult,
+            surchargeChild: o.surchargeChild,
+            sortOrder: o.sortOrder ?? idx,
+            isActive: o.isActive ?? true,
+          })),
+        });
+      }
+    });
   }
 
   /**
@@ -101,6 +172,7 @@ export class TourService {
       dayNumber: number;
       title: string;
       description?: string | null;
+      hotelId?: string | null;
     }>,
   ) {
     const normalized = itineraries.map((it) => ({
@@ -108,6 +180,7 @@ export class TourService {
       dayNumber: it.dayNumber,
       title: it.title,
       description: it.description || null,
+      hotelId: it.hotelId || null,
       sortOrder: it.dayNumber,
     }));
 
@@ -163,15 +236,16 @@ export class TourService {
 
   /**
    * Danh sách tour công khai — lọc theo điểm đến, từ khóa, ngày khởi hành.
+   * Tham số `destination` nhận `slug` (khớp URL `?destination=ha-noi`).
    */
   static async searchListings(filters: {
-    destinationSlug?: string;
+    destination?: string;
     q?: string;
     from?: string;
     to?: string;
     type?: string;
   }) {
-    const { destinationSlug, q, from, to, type } = filters;
+    const { destination, q, from, to, type } = filters;
 
     const departureDateFilter =
       from || to
@@ -191,12 +265,25 @@ export class TourService {
         isActive: true,
         destination: {
           isActive: true,
-          ...(destinationSlug ? { slug: destinationSlug } : {}),
+          ...(destination ? { slug: destination } : {}),
         },
+        // tourType giờ là enum (SERIES / PRIVATE / CORPORATE — ADR-006).
+        // Filter chấp nhận chính xác enum value, tags fallback giữ tự do.
         ...(type
           ? {
               OR: [
-                { tourType: { contains: type, mode: "insensitive" as const } },
+                ...(["SERIES", "PRIVATE", "CORPORATE"].includes(
+                  type.toUpperCase(),
+                )
+                  ? [
+                      {
+                        tourType: type.toUpperCase() as
+                          | "SERIES"
+                          | "PRIVATE"
+                          | "CORPORATE",
+                      },
+                    ]
+                  : []),
                 { tags: { has: type } },
               ],
             }
@@ -344,11 +431,36 @@ export class TourService {
   }
 
   /**
+   * Normalize TourInput → Prisma payload. Prisma sinh ra type không chấp nhận
+   * `destinationId: null` (vì có relation cùng tên) — convert sang `undefined`
+   * khi user xoá liên kết. Cho phép Pricing Pattern C optional fields.
+   */
+  private static toPrismaInput(
+    data: Partial<TourInput>,
+  ): Prisma.TourUncheckedCreateInput | Prisma.TourUncheckedUpdateInput {
+    const { destinationId, singleSupplementPrice, estimatedCost, ...rest } =
+      data;
+
+    return {
+      ...rest,
+      ...(destinationId !== undefined
+        ? { destinationId: destinationId ?? undefined }
+        : {}),
+      ...(singleSupplementPrice !== undefined
+        ? { singleSupplementPrice: singleSupplementPrice ?? null }
+        : {}),
+      ...(estimatedCost !== undefined
+        ? { estimatedCost: estimatedCost ?? null }
+        : {}),
+    } as Prisma.TourUncheckedCreateInput;
+  }
+
+  /**
    * Create a new tour
    */
   static async create(data: TourInput) {
     const tour = await prisma.tour.create({
-      data,
+      data: this.toPrismaInput(data) as Prisma.TourUncheckedCreateInput,
       include: {
         destination: true,
       },
@@ -363,7 +475,7 @@ export class TourService {
   static async update(id: string, data: Partial<TourInput>) {
     const tour = await prisma.tour.update({
       where: { id },
-      data,
+      data: this.toPrismaInput(data),
       include: {
         destination: true,
       },

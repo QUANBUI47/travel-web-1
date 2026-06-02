@@ -5,13 +5,20 @@ import { formatTourType, formatTransport } from "../display-labels";
 const t = (key: string) => `t:${key}`;
 
 describe("formatTourType", () => {
-  it("maps known DB labels to i18n keys", () => {
-    expect(formatTourType("Ghép đoàn", t)).toBe("t:tour_type_group");
+  it("maps TourType enum values to i18n keys", () => {
+    expect(formatTourType("SERIES", t)).toBe("t:tour_type_series");
+    expect(formatTourType("PRIVATE", t)).toBe("t:tour_type_private");
+    expect(formatTourType("CORPORATE", t)).toBe("t:tour_type_corporate");
+  });
+
+  it("still maps legacy Vietnamese labels (data cũ trước migration)", () => {
+    expect(formatTourType("Ghép đoàn", t)).toBe("t:tour_type_series");
     expect(formatTourType("Tour riêng", t)).toBe("t:tour_type_private");
   });
 
   it("uses fallback key when value is empty", () => {
-    expect(formatTourType(null, t)).toBe("t:tour_type_group");
+    expect(formatTourType(null, t)).toBe("t:tour_type_series");
+    expect(formatTourType(undefined, t)).toBe("t:tour_type_series");
   });
 
   it("returns raw value for unknown labels", () => {

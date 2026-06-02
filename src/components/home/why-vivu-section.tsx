@@ -49,7 +49,7 @@ export function WhyVivuSection({ content, locale }: WhyVivuSectionProps) {
             <span className="text-primary font-black uppercase tracking-[0.2em] md:tracking-[0.3em] text-[0.625rem] md:text-xs">
               {t("badge")}
             </span>
-            <h2 className="text-4xl lg:text-5xl font-black font-['Plus_Jakarta_Sans'] tracking-tight leading-tight text-slate-900 dark:text-white">
+            <h2 className="text-4xl lg:text-5xl font-black tracking-tight leading-tight text-slate-900 dark:text-white">
               {sectionTitle}
             </h2>
             <p className="text-slate-500 dark:text-slate-400 text-lg leading-relaxed font-medium">

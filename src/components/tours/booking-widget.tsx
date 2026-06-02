@@ -24,7 +24,9 @@ export function BookingWidget({ tour, locale }: BookingWidgetProps) {
     (d) => d.id === selectedDepartureId,
   );
 
-  const currentPrice = selectedDeparture?.priceOverride ?? tour.priceFrom;
+  // S4-05 sẽ rewrite widget multi-pax (adults/children/infants). Tạm thời
+  // dùng priceAdult làm giá per-pax đồng nhất với UI legacy 1 số người.
+  const currentPrice = selectedDeparture?.priceOverride ?? tour.priceAdult;
 
   const intlLocale = locale === "vi" ? "vi-VN" : "en-US";
   const currency = locale === "vi" ? "VND" : "USD";

@@ -73,7 +73,7 @@ export default async function DestinationDetailPage({ params }: Props) {
 
   const destination = serialize(raw);
   const tours = serialize(
-    await TourService.searchListings({ destinationSlug: slug }),
+    await TourService.searchListings({ destination: slug }),
   );
   const name = getDBLocalizedValue(destination, "name", locale);
   const regionName = destination.region

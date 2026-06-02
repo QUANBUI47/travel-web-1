@@ -1,8 +1,19 @@
-/** Map stored Vietnamese DB labels → Tours i18n keys */
+import type { TourType } from "@prisma/client";
+
+/**
+ * Map giá trị tourType từ DB → key i18n để dịch trong UI.
+ *
+ * Sau Sprint 4 (ADR-006), `tourType` là enum `TourType` (SERIES / PRIVATE /
+ * CORPORATE). Vẫn nhận lại chuỗi Vietnamese cũ ("Ghép đoàn", "Tour riêng")
+ * để chuyển tiếp mượt cho dữ liệu cũ còn sót hoặc copy/paste từ admin.
+ */
 const TOUR_TYPE_KEYS: Record<string, string> = {
-  "Ghép đoàn": "tour_type_group",
+  SERIES: "tour_type_series",
+  PRIVATE: "tour_type_private",
+  CORPORATE: "tour_type_corporate",
+  "Ghép đoàn": "tour_type_series",
   "Tour riêng": "tour_type_private",
-  "Group tour": "tour_type_group",
+  "Group tour": "tour_type_series",
   "Private tour": "tour_type_private",
 };
 
@@ -20,9 +31,9 @@ const TRANSPORT_KEYS: Record<string, string> = {
 type TranslateFn = (key: string) => string;
 
 export function formatTourType(
-  value: string | null | undefined,
+  value: TourType | string | null | undefined,
   t: TranslateFn,
-  fallbackKey = "tour_type_group",
+  fallbackKey = "tour_type_series",
 ): string {
   if (!value) return t(fallbackKey);
   const key = TOUR_TYPE_KEYS[value];

@@ -191,6 +191,42 @@ export async function updateTourItinerariesAction(
   }
 }
 
+export async function updateTourOptionsAction(
+  tourId: string,
+  options: unknown,
+): Promise<TourVoidActionResponse> {
+  try {
+    await requireAdmin();
+    const { tourIdSchema, TourOptionsInputSchema } =
+      await getValidationSchemas();
+
+    tourIdSchema.parse(tourId);
+    const validated = TourOptionsInputSchema.parse(options);
+
+    await TourService.replaceOptions(tourId, validated);
+
+    revalidatePath(ROUTES.ADMIN.TOURS);
+    revalidatePath(`${ROUTES.ADMIN.TOURS}/${tourId}`);
+    revalidatePath(ROUTES.TOURS);
+    revalidateNavCache();
+
+    return { success: true };
+  } catch (error) {
+    if (error instanceof ZodError) {
+      return {
+        success: false,
+        error: "VALIDATION_ERROR",
+        message: await zodFirstMessage(error, "invalid_tour_data"),
+      };
+    }
+
+    return (await handleError(
+      error,
+      "VIVU_ADMIN_ERROR_UPDATE_TOUR",
+    )) as TourVoidActionResponse;
+  }
+}
+
 export async function updateTourDeparturesAction(
   tourId: string,
   departures: unknown,
